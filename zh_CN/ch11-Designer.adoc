@@ -424,60 +424,60 @@ image::images/designer.palette.add.money.help.png[align="center"]
 [NOTE]
 ====
 
-You can use +@Property+ annotations on members of your +CustomServiceTask+, but this will not work if you use ++@Runtime++'s +expression+ attribute. The reason for this is that the expression you specify will be attempted to be resolved to a _method_ by Activiti, not to a class. Therefore, no injection into a class will be performed. Any members marked with +@Property+ will be ignored by Designer if you use +expression+ in your +@Runtime+ annotation. Designer will not render them as editable fields in the node's property pane and will produce no output for the properties in the process' BPMN.
+可以在++CustomServiceTask++的成员上使用++@Property++注解，但如果使用++@Runtime++的++expression++属性，将不会生效。原因是指定的表达式将被Activiti尝试解析为__方法__，而不是类。因此，不会有对类的注入。如果在++@Runtime++注解中使用++expression++，则注解为++@Property++的成员将被Designer忽略。Designer不会将它们渲染为节点参数页面的可编辑字段，也不会为这些参数在流程的BPMN中生成输出。
 ====
 
 [NOTE]
 ====
-Note that the runtime class shouldn't be in your extension JAR, as it's dependent on the Activiti libraries. Activiti needs to be able to find it at runtime, so it needs to be on the Activiti engine's classpath.
+请注意不应该在你的扩展JAR中包括运行时类，因为它与Activiti库是分离的。Activiti需要在运行时能够找到它们，因此需要将其放在Activiti引擎的clsspath中。
 ====
 
-The examples project in Designer's source tree contains examples of the different options for configuring +@Runtime+. Take a look in the money-tasks project for some starting points. The examples refer to delegate class examples that are in the money-delegates project.
+Designer代码树中的示例项目包含了配置++@Runtime++的不同选项的例子。可以从查看money-tasks项目开始。引用代理类的示例在money-delegates项目中。
 
 
 [[eclipseDesignerPropertyTypes]]
 
 
-===== Property types
+===== 参数类型 Property types
 
-This section describes the property types you can use for a +CustomServiceTask+ by setting its type to a +PropertyType+ value.
+这个章节介绍了++CustomServiceTask++能够使用的参数类型，可以将类型设置为++PropertyType++的值。
 
 ====== PropertyType.TEXT
 
-Creates a single line text field as shown below. Can be a required field and shows validation messages as a tooltip. Validation failures are displayed by changing the background of the field to a light red color.
+创建如下所示的单行文本字段。可以是必填字段，并将验证消息作为提示信息显示。验证失败将改变字段的背景为浅红色。
 
 image::images/designer.property.text.invalid.png[align="center"]
 
 ====== PropertyType.MULTILINE_TEXT
 
-Creates a multiline text field as shown below (height is fixed at 80 pixels). Can be a required field and shows validation messages as a tooltip. Validation failures are displayed by changing the background of the field to a light red color.
+创建如下所示的多行文本字段（高度固定为80像素）。可以是必填字段，并将验证消息作为提示信息显示。验证失败将改变字段的背景为浅红色。
 
 image::images/designer.property.multiline.text.invalid.png[align="center"]
 
 
 ====== PropertyType.PERIOD
 
-Creates a structured editor for specifying a period of time by editing amounts of each unit with a spinner control. The result is shown below. Can be a required field (which is interpreted such that not all values may be 0, so at least 1 part of the period must have a non-zero value) and shows validation messages as a tooltip. Validation failures are displayed by changing the background of the entire field to a light red color. The value of the field is stored as a string of the form 1y 2mo 3w 4d 5h 6m 7s, which represents 1 year, 2 months, 3 weeks, 4 days, 6 minutes and 7 seconds. The entire string is always stored, even if parts are 0.
+创建一个组合编辑框，可以使用转盘控制编辑每一个单位的数量，来指定一段时间。结果如下所示。可以是必填字段（解释为不能所有的值都是0，也就是至少有一个部分要有非零值），并将验证消息作为提示信息显示。验证失败将改变整个字段的背景为浅红色。字段的值保存为1y 2mo 3w 4d 5h 6m 7s格式的字符串，代表1年，2月，3周，4天，6分钟及7秒。即使有部分为0，也总是存储整个字符串。
 
 image::images/designer.property.period.png[align="center"]
 
 
 ====== PropertyType.BOOLEAN_CHOICE
 
-Creates a single checkbox control for boolean or toggle choices. Note that you can specify the +required+ attribute on the +Property+ annotation, but it will not be evaluated because that would leave the user without a choice whether to check the box or not. The value stored in the diagram is java.lang.Boolean.toString(boolean), which results in "true" or "false".
+创建一个单独的boolean复选框，或者开关选择。请注意可以在++Property++注解上指定++required++属性，但不会被处理，因为这样用户就无法选择是否选中复选框。流程图中存储的值为java.lang.Boolean.toString(boolean)，其结果为"true"或"false"。
 
 image::images/designer.property.boolean.choice.png[align="center"]
 
 ====== PropertyType.RADIO_CHOICE
 
-Creates a group of radio buttons as shown below. Selection of any of the radio buttons is mutually exclusive with selection of any of the others (i.e., only one selection allowed). Can be a required field and shows validation messages as a tooltip. Validation failures are displayed by changing the background of the group to a light red color.
+创建如下所示的一组单选按钮。选中任何一个单选按钮都自动排除任何其他的选择（也就是说，单选）。可以是必填字段，并将验证消息作为提示信息显示。验证失败将改变组的背景为浅红色。
 
-This property type expects the class member you have annotated to also have an accompanying +@PropertyItems+ annotation (for an example, see below). Using this additional annotation, you can specify the list of items that should be offered in an array of Strings. Specify the items by adding two array entries for each item: first, the label to be shown; second, the value to be stored.
+这个参数类型需要你注解的类成员同时使用++@PropertyItems++注解（例如如下所示）。可以使用这个额外的注解，以字符串数组的方式，指定条目的列表。需要为每一个条目添加两个数组项：第一个，用于显示的标签；第二个，用于存储的值。
 
 [source,java,linenums]
 ----
-@Property(type = PropertyType.RADIO_CHOICE, displayName = "Withdrawl limit", required = true)
-@Help(displayHelpShort = "The maximum daily withdrawl amount ", displayHelpLong = "Choose the maximum daily amount that can be withdrawn from the account.")
+@Property(type = PropertyType.RADIO_CHOICE, displayName = "提款限额 Withdrawl limit", required = true)
+@Help(displayHelpShort = "最大每日提款限额 The maximum daily withdrawl amount ", displayHelpLong = "选择从该账户中每日最大能提取的额度。 Choose the maximum daily amount that can be withdrawn from the account.")
 @PropertyItems({ LIMIT_LOW_LABEL, LIMIT_LOW_VALUE, LIMIT_MEDIUM_LABEL, LIMIT_MEDIUM_VALUE, LIMIT_HIGH_LABEL, LIMIT_HIGH_VALUE })
 private String withdrawlLimit;
 ----
@@ -489,14 +489,14 @@ image::images/designer.property.radio.choice.invalid.png[align="center"]
 
 ====== PropertyType.COMBOBOX_CHOICE
 
-Creates a combobox with fixed options as shown below. Can be a required field and shows validation messages as a tooltip. Validation failures are displayed by changing the background of the combobox to a light red color.
+创建如下所示的，带有固定选项的下拉框。可以是必填字段，并将验证消息作为提示信息显示。验证失败将改变下拉框的背景为浅红色。
 
-This property type expects the class member you have annotated to also have an accompanying +@PropertyItems+ annotation (for an example, see below). Using this additional annotation, you can specify the list of items that should be offered in an array of Strings. Specify the items by adding two array entries for each item: first, the label to be shown; second, the value to be stored.
+这个参数类型需要你注解的类成员同时使用++@PropertyItems++注解（例如如下所示）。可以使用这个额外的注解，以字符串数组的方式，指定条目的列表。需要为每一个条目添加两个数组项：第一个，用于显示的标签；第二个，用于存储的值。
 
 [source,java,linenums]
 ----
-@Property(type = PropertyType.COMBOBOX_CHOICE, displayName = "Account type", required = true)
-@Help(displayHelpShort = "The type of account", displayHelpLong = "Choose a type of account from the list of options")
+@Property(type = PropertyType.COMBOBOX_CHOICE, displayName = "账户类型 Account type", required = true)
+@Help(displayHelpShort = "账户的类型 The type of account", displayHelpLong = "从选项列表中选择账户的类型 Choose a type of account from the list of options")
 @PropertyItems({ ACCOUNT_TYPE_SAVINGS_LABEL, ACCOUNT_TYPE_SAVINGS_VALUE, ACCOUNT_TYPE_JUNIOR_LABEL, ACCOUNT_TYPE_JUNIOR_VALUE, ACCOUNT_TYPE_JOINT_LABEL,
   ACCOUNT_TYPE_JOINT_VALUE, ACCOUNT_TYPE_TRANSACTIONAL_LABEL, ACCOUNT_TYPE_TRANSACTIONAL_VALUE, ACCOUNT_TYPE_STUDENT_LABEL, ACCOUNT_TYPE_STUDENT_VALUE,
   ACCOUNT_TYPE_SENIOR_LABEL, ACCOUNT_TYPE_SENIOR_VALUE })
@@ -510,14 +510,14 @@ image::images/designer.property.combobox.choice.invalid.png[align="center"]
 
 ====== PropertyType.DATE_PICKER
 
-Creates a date selection control as shown below. Can be a required field and shows validation messages as a tooltip (note, that the control used will auto-set the selection to the date on the system, so the value is seldom empty). Validation failures are displayed by changing the background of the control to a light red color.
+创建如下所示的日期选择控件。可以是必填字段，并将验证消息作为提示信息显示（请注意，这个控件会自动填入当前系统时间，因此值很难为空）。验证失败将改变控件的背景为浅红色。
 
-This property type expects the class member you have annotated to also have an accompanying +@DatePickerProperty+ annotation (for an example, see below). Using this additional annotation, you can specify the date time pattern to be used to store dates in the diagram and the type of datepicker you would like to be shown. Both attributes are optional and have default values that will be used if you don't specify them (these are static variables in the +DatePickerProperty+ annotation). The +dateTimePattern+ attribute should be used to supply a pattern to the +SimpleDateFormat+ class. When using the +swtStyle+ attribute, you should specify an integer value that is supported by ++SWT++'s +DateTime+ control, because this is the control that is used to render this type of property.
+这个参数类型需要你注解的类成员同时使用++@DatePickerProperty++注解（例如如下所示）。可以使用这个额外的注解，指定在流程图中存储日期时使用的日期格式，以及要用于显示的日期选择类型。这些属性都是可选的，当没有指定时会使用默认值（++DatePickerProperty++注解的静态变量）。++dateTimePattern+属性应该使用++SimpleDateFormat++类支持的格式。当使用++swtStyle++属性时，应该指定++SWT++的++DateTime++控件支持的整形值，因为将使用这个控件渲染这个类型的参数。
 
 [source,java,linenums]
 ----
-@Property(type = PropertyType.DATE_PICKER, displayName = "Expiry date", required = true)
-@Help(displayHelpShort = "The date the account expires ", displayHelpLong = "Choose the date when the account will expire if no extended before the date.")
+@Property(type = PropertyType.DATE_PICKER, displayName = "过期日期 Expiry date", required = true)
+@Help(displayHelpShort = "账户过期的日期 The date the account expires ", displayHelpLong = "选择一个日期，如果账户未在该日期前展期，则将过期。 Choose the date when the account will expire if no extended before the date.")
 @DatePickerProperty(dateTimePattern = "MM-dd-yyyy", swtStyle = 32)
 private String expiryDate;
 ----
@@ -528,27 +528,26 @@ image::images/designer.property.date.picker.png[align="center"]
 
 ====== PropertyType.DATA_GRID
 
-Creates a data grid control as shown below. A data grid can be used to allow the user to enter an arbitrary amount of rows of data and enter values for a fixed set of columns in each of those rows (each individual combination of row and column is referred to as a cell). Rows can be added and removed as the user sees fit.
+创建一个如下所示的数据表格控件。数据表格可以让用户输入任意行数据，并为每一行输入固定列数的值（每一组行列的组合代表一个单元格）。用户可以添加与删除行。
 
-This property type expects the class member you have annotated to also have an accompanying +@DataGridProperty+ annotation (for an example, see below). Using this additional annotation, you can specify some specific attributes of the data grid. You are required to reference a different class to determine which columns go into the grid with the +itemClass+ attribute. Activiti Designer expects the member type to be a +List+. By convention, you can use the class of the +itemClass+ attribute as its generic type. If, for example, you have a grocery list that you edit in the grid, you would define the columns of the grid in the +GroceryListItem+ class. From your +CustomServiceTask+, you would refer to it like this:
+这个参数类型需要你注解的类成员同时使用++@DataGridProperty++注解（例如如下所示）。可以使用这个额外的注解，指定数据表格的细节属性。需要用++itemClass++属性引用另一个类，来决定表格中有哪些列。Activiti Designer期望其成员类型为++List++。按照约定，可以将++itemClass++属性的类用作其泛型类型。如果，例如，在表格中编辑一个杂货清单，用++GroceryListItem++类定义表格的列。在++CustomServiceTask++中，可以这样引用它：
 
 [source,java,linenums]
 ----
-@Property(type = PropertyType.DATA_GRID, displayName = "Grocery List")
+@Property(type = PropertyType.DATA_GRID, displayName = "杂货清单 Grocery List")
 @DataGridProperty(itemClass = GroceryListItem.class)
 private List<GroceryListItem> groceryList;
 ----
 
+与++CustomServiceTask++一样，当使用数据表格时，"itemClass"可以使用相同的注解指定字段类型，目前支持++TEXT++，+$$MULTILINE_TEXT$$+ 与++PERIOD++。你会注意到不论其++PropertyType+是什么，表格都会为每个字段创建一个单行文本控件。这是为了表格保持整洁与可读。如果考虑下++PERIOD PropertyType++的显示模式，就可以想象这绝不适合在表格的单元格中显示。对于 +$$MULTILINE_TEXT$$+ 与++PERIOD++，会为每个字段添加双击机制，将会为该++PropertyType++弹出更大的编辑器。数值将在用户点击OK后存储至字段，因此可以在表格中显示。
 
-The "itemClass" class uses the same annotations you would otherwise use to specify fields of a +CustomServiceTask+, with the exception of using a data grid. Specifically, +TEXT+, +$$MULTILINE_TEXT$$+ and +PERIOD+ are currently supported. You'll notice the grid will create single line text controls for each field, regardless of the +PropertyType+. This is done on purpose to keep the grid graphically appealing and readable. If you consider the regular display mode for a +PERIOD+ +PropertyType+ for instance, you can imagine it would never properly fit in a grid cell without cluttering the screen. For +$$MULTILINE_TEXT$$+ and +PERIOD+, a double-click mechanism is added to each field which pops up a larger editor for the +PropertyType+. The value is stored to the field after the user clicks OK and is therefore readable within the grid.
+必选属性使用与普通++TEXT++字段类似的方式处理，当任何字段失去焦点时，会验证整个表格。验证失败的单元格，背景色将改为浅红色。
 
-Required attributes are handled in a similar manner to regular fields of type +TEXT+ and the entire grid is validated as soon as any field loses focus. The background color of the text control in a specific cell of the data grid is changed to light red if there are validation failures.
-
-By default, the component allows the user to add rows, but not to determine the order of those rows. If you wish to allow this, you should set the +orderable+ attribute to true, which enables buttons at the end of each row to move it up or down in the grid.
+默认情况下，这个组件允许用户添加行，但不能决定行的顺序。如果希望允许排序，需要将++orderable++属性设置为true，这将在每一行末尾启用按钮，以将该行在表格内上移或下移。
 
 [NOTE]
 ====
-At the moment, this property type is not correctly injected into your runtime class.
+目前，这个参数类型不能正确注入运行时类。
 ====
 
 image::images/designer.property.datagrid.png[align="center"]
