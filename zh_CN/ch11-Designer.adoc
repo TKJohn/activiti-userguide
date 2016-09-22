@@ -188,7 +188,7 @@ image::images/designer.deployment.dir.png[align="center"]
 </project>
 ----
 
-可以看到，这只是一个基础的pom.xml文件，为项目定义了一个++groupId++，++artifactId++与++version++。我们会创建一个定制项，包含一个业务的自定义节点。
+可以看到，这只是一个基础的pom.xml文件，为项目定义了一个++groupId++，++artifactId++与++version++。我们会创建一个定制项，包含一个对money业务的自定义节点。
 
 ++pom.xml++文件中包含依赖，为项目依赖添加集成库：
 
@@ -270,38 +270,37 @@ mvn eclipse:eclipse
 
 ===== 在Activiti Designer中应用你的扩展 Applying your extension to Activiti Designer
 
-You might be wondering how you can add your extension to Activiti Designer so your customizations are applied. These are the steps to do just that:
-* Once you've created your extension JAR (for instance, by performing a mvn install in your project to build it with Maven), you need to transfer the extension to the computer where Activiti Designer is installed;
-* Store the extension somewhere on the hard drive where it will be able to remain and remember the location. _Note:_ the location must be outside the Eclipse workspace of Activiti Designer - storing the extension inside the workspace will lead to the user getting a popup error message and the extensions being unavailable;
-* Start Activiti Designer and from the menu, select +Window+ > +Preferences+
-* In the preferences screen, type +user+ as keyword. You should see an option to access the +User Libraries+ in Eclipse in the +Java+ section.
+你也许想知道如何将你的扩展加入Activiti Designer，以便应用你的自定义项。需要这些步骤：
+* 创建扩展JAR（例如，要使用Maven构建，在项目中运行mvn install）后，需要将扩展传递至Activiti Designer安装的计算机；
+* 将扩展存储在硬盘上，方便记忆的位置。__请注意：__必须保存在Activiti Designer的Eclipse工作空间之外——将扩展保存在工作空间内，会导致弹出错误消息弹框，扩展将不可用；
+* 启动Activiti Designer，从菜单中，选择++Window++ > ++Preferences++
+* 在Preferences界面，键入++user++作为关键字。将可以看到在Eclipse中++Java++段落内，++User Libraries++的选项。
 
 image::images/designer.preferences.userlibraries.png[align="center"]
 
 
-* Select the User Libraries item and a tree view shows up to the right where you can add libraries. You should see the default group where you can add extensions to Activiti Designer (depending on your Eclipse installation, you might see several others as well).
+* 选择++User Libraries++选项，将在右侧显示树形界面，可以添加库。应该可以看到一个默认组，可以添加Activiti Designer的扩展（根据Eclipse安装不同，也可能看到几个其他的）。
 
 image::images/designer.preferences.userlibraries.activiti.empty.png[align="center"]
 
 
-* Select the +Activiti Designer Extensions+ group and click the +Add JARs...+ button. Navigate to the folder where your extension is stored and select the extension file you want to add. After completing this, your preferences screen should show the extension as part of the +Activiti Designer Extensions+ group, as shown below.
+* 选择++Activiti Designer Extensions++组，并点击++Add JARs...++按钮。跳转至存储扩展的目录，并选择希望添加的扩展文件。完成后，配置界面会将扩展作为++Activiti Designer Extensions++组的成员进行显示，像下面这样。
 
 image::images/designer.preferences.userlibraries.activiti.moneytasks.png[align="center"]
 
 
-* Click the +OK+ button to save and close the preferences dialog. The +Activiti Designer Extensions+ group is automatically added to new Activiti projects you create. You can see the user library as entry in the project's tree in the Navigator or Package Explorer. If you already had Activiti projects in the workspace, you should also see the new extensions show up in the group. An example is shown below.
+* 点击++OK++按钮保存并关闭配置对话框。++Activiti Designer Extensions++会自动添加至你创建的新Activiti项目。可以在导航条或包管理器的项目树下的用户库条目中看到。如果工作空间中已经有了Activiti项目，也可以看到组中显示了新扩展，像下面这样。
 
 image::images/designer.userlibraries.project.png[align="center"]
 
+打开的流程图将在其画板上显示新扩展的图形（或者禁用部分图形，取决于扩展中的配置）。如果已经打开了流程图，关闭并重新打开就能在画板上看到变化。
 
-Diagrams you open will now have the shapes from the new extension in their palette (or shapes disabled, depending on the customizations in your extension). If you already had a diagram opened, close and reopen it to see the changes in the palette.
 
+===== 为画板添加图形 Adding shapes to the palette
 
-===== Adding shapes to the palette
+项目配置完后，可以很轻松的为画板添加图形。每个想添加的图形都表现为JAR中的一个类。请注意这些类并不是Activiti引擎运行时会使用的类。在扩展中可以为每个图形描述Activiti Designer可用的参数。从这些图形中，也可以定义运行时特性，将在流程实例到达流程的该节点时，由引擎使用。运行时特性可以使用任何Activiti对普通++ServiceTask++支持的选项。查看<<eclipseDesignerConfiguringRuntime,这个章节>>了解更多信息。
 
-With your project set up, you can now easily add shapes to the palette. Each shape you wish to add is represented by a class in your JAR. Take note that these classes are not the classes that will be used by the Activiti engine during runtime. In your extension you describe the properties that can be set in Activiti Designer for each shape. From these shapes, you can also define the runtime characteristics that should be used by the engine when a process instance reaches the node in the process. The runtime characteristics can use any of the options that Activiti supports for regular ++ServiceTask++s. See <<eclipseDesignerConfiguringRuntime,this section>> for more details.
-
-A shape's class is a simple Java class, to which a number of annotations are added. The class should implement the +CustomServiceTask+ interface, but you shouldn't implement this interface yourself. Extend the +AbstractCustomServiceTask+ base class instead (at the moment you MUST extend this class directly, so no abstract classes in between). In the Javadoc for that class you can find instructions on the defaults it provides and when you should override any of the methods it already implements. Overrides allow you to do things such as providing icons for the palette and in the shape on the canvas (these can be different) and specifying the base shape you want the node to have (activity, event, gateway).
+图形的类是简单的Java类，加上一些注解。这个类需要实现++CustomServiceTask++接口，但不应该自行实现这个接口，而应该扩展++AbstractCustomServiceTask++基类（目前必须直接扩展这个类，而不能在中间使用abstract类）。在这个类的Javadoc中，可以看到其魔人提供的，与需要覆盖的方法介绍。覆盖使你可以实现例如为画板及画布中的图形提供图标（两个可以不一样），或者指定你希望节点实现的基图形（活动，时间，网关）。
 
 
 [source,java,linenums]
@@ -316,10 +315,9 @@ public class AcmeMoneyTask extends AbstractCustomServiceTask {
 }
 ----
 
+需要实现++getName()++方法，决定节点在画板上的名字。也可以将节点放在自己的抽屉中，并提供图标。覆盖++AbstractCustomServiceTask++的对应方法。如果希望提供图标，请确保放在JAR的++src/main/resources++包中，需要是16X16像素的JPEG或PNG格式图片。你要提供的路径与这个目录有关。
 
-You will need to implement the +getName()+ method to determine the name the node will have in the palette. You can also put the nodes in their own drawer and provide an icon. Override the appropriate methods from +AbstractCustomServiceTask+. If you want to provide an icon, make sure it's in the +src/main/resources+ package in your JAR and is about 16x16 pixels and a JPEG or PNG format. The path you supply is relative to that folder.
-
-You can add properties to the shape by adding members to the class and annotating them with the +@Property+ annotation like this:
+可以通过在类中添加成员，并使用++@Property++注解，来为形状添加参数。像这样：
 
 [source,java,linenums]
 ----
@@ -328,13 +326,13 @@ You can add properties to the shape by adding members to the class and annotatin
 private String accountNumber;
 ----
 
-There are several +PropertyType+ values you can use, which are described in more detail in <<eclipseDesignerPropertyTypes,this section>>. You can make a field required by setting the required attribute to true. A message and red background will appear if the user doesn't fill out the field.
+可以使用多种++PropertyType++值，在<<eclipseDesignerPropertyTypes,这个章节>>中详细描述。可以通过将必填属性设置为true，将一个字段设为必填。如果用户没有填写这个字段，将会提示消息，背景也会变红。
 
-If you want to ensure the order of the various properties in your class as they appear in the property screen, you should specify the order attribute of the +@Property+ annotation.
+如果想要确保类中多个参数在参数界面上的显示顺序，需要指定++@Property++注解的order属性。
 
-As you can see, there's also a +@Help+ annotation that's used to provide the user some guidance when filling out the field. You can also use the +@Help+ annotation on the class itself - this information is shown at the top of the property sheet presented to the user.
+可以看到有个++@Help++注解，它用于为用户提供一些填写字段的指导。也可以在类本身上使用++@Help++注解——这个信息将在显示给用户的参数表格最上面显示。
 
-Below is the listing for a further elaboration of the +MoneyTask+. A comment field has been added and you can see an icon is included for the node.
+下面是++MoneyTask++详细介绍的列表。添加了一个备注字段，也可以看到节点包含了一个图标。
 
 
 [source,java,linenums]
@@ -345,17 +343,17 @@ Below is the listing for a further elaboration of the +MoneyTask+. A comment fie
  * @since 1.0.0
  */
 @Runtime(javaDelegateClass = "org.acme.runtime.AcmeMoneyJavaDelegation")
-@Help(displayHelpShort = "Creates a new account", displayHelpLong = "Creates a new account using the account number specified")
+@Help(displayHelpShort = "创建一个新的账户 Creates a new account", displayHelpLong = "使用给定的账户编码，创建一个新的账户 Creates a new account using the account number specified")
 public class AcmeMoneyTask extends AbstractCustomServiceTask {
 
-  private static final String HELP_ACCOUNT_NUMBER_LONG = "Provide a number that is suitable as an account number.";
+  private static final String HELP_ACCOUNT_NUMBER_LONG = "提供一个可用作账户编码的编码。 Provide a number that is suitable as an account number.";
 
   @Property(type = PropertyType.TEXT, displayName = "Account Number", required = true)
-  @Help(displayHelpShort = "Provide an account number", displayHelpLong = HELP_ACCOUNT_NUMBER_LONG)
+  @Help(displayHelpShort = "提供一个账户编码 Provide an account number", displayHelpLong = HELP_ACCOUNT_NUMBER_LONG)
   private String accountNumber;
 
   @Property(type = PropertyType.MULTILINE_TEXT, displayName = "Comments")
-  @Help(displayHelpShort = "Provide comments", displayHelpLong = "You can add comments to the node to provide a brief description.")
+  @Help(displayHelpShort = "提供备注 Provide comments", displayHelpLong = "可以为节点添加备注，以提供详细说明。 You can add comments to the node to provide a brief description.")
   private String comments;
 
   /*
@@ -385,32 +383,28 @@ public class AcmeMoneyTask extends AbstractCustomServiceTask {
 }
 ----
 
-
-If you extend Activiti Designer with this shape, The palette and corresponding node will look like this:
+如果使用这个图形扩展Activiti Designer，画板与相应的图形将像是这样：
 
 image::images/designer.palette.add.money.png[align="center"]
 
-
-The properties screen for the money task is shown below. Note the required message for the +accountNumber+ field.
+money任务的参数界面在下面显示。请注意++accountNumber++字段的必填信息。
 
 image::images/designer.palette.add.money.properties.required.png[align="center"]
 
+在创建流程图时，填写参数字段时，用户可以使用静态文本，或者使用流程变量的表达式（如"This little piggy went to ${piggyLocation}"）。一般来说，用户可以在text字段自由填写任何文本。如果你希望用户使用表达式，并（使用++@Runtime++）为++CustomServiceTask++添加运行时行为，请确保在代理类中使用++Expression++字段，以便表达式可以在运行时正确解析。可以在<<eclipseDesignerConfiguringRuntime,这个章节>>找到更多关于运行时行为的信息。
 
-Users can enter static text or use expressions that use process variables in the property fields when creating diagrams (e.g. "This little piggy went to ${piggyLocation}"). Generally, this applies to text fields where users are free to enter any text. If you expect users to want to use expressions and you apply runtime behavior to your +CustomServiceTask+ (using ++@Runtime++), make sure to use +Expression+ fields in the delegate class so the expressions are correctly resolved at runtime. More information on runtime behavior can be found in <<eclipseDesignerConfiguringRuntime,this section>>.
-
-
-The help for fields is offered by the buttons to the right of each property. Clicking on the button shows a popup as displayed below.
+字段的帮助信息由每个参数右侧的按钮提供。点击该按钮将弹出显示下列内容。
 
 image::images/designer.palette.add.money.help.png[align="center"]
 
 
 [[eclipseDesignerConfiguringRuntime]]
 
-====== Configuring runtime execution of Custom Service Tasks
+====== 配置自定义服务任务的运行时执行 Configuring runtime execution of Custom Service Tasks
 
-With your fields setup and your extension applied to Designer, users can configure the properties of the service task when modelling a process. In most cases, you will want to use these user-configured properties when the process is executed by Activiti. To do this, you must instruct Activiti which class to instantiate when the process reaches your +CustomServiceTask+.
+当设置好字段，并将扩展应用至Designer后，用户可以在建模流程时，配置服务任务的这些参数。在大多数情况下，会希望在Activiti执行流程时，使用这些用户配置参数。要做到这一点，必须告诉Activiti，当流程到达你++CustomServiceTask++时，需要实例化哪个类。
 
-There is a special annotation for specifying the runtime characteristics of your +CustomServiceTask+, the +@Runtime+ annotation. Here's an example of how to use it:
+指定++CustomServiceTask++运行时特性，有一个特别的注解，++@Runtime++。这里有些如何使用的例子：
 
 
 [source,java,linenums]
@@ -418,15 +412,13 @@ There is a special annotation for specifying the runtime characteristics of your
 @Runtime(javaDelegateClass = "org.acme.runtime.AcmeMoneyJavaDelegation")
 ----
 
+使用时，++CustomServiceTask++将会表现为流程建模BPMN中的一个普通的++ServiceTask++。Activiti提供了<<bpmnJavaServiceTask,多种方法>>定义++ServiceTask++的运行时特性。因此，++@Runtime++可以使用Activiti提供的三个属性中的一个：
 
-Your +CustomServiceTask+ will result in a normal +ServiceTask+ in the BPMN output of processes modelled with it. Activiti enables <<bpmnJavaServiceTask,several ways>> to define the runtime characteristics of ++ServiceTask++s. Therefore, the +@Runtime+ annotation can take one of three attributes, which match directly to the options Activiti provides, like this:
+* ++javaDelegateClass++在BPMN输出中映射为++activiti:class++。指定一个实现了++JavaDelegate++的类的全限定类名。
+* ++expression++在BPMN输出中映射为+activiti:expression++。制定一个需要执行的方法的表达式，例如一个Spring Bean中的方法。当使用这个选项时，__不应__在字段上指定任何++@Property++注解。下面有更详细的说明。
+* ++javaDelegateExpression++在BPMN输出中映射为++activiti:delegateExpression++。指定一个实现了++JavaDelegate++的类的表达式。
 
-* +javaDelegateClass+ maps to +activiti:class+ in the BPMN output. Specify the fully qualified classname of a class that implements +JavaDelegate+.
-* +expression+ maps to +activiti:expression+ in the BPMN output. Specify an expression to a method to be executed, such as a method in a Spring Bean. You should _not_ specify any +@Property+ annotations on fields when using this option. For more information, see below.
-* +javaDelegateExpression+ maps to +activiti:delegateExpression+ in the BPMN output. Specify an expression to  a class that implements +JavaDelegate+.
-
-
-The user's property values will be injected into the runtime class if you provide members in the class for Activiti to inject into. The names should match the names of the members in your +CustomServiceTask+. For more information, consult <<serviceTaskFieldInjection,this part>> of the userguide. Note that since version 5.11.0 of the Designer you can use the +Expression+ interface for dynamic field values. This means that the value of the property in the Activiti Designer must contain an expression and this expression will then be injected into an +Expression+ property in the +JavaDelegate+ implementation class.
+如果在类中为Activiti提供了可以注入的成员，就可以将用户的参数至注入到运行时类中。名字需要与++CustomServiceTask++的成员名一致。查看用户手册的<<serviceTaskFieldInjection,这个部分>>了解更多信息。请注意从Designer的5.11.0版本开始，可以为动态字段值使用++Expression++接口。这意味着Activiti Designer中参数的值必须要是表达式，并且这个表达式将在之后注入++JavaDelegate++实现类的++Expression++参数中。
 
 
 [NOTE]
