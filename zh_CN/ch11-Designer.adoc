@@ -300,7 +300,7 @@ image::images/designer.userlibraries.project.png[align="center"]
 
 项目配置完后，可以很轻松的为画板添加图形。每个想添加的图形都表现为JAR中的一个类。请注意这些类并不是Activiti引擎运行时会使用的类。在扩展中可以为每个图形描述Activiti Designer可用的参数。从这些图形中，也可以定义运行时特性，将在流程实例到达流程的该节点时，由引擎使用。运行时特性可以使用任何Activiti对普通++ServiceTask++支持的选项。查看<<eclipseDesignerConfiguringRuntime,这个章节>>了解更多信息。
 
-图形的类是简单的Java类，加上一些注解。这个类需要实现++CustomServiceTask++接口，但不应该自行实现这个接口，而应该扩展++AbstractCustomServiceTask++基类（目前必须直接扩展这个类，而不能在中间使用abstract类）。在这个类的Javadoc中，可以看到其魔人提供的，与需要覆盖的方法介绍。覆盖使你可以实现例如为画板及画布中的图形提供图标（两个可以不一样），或者指定你希望节点实现的基图形（活动，时间，网关）。
+图形的类是简单的Java类，加上一些注解。这个类需要实现++CustomServiceTask++接口，但不应该直接实现这个接口，而应该扩展++AbstractCustomServiceTask++基类（目前必须直接扩展这个类，而不能在中间使用abstract类）。在这个类的Javadoc中，可以看到其魔人提供的，与需要覆盖的方法介绍。覆盖使你可以实现例如为画板及画布中的图形提供图标（两个可以不一样），或者指定你希望节点实现的基图形（活动，时间，网关）。
 
 
 [source,java,linenums]
@@ -554,11 +554,11 @@ image::images/designer.property.datagrid.png[align="center"]
 
 
 
-===== Disabling default shapes in the palette
+===== 在画板中禁用默认图形 Disabling default shapes in the palette
 
-This customization requires you to include a class in your extension that implements the +DefaultPaletteCustomizer+ interface. You should not implement this interface directly, but subclass the +AbstractDefaultPaletteCustomizer+ base class. Currently, this class provides no functionality, but future versions of the +DefaultPaletteCustomizer+ interface will offer more capabilities for which this base class will provide some sensible defaults so it's best to subclass so your extension will be compatible with future releases.
+这种自定义需要在你的扩展中引入一个实现了++DefaultPaletteCustomizer++接口的类。不应该直接实现这个接口，而要扩展++AbstractDefaultPaletteCustomizer++基类。目前，这个类不提供任何功能，但++DefaultPaletteCustomizer++未来的版本中会提供更多功能，这样基类将提供更多合理的默认值，这样你的扩展将在未来的版本中更好用。
 
-Extending the +AbstractDefaultPaletteCustomizer+ class requires you to implement one method, +disablePaletteEntries()+, from which you must return a list of +PaletteEntry+ values. For each of the default shapes, you can disable it by adding its corresponding +PaletteEntry+ value to your list. Note that if you remove shapes from the default set and there are no remaining shapes in a particular drawer, that drawer will be removed from the palette in its entirety. If you wish to disable all of the default shapes, you only need to add +PaletteEntry.ALL+ to your result. As an example, the code below disables the Manual task and Script task shapes in the palette.
+扩展++AbstractDefaultPaletteCustomizer++需要实现一个方法，++disablePaletteEntries()++，并必须返回一个++PaletteEntry++值的list。请注意如果从默认集合中移除图形，导致某个抽屉中没有图形，则该抽屉也会被移除。如果需要禁用所有的默认图形，只需要在结果中添加++PaletteEntry.ALL++。作为例子，下面的代码禁用了画板中的手动任务和脚本任务图形。
 
 [source,java,linenums]
 ----
@@ -580,13 +580,11 @@ public class MyPaletteCustomizer extends AbstractDefaultPaletteCustomizer {
 }
 ----
 
-
-The result of applying this extension is shown in the picture below. As you can see, the manual task and script task shapes are no longer available in the +Tasks+ drawer.
+应用这个扩展的结果在下图显示。可以看到，在++Tasks++抽屉中不再可用手动任务与脚本任务图形。
 
 image::images/designer.palette.disable.manual.and.script.png[align="center"]
 
-
-To disable all of the default shapes, you could use something similar to the code below.
+要禁用所有默认图形，需要使用类似下面的代码。
 
 [source,java,linenums]
 ----
@@ -607,31 +605,29 @@ public class MyPaletteCustomizer extends AbstractDefaultPaletteCustomizer {
 }
 ----
 
-
-The result will look like this (notice that the drawers the default shapes were in are no longer in the palette):
+结果像是这样（请注意画板中不再有默认图形所在的抽屉）：
 
 image::images/designer.palette.disable.all.png[align="center"]
 
 
-==== Validating diagrams and exporting to custom output formats
+==== 验证流程图与输出为自定义格式 Validating diagrams and exporting to custom output formats
 
-Besides customizing the palette, you can also create extensions to Activiti Designer that can perform validations and save information from the diagram to custom resources in the Eclipse workspace. There are built-in extension points for doing this and this section explains how to use them.
+除了自定义画板，也可以为Activiti Designer创建扩展，进行验证，并将流程图的信息保存为Eclipse工作空间中的自定义资源。内建的扩展点可以实现这些，这个章节将介绍如何做。
 
 [NOTE]
 ====
-The ExportMarshaller functions were reintroduced recently. We are still working on the validation functionality. The documentation below details the old situation and will be updated when the new functionality is available.
+ExportMarshaller功能最近正在重构。我们仍在开发验证功能。下面的文档记录的是旧的情况，并将在新功能可用后更新。
 ====
 
+Activiti Designer可以编写用于验证流程图的扩展。默认情况已经可以在工具中验证BPMN结构，但你也可以添加自己的，如果希望验证额外的条目，例如建模约定，或者++CustomServiceTask++中的参数值。这些扩展被称作++Process Validators++。
 
-Activiti Designer allows you to write extensions that validate diagrams. There are already validations of BPMN constructs in the tool by default, but you can add your own if you want to validate additional items such as modeling conventions or the values in properties of ++CustomServiceTask++s. These extensions are known as +Process Validators+.
+也可以在Activiti Designer保存流程图时，以发布为其它格式。这些扩展被称作++Export Marshallers++，在每次用户保存操作时，由Activiti Designer自动调用。这个行为可以通过在Eclipse配置对话框中，为每一种扩展检测出的格式，分别启用或禁用。Designer会根据用户的配置，确保在保存流程图时，调用你的++ExportMarshaller++。
 
-You can also Activiti Designer to publish to additional formats when saving diagrams. These extensions are called +Export Marshallers+ and are invoked automatically by Activiti Designer on each save action by the user. This behavior can be enabled or disabled by setting a preference in Eclipse's preferences dialog for each format for which there is an extension detected. Designer will make sure your +ExportMarshaller+ is invoked when saving the diagram, depending on the user's preference.
+通常，会想要将++ProcessValidator++与++ExportMarshaller++一起使用。例如有一些++CustomServiceTask++，带有一些希望在流程中使用的参数。然而，在生成流程前，希望验证其中一些值。联合使用++ProcessValidator++与++ExportMarshaller++是最佳的方式，Activiti Designer也允许你无缝拼接扩展。
 
-Often, you will want to combine a +ProcessValidator+ and an +ExportMarshaller+. Let's say you have a number of ++CustomServiceTask++s in use that have properties you would like to use in the process that gets generated. However, before the process is generated, you want to validate some of those values first. Combining a +ProcessValidator+ and +ExportMarshaller+ is the best way to accomplish this and Activiti Designer enables you to plug your extensions into the tool seamlessly.
+要创建一个++ProcessValidator++或++ExportMarshaller++，需要创建与扩展画板不同的扩展类型。原因很简单：你的代码会需访问比集成库中提供的更多的API。特别是，会需要使用Eclipse的类。因此从一开始，就需要创建一个Eclipse插件（可以使用Eclipse的PDE支持完成），并将其大包围自定义Eclipse产品或特性。解释开发Eclipse插件的所有细节，已经不是本用户手册的范畴，因此下面的介绍仅限于扩展Activiti Designer的功能。
 
-To create a +ProcessValidator+ or an +ExportMarshaller+, you need to create a different kind of extension than for extending the palette. The reason for this is simple: from your code you will need access to more APIs than those that are offered by the integration library. In particular, you will need classes that are available in Eclipse itself. So to get started, you should create an Eclipse plugin (which you can do by using Eclipse's PDE support) and package it in a custom Eclipse product or feature. It's beyond the scope of this user guide to explain all the details involved in developing Eclipse plugins, so the instructions below are limited to the functionality for extending Activiti Designer.
-
-Your bundle should be dependent on the following libraries:
+扩展包需要依赖下列库：
 
 * org.eclipse.core.runtime
 * org.eclipse.core.resources
@@ -639,31 +635,29 @@ Your bundle should be dependent on the following libraries:
 * org.activiti.designer.libs
 * org.activiti.designer.util
 
-Optionally, the org.apache.commons.lang bundle is available through Designer if you'd like to use that in your extension.
+可选的，如果希望在扩展中使用，可以通过Designer使用org.apache.commons.lang包。
 
+++ProcessValidator++与++ExportMarshaller++都是通过扩展基类创建的。这些基类从其父类++AbstractDiagramWorker++继承了一些有用的方法。使用这些方法，可以创建在Eclipse问题视图中显示的提示信息，警告，错误标记，以便用户了解错误与重要的信息。可以以++Resources++与++InputStreams++的格式获取流程图的信息。这些信息由++DiagramWorkerContext++提供，在++AbstractDiagramWorker++中可用。
 
-Both ++ProcessValidator++s and ++ExportMarshaller++s are created by extending a base class. These base classes inherit some useful methods from their superclass, the +AbstractDiagramWorker+ class. Using these methods you can create information, warning and error markers that show up in Eclipse's problems view for the user to figure out what's wrong or important. You can get to information about the diagram in the form of +Resources+ and +InputStreams+. This information is provided from the +DiagramWorkerContext+, which is available from the +AbstractDiagramWorker+ class.
-
-It's probably a good idea to invoke +clearMarkers()+ as one of the first things you do in either a +ProcessValidator+ or an ++ExportMarshaller++; this will clear any previous markers for your worker (markers are automatically linked to the worker and clearing markers for one worker leaves other markers untouched). For example:
+不论是++ProcessValidator++还是++ExportMarshaller++中，做任何事情前最好调用++clearMarkers()++；这将清除任何已有的标记（标记自动连接至操作，清除一个操作的标记不会影响其他操作的标记）。例如：
 
 
 [source,java,linenums]
 ----
-// Clear markers for this diagram first
+// 首先清除流程图的标记 Clear markers for this diagram first
 clearMarkersForDiagram();
 ----
 
-You should also use the progress monitor provided (in the ++DiagramWorkerContext++) to report your progress back to the user because validations and/or marshalling actions can take up some time during which the user is forced to wait. Reporting progress requires some knowledge of how you should use Eclipse's features. Take a look at link:$$http://www.eclipse.org/articles/Article-Progress-Monitors/article.html$$[this article] for a thorough explanation of the concepts and usage.
+也需要使用（++DiagramWorkerContext++中）提供的进度监控，将你的进度报告给用户，因为验证与/或保存操作可能花费很多时间，而用户必须等待。报告进度需要了解如何使用Eclipse的功能。查看link:$$http://www.eclipse.org/articles/Article-Progress-Monitors/article.html$$[这篇文章]了解详细概念与用法。
 
-===== Creating a ProcessValidator extension
+===== 创建ProcessValidator扩展 Creating a ProcessValidator extension
 
 [NOTE]
 ====
-Under review!
+审核中！
 ====
 
-
-Create an extension to the +org.activiti.designer.eclipse.extension.validation.ProcessValidator+ extension point in your +plugin.xml+ file. For this extension point, you are required to subclass the +AbstractProcessValidator+ class.
+在你的++plugin.xml++文件中，创建一个++org.activiti.designer.eclipse.extension.validation.ProcessValidator++扩展点的扩展。这个扩展点需要扩展++AbstractProcessValidator++类。
 
 [source,xml,linenums]
 ----
@@ -685,31 +679,29 @@ public class AcmeProcessValidator extends AbstractProcessValidator {
 }
 ----
 
+需要实现一些方法。最重要的是实现++getValidatorId()++，为验证器返回全局唯一ID。这将使你可以在++ExportMarshaller++中调用它，或者在其他++ExportMarshaller++中让其他人调用你的验证器。实现++getValidatorName()++，为验证器返回逻辑名字。这个名字将在对话框中显示给用户。++getFormatName()++可以返回这个验证器通常验证的流程图类型。
 
-You have to implement a number of methods. Most importantly, implement +getValidatorId()+ so you return a globally unique ID for your validator. This will enable you to invoke it from and +ExportMarshaller+, or event let someone _else_ invoke your validator from their +ExportMarshaller+. Implement +getValidatorName()+ and return a logical name for your validator. This name is shown to the user in dialogs. In +getFormatName()+, you can return the type of diagram the validator typically validates.
-
-The validation work itself is done in the +validateDiagram()+ method. From this point on, it's up to your specific functionality what you code here. Typically, however, you will want to start by getting hold of the nodes in the diagram's process, so you can iterate through them, collect, compare and validate data. This snippet shows you how to do this:
+验证工作通过++validateDiagram()++方法实现。从这里开始，就是你自己的功能代码了。然而，通常你会想从获取流程中的所有节点开始，这样就可以迭代访问，收集、比较与验证数据了。这段代码展示了如何进行这些操作：
 
 [source,java,linenums]
 ----
 final EList<EObject> contents = getResourceForDiagram(diagram).getContents();
 for (final EObject object : contents) {
   if (object instanceof StartEvent ) {
-  // Perform some validations for StartEvents
+  // 验证启动事件 Perform some validations for StartEvents
   }
-  // Other node types and validations
+  // 其它节点类型与验证 Other node types and validations
 }
 ----
 
+别忘了在验证过程中调用++addProblemToDiagram()++与/或++addWarningToDiagram()++等等。确保在结束时返回正确的boolean结果，指示验证成功还是失败。可以由后续调用的++ExportMarshaller++判断下一步操作。
 
-Don't forget to invoke +addProblemToDiagram()+ and/or +addWarningToDiagram()+, etc as you go through your validations. Make sure you return a correct boolean result at the end to indicate whether you consider the validation as succeeded or failed. This can be used by and invoking +ExportMarshaller+ to determine the next course of action.
 
+===== 创建ExportMarshaller扩展 Creating an ExportMarshaller extension
 
-===== Creating an ExportMarshaller extension
+在你的++plugin.xml++文件中，创建一个++org.activiti.designer.eclipse.extension.ExportMarshaller++扩展点的扩展。这个扩展点需要扩展++AbstractExportMarshaller++类。这个基类提供了一些在保存为你自己的格式时有用的方法，但最重要的是提供了将资源保存至工作空间，以及调用验证器的功能。
 
-Create an extension to the +org.activiti.designer.eclipse.extension.ExportMarshaller+ extension point in your +plugin.xml+ file. For this extension point, you are required to subclass the +AbstractExportMarshaller+ class. This abstract base class provides you with a number of useful methods when marshalling to your own format, but most importantly it allows you to save resources to the workspace and to invoke validators.
-
-An example implementation is available in Designer's examples folder. This example shows how to use the methods in the base class to get the basics done, such as accessing the diagram's +InputStream+, using its +BpmnModel+ and saving resources to the workspace.
+Designer的示例目录下有一个示例实现。这个示例展示了如何使用基类中的方法完成基本操作，例如访问流程图的++InputStream++，使用其++BpmnModel++，以及将资源保存至工作空间。
 
 [source,xml,linenums]
 ----
@@ -731,15 +723,14 @@ public class AcmeExportMarshaller extends AbstractExportMarshaller {
 }
 ----
 
-You are required to implement some methods, such as +getMarshallerName()+ and +getFormatName()+. These methods are used to display options to the user and to show information in progress dialogs, so make sure the descriptions you return reflect the functionality you are implementing.
+需要实现一些方法，例如++getMarshallerName()++与++getFormatName()++。这些方法用于为用户显示选项，并在流程对话框中显示信息，因此请确保你返回的描述反映了正在进行的操作。
 
-The bulk of your work is performed in the +doMarshallDiagram()+ method.
+大部分工作主要在++doMarshallDiagram()++方法中进行。
 
-If you want to perform a certain validation first, you can invoke the validator directly from your marshaller. You receive a boolean result from the validator, so you know whether validation succeeded. In most cases you won't want to proceed with marshalling the diagram if it's not valid, but you might choose to go ahead anyway or even create a different resource if validation fails.
+如果需要先进行一些验证，可以直接从保存器中调用验证器。从验证器可以获得boolean结果，就可以知道验证是否成功。在大多数情况下，在流程图验证失败时不会想要进行保存，但你也可以选择仍然继续，甚至在验证失败时创建不同的资源。
 
+一旦获取了所有需要的数据，要调用++saveResource()++方法创建保存有数据的文件。在一个保存器中，可以调用++saveResource()++任意多次；因此一个验证器可以创建多于一个输出文件。
 
-Once you have all the data you need, you should invoke the +saveResource()+ method to create a file containing your data. You can invoke +saveResource()+ as many times as you wish from a single ExportMarshaller; a marshaller can therefore be used to create more than one output file.
+可以使用++AbstractDiagramWorker++类的++saveResource()++方法构建输出资源的文件名。可以使用一些有用的变量用于创建文件名，例如_original-filename__my-format-name.xml。这些变量在Javadocs中描述，通过++ExportMarshaller++接口定义。如果希望自行解析保存位置，也可以在一个字符串（例如一个路径）上使用++resolvePlaceholders()++。++getURIRelativeToDiagram()++会为你调用它。
 
-You can construct a filename for your output resource(s) by using the +saveResource()+ method in the +AbstractDiagramWorker+ class. There are a couple of useful variables you can have parsed, allowing you to create filenames such as _original-filename__my-format-name.xml. These variables are described in the Javadocs and defined by the +ExportMarshaller+ interface. You can also use +resolvePlaceholders()+ on a string (e.g. a path) if you want to parse the placeholders yourself. +getURIRelativeToDiagram()+ will invoke this for you.
-
-You should use the progress monitor provided to report your progress back to the user. How to do this is described in link:$$http://www.eclipse.org/articles/Article-Progress-Monitors/article.html$$[this article].
+应该使用提供的进度监控将你的进度报告给用户。link:$$http://www.eclipse.org/articles/Article-Progress-Monitors/article.html$$[这个文章]描述了如何做。
