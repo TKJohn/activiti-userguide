@@ -2,20 +2,20 @@
 
 == Activiti Explorer
 
-Activiti Explorer是一个web应用，包含在从Activiti网站上下载的Activit中。Explorer不是一个完成的，最终用户可用的应用，而是用于实践与展示Activiti的功能。因此Explorer更像是一个示例，或者为在自己的应用中使用Activiti的用户提供灵感。另外，Explorer使用内存数据库，但也可以轻松切换至你自己的数据库（查看WEB-INF目录下的applicationContext文件）。
+Activiti Explorer是一个web应用，包含在从Activiti网站上下载的Activiti中。Explorer不是一个完成的，最终用户可用的应用，而是用于实践与展示Activiti的功能。因此Explorer更像是一个示例，或者为在自己的应用中使用Activiti的用户提供灵感。另外，Explorer使用内存数据库，但也可以轻松切换至你自己的数据库（查看WEB-INF目录下的applicationContext文件）。
 
 登录应用后，将看到这些大图标，展示了主要功能。
 
 image::images/explorer.tabs.png[align="center"]
     
-*  *Tasks*: 任务管理功能。在这里可以看到来自指派给你的运行中流程的用户任务表单，或你可以申领的组任务。Explorer可以关联内容，将工作分为子任务，将人作为不同角色引入，等等。Explorer也可以创建不关联至任何流程的独立任务。
+*  *Tasks*: 任务管理功能。在这里可以看到指派给你的运行中用户任务的表单，或你可以申领的组任务。Explorer可以关联内容，将工作分为子任务，将人作为不同角色引入，等等。Explorer也可以创建不关联至任何流程的独立任务。
 * *Process*: 展示已部署的流程定义，也可以启动新的流程实例。
-* *Reporting*: 生成报告，与浏览之前保存的结果。查看<<explorer.reporting,报告章节>>了解更多细节。
+* *Reporting*: 生成报告以及浏览之前保存的报告。查看<<explorer.reporting,报告章节>>了解更多细节。
 * *Manage*: 只有当用户登陆为管理员权限时才可见。可以管理Activiti引擎：管理用户与组，执行与查看卡住的作业，查看数据库，以及部署新的流程定义。
 
 === 配置 Configuration
 
-Activiti　Explorer使用Spring Java配置启动Activiti引擎。可以修改WEB-INF/classes目录下的engine.properties文件，定义小部分参数。如果需要高级配置选项，可以修改同在WEB-INF/classes目录下的activiti-custom-context.xml文件，定义Activiti流程引擎配置。该文件已经以注释形式提供了示例配置。
+Activiti Explorer使用Spring Java配置启动Activiti引擎。可以修改WEB-INF/classes目录下的engine.properties文件，定义小部分参数。如果需要高级配置选项，可以修改同在WEB-INF/classes目录下的activiti-custom-context.xml文件，来定义Activiti流程引擎配置。该文件已经以注释形式提供了示例配置。
 
 === 流程图 Process diagram
 
@@ -48,9 +48,9 @@ http://localhost:8080/activiti-explorer/diagram-viewer/index.html?processDefinit
 image::images/explorer.tasks.png[align="center"]
           
 *  *Inbox:* 展示指派给当前登录用户的任务。
-*  *My tasks:* 展示当前登录用户作为属主的任务。当创建独立任务时，自动成为该任务的属主。
+*  *My tasks:* 展示当前登录用户作为属主的任务。当创建独立任务时，当前用户自动成为该任务的属主。
 *  *Queued:* 展示你所在的不同组。这里的任务必须先进行申领，然后才能完成。
-*  *Involved:* 展示当前登陆用户作为下列角色之一的任务：(1)相关人员（也就是说候选用户或参与者），(2)办理人，与(3)属主。
+*  *Involved:* 展示当前登陆用户作为下列角色之一的任务：(1)相关人员（也就是说候选用户或参与者），(2)办理人，或者(3)属主。
 *  *Archived* 包含过去（历史）的任务。
 
 === 启动流程实例 Start process instances
@@ -105,17 +105,17 @@ image::images/explorer.reporting.png[align="center"]
 报告页签目前有两个子页签：
 
 
-*  *Generate reports*: 展示系统已知的所有报告类型的列表。可以运行生成报告。
+*  *Generate reports*: 展示系统已有的所有报告类型的列表。可以运行来生成报告。
 *  *Saved reports*: 展示之前保存的所有报告的列表。请注意这些是个人保存的报告，不能查看其他人保存的报告。
 
 用于创建报告中列表与图表的数据由流程生成。虽然初看有些奇怪，但使用流程生成报告数据有几个优点
       
 *  流程可以直接访问Activiti引擎内部，并可以直接访问引擎使用的数据库。
 *  作业执行器可以用于任何其他流程。这意味着可以异步生成流程，或者同步地执行一些步骤。也意味着可以使用定时器，例如，在特定时间点生成报告。
-*  可以使用已知工具与已知概念创建新报告。并且，不需要新的概念、服务或应用。部署或上传新的报告与部署一个新流程是一样的。
-*  可以使用BPMN 2.0结构。这意味着所有的东西，比如并行步骤，基于数据做分支选择，或者甚至是生成过程中请求用户输入都可以。
+*  可以使用已有工具与已有概念创建新报告。并且，不需要新的概念、服务或应用。部署或上传新的报告与部署一个新流程是一样的。
+*  可以使用BPMN 2.0结构。这意味着所有的东西，比如并行步骤，基于数据做分支选择，或者甚至是生成过程中请求用户输入都可以使用。
 
-用于生成报告数据的流程定义需要是**'activiti-report'类型的**，这样才能在Explorer的已知报告列表中看到。“报告流程”可以简单，也可以任意复杂。唯一的要求，是流程要生成一个叫做**reportData**的变量，这个变量必须是一个表示JSON对象的字节数组。该变量存储在Activiti的历史表中（因此要求引擎必须启用历史），用于后续保存报告时获取。
+用于生成报告数据的流程定义需要是**'activiti-report'类型的**，这样才能在Explorer的已有报告列表中看到。“报告流程”可以简单，也可以任意复杂。唯一的要求，是流程要生成一个叫做**reportData**的变量，这个变量必须是一个表示JSON对象的字节数组。该变量存储在Activiti的历史表中（因此要求引擎必须启用历史），用于后续保存报告时获取。
 
 [[explorer.reporting.json]]
 
@@ -150,10 +150,10 @@ image::images/explorer.reporting.png[align="center"]
 这个JSON将在Explorer运行时获取，并将用于生成图表或列表。JSON中的元素是：
           
 * *title*: 整个报告的总标题
-* *datasets*: 与报告中不同图表与列表对应的数据集的数组。
+* *datasets*: 与报告中各图表与列表对应的数据集的数组。
 * *type*: 每个数据集都有一个类型。这个类型将用于决定如何渲染数据。目前支持的值有：**pieChart，lineChart，barChart与list**。
 * *description*: 每个图表都可选一个描述，将显示在报告中。
-* *x- and yaxis*: 只对__lineChart__类型可用。描述图表坐标轴名字的可选参数。
+* **x与yaxis**: 只对__lineChart__类型可用。描述图表坐标轴名字的可选参数。
 * *data*: 实际的数据，是一个带有键值对元素的JSON对象。
 
 
@@ -220,9 +220,9 @@ image::images/explorer.reporting.png[align="center"]
 
 除了流程XML顶端的标准的XML行，主要的区别是__targetNamespace__设置为**activiti-report**，为部署的流程定义添加了同名的类型。
 
-脚本的前几行是为了避免重复写包名而进行的引入。要关注的第一行是使用__ReportingUtil__查询Activiti数据库，其结果是调用了一个普通的__JDBC Resultset__。在查询下面的几行，JavaScript功能轻松地创建了要用的JSON。这个JSON按照<<explorer.reporting.json,要求>>生成。
+脚本的前几行是为了避免重复写包名而进行的引入。要关注的第一行是使用__ReportingUtil__查询Activiti数据库，其结果是生成了一个普通的__JDBC Resultset__。在查询下面的几行，JavaScript功能轻松地创建了要用的JSON。这个JSON按照<<explorer.reporting.json,要求>>生成。
 
-脚本的最后一行看起来有些奇怪。首先是使用JavaScript函数__JSON.stringify()__将JSON对象转换为字符串，然后将这个字符串保存为一个字节数组变量。原因是技术性的：字节数组没有大小限制，而字符串有。这就是为什么JavaScript字符串必须要转换为Java字符串，这样就可以转换为字节形式。
+脚本的最后一行看起来有些奇怪。首先是使用JavaScript函数__JSON.stringify()__将JSON对象转换为字符串，然后将这个字符串保存为一个字节数组变量。原因是技术性的：字节数组没有大小限制，而字符串有。这就是为什么JavaScript字符串必须要转换为Java字符串，因为这样就可以转换为字节形式。
 
 兼容JDK 6（与更高）的相同流程看起来有点区别。不能使用原生的JSON功能，因此需要提供一些辅助类（__ReportData__与__Dataset__）：
             
@@ -319,7 +319,7 @@ image::images/explorer.reporting.start.form.png[align="center"]
 默认情况下，Explorer包含四个示例报告：
 
 *  **Employee productivity（雇员生产力）**：这个报告演示了折线图的使用，并使用了启动表单。这个报告中使用的脚本也比其他例子中的复杂，因为获取的数据，在存储至报告数据前，会由脚本进行处理。
-*  **Helpdesk - firstline vs escalated（帮助中心——一线与升级）**：展示了饼图的使用，并结合了两个不同数据库查询的结果。
+*  **Helpdesk - firstline vs escalated（帮助中心——一线对比升级）**：展示了饼图的使用，并结合了两个不同数据库查询的结果。
 *  **Process instance overview（流程实例总览）**：使用多个数据集的示例报告。这个报告包含有一个饼图，以及相同数据的列表视图，这样展示了如何使用多个数据集生成一个带有多个图表的页面。
 *  **Task duration（任务持续时间）**：另一个使用了启动表单的例子，并使用了相应的数据动态建立SQL查询。
                     
