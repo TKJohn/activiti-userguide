@@ -3768,8 +3768,8 @@ GET runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 |===============
 |参数|必填|值|描述
 |taskId|是|String|任务的id。
-|family|是|String|可以为++groups++或++users++，取决于认证目标的类型。
-|identityId|是|String|认证的id。
+|family|是|String|可以为++groups++或++users++，取决于身份目标的类型。
+|identityId|是|String|身份的id。
 |type|是|String|身份联系的类型。
 
 |===============
@@ -3806,17 +3806,16 @@ POST runtime/tasks/{taskId}/identitylinks
 ----
 
 
-.Create an identity link on a task - URL 参数
+.为一个任务创建一个身份联系 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task .
+|taskId|是|String|任务的id。
 
 |===============
 
 
-
-*Request body (user):*
+**响应体（用户）：**
 
 [source,json,linenums]
 ----
@@ -3826,8 +3825,7 @@ POST runtime/tasks/{taskId}/identitylinks
 }
 ----
 
-
-*Request body (group):*
+**响应体（组）：**
 
 [source,json,linenums]
 ----
@@ -3837,12 +3835,12 @@ POST runtime/tasks/{taskId}/identitylinks
 }
 ----
 
-.Create an identity link on a task - 响应码
+.为一个任务创建一个身份联系 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the task was found and the identity link was created.
-|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. 状态消息提供了额外信息。
+|201|代表已找到任务，并已创建身份联系。
+|404|代表未找到任务，或任务中没有请求的身份联系。状态消息提供了额外信息。
 
 |===============
 
@@ -3861,48 +3859,48 @@ POST runtime/tasks/{taskId}/identitylinks
 ----
 
 
-==== Delete an identity link on a task
+==== 为一个任务删除一个身份联系 Delete an identity link on a task
 
 ----
 DELETE runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 ----
 
-.Delete an identity link on a task - URL 参数
+.为一个任务删除一个身份联系 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task.
-|family|是|String|Either +groups+ or +users+, depending on what kind of identity is targeted.
-|identityId|是|String|The id of the identity.
-|type|是|String|The type of identity link.
+|taskId|是|String|任务的id。
+|family|是|String|可以为++groups++或++users++，取决于身份目标的类型。
+|identityId|是|String|身份的id。
+|type|是|String|身份联系的类型。
 
 |===============
 
 
-.Delete an identity link on a task - 响应码
+.为一个任务删除一个身份联系 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the task and identity link were found and the link has been deleted. 响应体设置为空。
-|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. 状态消息提供了额外信息。
+|204|代表已找到任务与身份联系，并已删除身份联系。响应体设置为空。
+|404|代表未找到任务，或任务中没有请求的身份联系。状态消息提供了额外信息。
 
 |===============
 
 
 
 
-==== Create a new comment on a task
+==== 为一个任务创建一个新备注 Create a new comment on a task
 
 
 ----
 POST runtime/tasks/{taskId}/comments
 ----
 
-.Create a new comment on a task - URL 参数
+.为一个任务创建一个新备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to create the comment for.
+|taskId|是|String|要创建备注的任务的id。
 
 |===============
 
@@ -3917,8 +3915,7 @@ POST runtime/tasks/{taskId}/comments
 }
 ----
 
-
-Parameter +saveProcessInstanceId+ is optional, if +true+ save process instance id of task with comment.
+参数++saveProcessInstanceId++是可选的，如果为++true++，则在备注中保存任务的流程实例id。
 
 **成功响应体：**
 
@@ -3937,29 +3934,29 @@ Parameter +saveProcessInstanceId+ is optional, if +true+ save process instance i
 ----
 
 
-.Create a new comment on a task - 响应码
+.为一个任务创建一个新备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the comment was created and the result is returned.
-|400|Indicates the comment is missing from the request.
+|201|代表已创建备注，并已返回结果。
+|400|代表请求中缺少备注。
 |404|代表未找到请求的任务。
 
 |===============
 
 
 
-==== Get all comments on a task
+==== 获取一个任务的所有备注 Get all comments on a task
 
 ----
 GET runtime/tasks/{taskId}/comments
 ----
 
-.Get all comments on a task - URL 参数
+.获取一个任务的所有备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the comments for.
+|taskId|是|String|要获取备注的任务的id。
 
 |===============
 
@@ -3992,30 +3989,30 @@ GET runtime/tasks/{taskId}/comments
 ----
 
 
-.Get all comments on a task - 响应码
+.获取一个任务的所有备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the comments are returned.
+|200|代表已找到任务，并已返回备注。
 |404|代表未找到请求的任务。
 
 |===============
 
 
 
-==== Get a comment on a task
+==== 获取一个任务的一个备注 Get a comment on a task
 
 ----
 GET runtime/tasks/{taskId}/comments/{commentId}
 ----
 
 
-.Get a comment on a task - URL 参数
+.获取一个任务的一个备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the comment for.
-|commentId|是|String|The id of the comment.
+|taskId|是|String|要获取备注的任务的id。
+|commentId|是|String|备注的id。
 
 |===============
 
@@ -4036,53 +4033,53 @@ GET runtime/tasks/{taskId}/comments/{commentId}
 }
 ----
 
-.Get a comment on a task - 响应码
+.获取一个任务的一个备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task and comment were found and the comment is returned.
-|404|Indicates the requested task was not found or the tasks doesn't have a comment with the given ID.
+|200|代表已找到任务与备注，并已返回备注。
+|404|代表未找到请求的任务，或任务没有给定ID的备注。
 
 |===============
 
 
-==== Delete a comment on a task
+==== 为一个任务删除一个备注 Delete a comment on a task
 
 ----
 DELETE runtime/tasks/{taskId}/comments/{commentId}
 ----
 
-.Delete a comment on a task - URL 参数
+.为一个任务删除一个备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to delete the comment for.
-|commentId|是|String|The id of the comment.
+|taskId|是|String|要删除备注的任务的id。
+|commentId|是|String|备注的id。
 
 |===============
 
 
-.Delete a comment on a task - 响应码
+.为一个任务删除一个备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the task and comment were found and the comment is deleted. 响应体设置为空
-|404|Indicates the requested task was not found or the tasks doesn't have a comment with the given ID.
+|204|代表已找到任务与备注，并已删除备注。响应体设置为空
+|404|代表未找到请求的任务，或任务没有给定ID的备注。
 
 |===============
 
 
-==== Get all events for a task
+==== 获取一个任务的所有事件 Get all events for a task
 
 ----
 GET runtime/tasks/{taskId}/events
 ----
 
-.Get all events for a task - URL 参数
+.获取一个任务的所有事件 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the events for.
+|taskId|是|String|要获取事件的任务的id。
 
 |===============
 
@@ -4106,29 +4103,29 @@ GET runtime/tasks/{taskId}/events
 ----
 
 
-.Get all events for a task - 响应码
+.获取一个任务的所有事件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the events are returned.
+|200|代表已找到任务，并已返回事件。
 |404|代表未找到请求的任务。
 
 |===============
 
 
 
-==== Get an event on a task
+==== 获取一个任务的一个事件 Get an event on a task
 
 ----
 GET runtime/tasks/{taskId}/events/{eventId}
 ----
 
-.Get an event on a task - URL 参数
+.获取一个任务的一个事件 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the event for.
-|eventId|是|String|The id of the event.
+|taskId|是|String|要获取事件的任务的id。
+|eventId|是|String|事件的id。
 
 |===============
 
@@ -4150,28 +4147,28 @@ GET runtime/tasks/{taskId}/events/{eventId}
 ----
 
 
-.Get an event on a task - 响应码
+.获取一个任务的一个事件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task and event were found and the event is returned.
-|404|Indicates the requested task was not found or the tasks doesn't have an event with the given ID.
+|200|代表已找到任务与事件，并已返回事件。
+|404|代表未找到请求的任务，或者任务中没有给定ID的事件。
 
 |===============
 
 
 
-==== Create a new attachment on a task, containing a link to an external resource
+==== 为一个任务创建一个新的附件，带有一个指向外部资源的链接 Create a new attachment on a task, containing a link to an external resource
 
 ----
 POST runtime/tasks/{taskId}/attachments
 ----
 
-.Create a new attachment on a task, containing a link to an external resource - URL 参数
+.为一个任务创建一个新的附件，带有一个指向外部资源的链接 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to create the attachment for.
+|taskId|是|String|要创建附件的任务的id。
 
 |===============
 
@@ -4188,10 +4185,7 @@ POST runtime/tasks/{taskId}/attachments
 }
 ----
 
-
-Only the attachment name is required to create a new attachment.
-
-
+要创建一个新的附件，只有附件名是必填的。
 
 **成功响应体：**
 
@@ -4211,40 +4205,38 @@ Only the attachment name is required to create a new attachment.
 ----
 
 
-.Create a new attachment on a task, containing a link to an external resource - 响应码
+.为一个任务创建一个新的附件，带有一个指向外部资源的链接 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the attachment was created and the result is returned.
-|400|Indicates the attachment name is missing from the request.
+|201|代表已创建附件，并已返回结果。
+|400|代表请求中缺少附件名。
 |404|代表未找到请求的任务。
 
 |===============
 
 
 
-==== Create a new attachment on a task, with an attached file
+==== 为一个任务创建一个新的附件，带有附加文件 Create a new attachment on a task, with an attached file
 
 ----
 POST runtime/tasks/{taskId}/attachments
 ----
 
-.Create a new attachment on a task, with an attached file - URL 参数
+.为一个任务创建一个新的附件，带有附加文件 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to create the attachment for.
+|taskId|是|String|要创建附件的任务的id。
 
 |===============
 
 
-**请求体：**
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
-
-* ++name++: Required name of the variable.
-* ++description++: Description of the attachment, optional.
-* ++type++: Type of attachment, optional. Supports any arbitrary string or a valid HTTP content-type.
+* ++name++: 附件需要的名字。
+* ++description++: 附件的描述，可选。
+* ++type++: 附件的类型，可选。支持任意字符串或合法的HTTP content-type。
 
 **成功响应体：**
 
@@ -4264,29 +4256,29 @@ The request should be of type +multipart/form-data+. There should be a single fi
 ----
 
 
-.Create a new attachment on a task, with an attached file - 响应码
+.为一个任务创建一个新的附件，带有附加文件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the attachment was created and the result is returned.
-|400|Indicates the attachment name is missing from the request or no file was present in the request. The error-message contains additional information.
+|201|代表已创建附件，并已返回结果。
+|400|代表请求中缺少附件名，或者请求中没有文件。错误消息中包含了额外信息。
 |404|代表未找到请求的任务。
 
 |===============
 
 
-==== Get all attachments on a task
+==== 获取一个任务的所有附件 Get all attachments on a task
 
 ----
 GET runtime/tasks/{taskId}/attachments
 ----
 
 
-.Get all attachments on a task - URL 参数
+.获取一个任务的所有附件 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the attachments for.
+|taskId|是|String|要获取附件的任务的id。
 
 |===============
 
@@ -4322,11 +4314,11 @@ GET runtime/tasks/{taskId}/attachments
 ----
 
 
-.Get all attachments on a task - 响应码
+.获取一个任务的所有附件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the attachments are returned.
+|200|代表已找到任务，并已返回附件。
 |404|代表未找到请求的任务。
 
 |===============
@@ -4334,18 +4326,18 @@ GET runtime/tasks/{taskId}/attachments
 
 
 
-==== Get an attachment on a task
+==== 获取一个任务的一个附件 Get an attachment on a task
 
 ----
 GET runtime/tasks/{taskId}/attachments/{attachmentId}
 ----
 
-.Get an attachment on a task - URL 参数
+.获取一个任务的一个附件 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the attachment for.
-|attachmentId|是|String|The id of the attachment.
+|taskId|是|String|要获取附件的任务的id。
+|attachmentId|是|String|附件的id。
 
 |===============
 
@@ -4368,94 +4360,94 @@ GET runtime/tasks/{taskId}/attachments/{attachmentId}
 ----
 
 
-*  ++externalUrl - contentUrl:++In case the attachment is a link to an external resource, the +externalUrl+ contains the URL to the external content. If the attachment content is present in the Activiti engine, the +contentUrl+ will contain an URL where the binary content can be streamed from.
-*  ++type:++Can be any arbitrary value. When a valid formatted media-type (e.g. application/xml, text/plain) is included, the binary content HTTP response content-type will be set the the given value.
+*  ++externalUrl - contentUrl:++ 如果附件为外部资源，则++externalUrl++中包含外部内容的URL。如果附件内容保存在Activiti引擎中，则++contentUrl++中将包含可以流式获取二进制内容的URL。
+*  ++type:++ 可以是任意值。如果包含了合法格式的media-type（例如application/xml、text/plain），则二进制内容的HTTP响应的content-type将设置为给定值。
 
-.Get an attachment on a task - 响应码
+.获取一个任务的一个附件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task and attachment were found and the attachment is returned.
-|404|Indicates the requested task was not found or the tasks doesn't have a attachment with the given ID.
+|200|代表已找到任务与附件，并已返回附件。
+|404|代表未找到请求的任务，或任务中没有给定ID的附件。
 
 |===============
 
 
 
-==== Get the content for an attachment
+==== 获取一个附件的内容 Get the content for an attachment
 
 
 ----
 GET runtime/tasks/{taskId}/attachment/{attachmentId}/content
 ----
 
-.Get the content for an attachment - URL 参数
+.获取一个附件的内容 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get a variable data for.
-|attachmentId|是|String|The id of the attachment, a +404+ is returned when the attachment points to an external URL rather than content attached in Activiti.
+|taskId|是|String|要获取附件数据的任务的id。
+|attachmentId|是|String|附件的id。如果附件指向外部URL而不是保存在Activiti内部，则将返回++404++。
 
 |===============
 
 
-.Get the content for an attachment - 响应码
+.获取一个附件的内容 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task and attachment was found and the requested content is returned.
-|404|Indicates the requested task was not found or the task doesn't have an attachment with the given id or the attachment doesn't have a binary stream available. 状态消息提供了额外信息。
+|200|代表已找到任务与附件，并已返回请求的内容。
+|404|代表未找到请求的任务，或者任务中没有给定id的附件，或者附件没有可用的二进制流。状态消息提供了额外信息。
 
 |===============
 
 
 **成功响应体：**
 
-The response body contains the binary content. By default, the content-type of the response is set to +application/octet-stream+ unless the attachment type contains a valid Content-type.
+响应体包含了二进制内容。默认情况下，响应的content-type设置为++application/octet-stream++，除非附件类型包含了合法的content-type。
 
 
-==== Delete an attachment on a task
+==== 为一个任务删除一个附件 Delete an attachment on a task
 
 
 ----
 DELETE runtime/tasks/{taskId}/attachments/{attachmentId}
 ----
 
-.Delete an attachment on a task - URL 参数
+.为一个任务删除一个附件 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to delete the attachment for.
-|attachmentId|是|String|The id of the attachment.
+|taskId|是|String|要删除附件的任务的id。
+|attachmentId|是|String|附件的id。
 
 |===============
 
 
-.Delete an attachment on a task - 响应码
+.为一个任务删除一个附件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the task and attachment were found and the attachment is deleted. 响应体设置为空
-|404|Indicates the requested task was not found or the tasks doesn't have a attachment with the given ID.
+|204|代表已找到任务与附件，并已删除附件。响应体设置为空
+|404|代表未找到请求的任务，或者任务中没有给定ID的附件。
 
 |===============
 
 
-=== History
+=== 历史 History
 
-==== Get a historic process instance
+==== 获取一个历史流程实例 Get a historic process instance
 
 
 ----
 GET history/historic-process-instances/{processInstanceId}
 ----
 
-.Get a historic process instance - 响应码
+.获取一个历史流程实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that the historic process instances could be found.
-|404|Indicates that the historic process instances could not be found.
+|200|代表可以找到历史流程实例。
+|404|代表找不到历史流程实例。
 
 |===============
 
@@ -4496,44 +4488,44 @@ GET history/historic-process-instances/{processInstanceId}
 [[restHistoricProcessInstancesGet]]
 
 
-==== List of historic process instances
+==== 历史流程实例的列表 List of historic process instances
 
 ----
 GET history/historic-process-instances
 ----
 
-.List of historic process instances - URL 参数
+.历史流程实例的列表 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|否|String|An id of the historic process instance.
-|processDefinitionKey|否|String|The process definition key of the historic process instance.
-|processDefinitionId|否|String|The process definition id of the historic process instance.
-|businessKey|否|String|The business key of the historic process instance.
-|involvedUser|否|String|An involved user of the historic process instance.
-|finished|否|Boolean|Indication if the historic process instance is finished.
-|superProcessInstanceId|否|String|An optional parent process id of the historic process instance.
-|excludeSubprocesses|否|Boolean|Return only historic process instances which aren't sub processes.
-|finishedAfter|否|Date|Return only historic process instances that were finished after this date.
-|finishedBefore|否|Date|Return only historic process instances that were finished before this date.
-|startedAfter|否|Date|Return only historic process instances that were started after this date.
-|startedBefore|否|Date|Return only historic process instances that were started before this date.
-|startedBy|否|String|Return only historic process instances that were started by this user.
-|includeProcessVariables|否|Boolean|An indication if the historic process instance variables should be returned as well.
-|tenantId|否|String|Only return instances with the given tenantId.
-|tenantIdLike|否|String|Only return instances with a tenantId like the given value.
-|withoutTenantId|否|Boolean|If +true+, only returns instances without a tenantId set. 如果值为++false++，则忽略++withoutTenantId++参数。
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|processInstanceId|否|String|历史流程实例的id。
+|processDefinitionKey|否|String|历史流程实例的流程定义key。
+|processDefinitionId|否|String|历史流程实例的流程定义id。
+|businessKey|否|String|历史流程实例的businessKey。
+|involvedUser|否|String|历史流程实例的参与用户。
+|finished|否|Boolean|历史流程实例是否已结束。
+|superProcessInstanceId|否|String|可选的历史流程实例的父流程的id
+|excludeSubprocesses|否|Boolean|只返回不是子流程的历史流程实例。
+|finishedAfter|否|Date|只返回在该日期之后完成的历史流程实例。
+|finishedBefore|否|Date|只返回在该日期之前完成的历史流程实例。
+|startedAfter|否|Date|只返回在该日期之后启动的历史流程实例。
+|startedBefore|否|Date|只返回在该日期之前启动的历史流程实例。
+|startedBy|否|String|只返回由该用户启动的历史流程实例。
+|includeProcessVariables|否|Boolean|是否也返回历史流程实例变量。
+|tenantId|否|String|只返回给定tenantId的实例。
+|tenantIdLike|否|String|只返回tenantId like给定值的实例。
+|withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的实例。如果值为++false++，则忽略++withoutTenantId++参数。
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.List of historic process instances - 响应码
+.历史流程实例的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that historic process instances could be queried.
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表可以查询历史流程实例。
+|400|代表某个传递的参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -4577,7 +4569,7 @@ GET history/historic-process-instances
 ----
 
 
-==== Query for historic process instances
+==== 查询历史流程实例 Query for historic process instances
 
 ----
 POST query/historic-process-instances
@@ -4602,15 +4594,15 @@ POST query/historic-process-instances
 }
 ----
 
-All supported JSON parameter fields allowed are exactly the same as the parameters found for <<restHistoricProcessInstancesGet,getting a collection of historic process instances>>, but passed in as JSON-body arguments rather than URL-parameters to allow for more advanced querying and preventing errors with request-uri's that are too long. On top of that, the query allows for filtering based on process variables. The +variables+ property is a JSON-array containing objects with the format <<restQueryVariable, as described here.>>
 
+支持的JSON参数字段与<<restHistoricProcessInstancesGet,获取历史流程实例集合>>的参数一模一样，但是使用JSON体参数而不是URL参数，可以进行更高级的查询，也可以避免请求URI太长的错误。另外，查询可以通过流程变量进行过滤。++variables++参数是一个JSON数组，包含<<restQueryVariable, 这里描述>>的格式的对象。
 
-.Query for historic process instances - 响应码
+.查询历史流程实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the tasks are returned
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回实例。
+|400|代表某个传递的参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -4654,24 +4646,24 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 ----
 
 
-==== Delete a historic process instance
+==== 删除一个历史流程实例 Delete a historic process instance
 
 ----
 DELETE history/historic-process-instances/{processInstanceId}
 ----
 
 
-.Response codes
+.响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that the historic process instance was deleted.
-|404|Indicates that the historic process instance could not be found.
+|200|代表已删除该历史流程实例。
+|404|代表未找到该历史流程实例。
 
 |===============
 
 
-==== Get the identity links of a historic process instance
+==== 获取一个历史流程实例的身份联系 Get the identity links of a historic process instance
 
 
 ----
@@ -4679,12 +4671,12 @@ GET history/historic-process-instance/{processInstanceId}/identitylinks
 ----
 
 
-.Response codes
+.响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the identity links are returned
-|404|Indicates the process instance could not be found.
+|200|代表请求成功，并已返回身份联系。
+|404|代表未找到流程实例。
 
 |===============
 
@@ -4708,40 +4700,40 @@ GET history/historic-process-instance/{processInstanceId}/identitylinks
 
 
 
-==== Get the binary data for a historic process instance variable
+==== 获取一个历史流程实例变量的二进制数据 Get the binary data for a historic process instance variable
 
 ----
 GET history/historic-process-instances/{processInstanceId}/variables/{variableName}/data
 ----
 
 
-.Get the binary data for a historic process instance variable - 响应码
+.获取一个历史流程实例变量的二进制数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the process instance was found and the requested variable data is returned.
-|404|Indicates the requested process instance was not found or the process instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
+|200|代表已找到流程实例，并已返回请求的变量数据。
+|404|代表未找到请求的流程实例，或者流程实例中没有给定名字的变量，或者给定名字的变量没有可用的二进制流。状态消息提供了额外信息。
 
 |===============
 
 
 **成功响应体：**
 
-The response body contains the binary value of the variable. When the variable is of type +binary+, the content-type of the response is set to +application/octet-stream+, regardless of the content of the variable or the request accept-type header. In case of +serializable+, +application/x-java-serialized-object+ is used as content-type.
+响应体包含了变量的二进制值。如果变量是++binary++类型，则不论变量的content或者请求的accept-type头是什么，响应的content-type都将设置为++application/octet-stream++。如果变量是++serializable++类型，则content-type会使用++application/x-java-serialized-object++。
 
 
-==== Create a new comment on a historic process instance
+==== 为一个历史流程实例创建一个新的备注 Create a new comment on a historic process instance
 
 ----
 POST history/historic-process-instances/{processInstanceId}/comments
 ----
 
 
-.Create a new comment on a historic process instance - URL 参数
+.为一个历史流程实例创建一个新的备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the process instance to create the comment for.
+|processInstanceId|是|String|要创建备注的流程实例的id。
 
 |===============
 
@@ -4756,7 +4748,7 @@ POST history/historic-process-instances/{processInstanceId}/comments
 }
 ----
 
-Parameter +saveProcessInstanceId+ is optional, if +true+ save process instance id of task with comment.
+参数++saveProcessInstanceId++是可选的，如果为++true++，则在备注中保存任务的流程实例id。
 
 **成功响应体：**
 
@@ -4775,19 +4767,19 @@ Parameter +saveProcessInstanceId+ is optional, if +true+ save process instance i
 ----
 
 
-.Create a new comment on a historic process instance - 响应码
+.为一个历史流程实例创建一个新的备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the comment was created and the result is returned.
-|400|Indicates the comment is missing from the request.
-|404|Indicates the requested historic process instance was not found.
+|201|代表已创建备注，并已返回结果。
+|400|代表请求中缺少备注。
+|404|代表未找到请求的历史流程实例。
 
 |===============
 
 
 
-==== Get all comments on a historic process instance
+==== 获取一个历史流程实例的所有备注 Get all comments on a historic process instance
 
 
 ----
@@ -4795,11 +4787,11 @@ GET history/historic-process-instances/{processInstanceId}/comments
 ----
 
 
-.Get all comments on a process instance - URL 参数
+.获取一个历史流程实例的所有备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the process instance to get the comments for.
+|processInstanceId|是|String|要获取备注的流程实例的id。
 
 |===============
 
@@ -4828,29 +4820,29 @@ GET history/historic-process-instances/{processInstanceId}/comments
 ----
 
 
-.Get all comments on a process instance - 响应码
+.获取一个历史流程实例的所有备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the process instance was found and the comments are returned.
+|200|代表已找到流程实例，并已返回备注。
 |404|代表未找到请求的任务。
 
 |===============
 
 
-==== Get a comment on a historic process instance
+==== 获取一个历史流程实例的一个备注 Get a comment on a historic process instance
 
 ----
 GET history/historic-process-instances/{processInstanceId}/comments/{commentId}
 ----
 
 
-.Get a comment on a historic process instance - URL 参数
+.获取一个历史流程实例的一个备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the historic process instance to get the comment for.
-|commentId|是|String|The id of the comment.
+|processInstanceId|是|String|要获取备注的历史流程实例的id。
+|commentId|是|String|备注的id。
 
 |===============
 
@@ -4870,55 +4862,55 @@ GET history/historic-process-instances/{processInstanceId}/comments/{commentId}
 ----
 
 
-.Get a comment on a historic process instance - 响应码
+.获取一个历史流程实例的一个备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the historic process instance and comment were found and the comment is returned.
-|404|Indicates the requested historic process instance was not found or the historic process instance doesn't have a comment with the given ID.
+|200|代表已找到历史流程实例与备注，并已返回备注。
+|404|代表未找到请求的历史流程实例，或者历史流程实例中没有给定ID的备注。
 
 |===============
 
 
 
-==== Delete a comment on a historic process instance
+==== 从一个历史流程实例中删除一个备注 Delete a comment on a historic process instance
 
 ----
 DELETE history/historic-process-instances/{processInstanceId}/comments/{commentId}
 ----
 
-.Delete a comment on a historic process instance - URL 参数
+.从一个历史流程实例中删除一个备注 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the historic process instance to delete the comment for.
-|commentId|是|String|The id of the comment.
+|processInstanceId|是|String|要删除备注的历史流程实例的id。
+|commentId|是|String|备注的id。
 
 |===============
 
 
-.Delete a comment on a historic process instance - 响应码
+.从一个历史流程实例中删除一个备注 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the historic process instance and comment were found and the comment is deleted. 响应体设置为空
-|404|Indicates the requested task was not found or the historic process instance doesn't have a comment with the given ID.
+|204|代表已找到历史流程实例与备注，并已删除备注。响应体设置为空
+|404|代表未找到请求的流程实例，或历史流程实例中没有给定ID的备注
 
 |===============
 
 
-==== Get a single historic task instance
+==== 获取一个历史任务实例 Get a single historic task instance
 
 ----
 GET history/historic-task-instances/{taskId}
 ----
 
-.Get a single historic task instance - 响应码
+.获取一个历史任务实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that the historic task instances could be found.
-|404|Indicates that the historic task instances could not be found.
+|200|代表可以找到历史任务实例。
+|404|代表不能找到历史任务实例。
 
 |===============
 
@@ -5182,7 +5174,7 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 DELETE history/historic-task-instances/{taskId}
 ----
 
-.Response codes
+.响应码
 [options="header"]
 |===============
 |响应码|描述
@@ -5199,7 +5191,7 @@ DELETE history/historic-task-instances/{taskId}
 GET history/historic-task-instance/{taskId}/identitylinks
 ----
 
-.Response codes
+.响应码
 [options="header"]
 |===============
 |响应码|描述
