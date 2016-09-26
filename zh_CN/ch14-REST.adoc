@@ -60,7 +60,7 @@ Activiti REST web应用使用Spring Java Configuration来启动Activiti引擎，
 
 |===============
 
-HTTP响应的media-type总是++application/json++，除非请求二进制内容（例如部署资源数据），这是将使用media-type的内容。
+HTTP响应的media-type总是++application/json++，除非请求二进制内容（例如部署资源数据），这时将使用media-type的内容。
 
 ==== 错误响应体 Error response body
 
@@ -834,7 +834,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processDefinitionId|是|String|要获取认证联系的流程定义的id。
+|processDefinitionId|是|String|要获取身份联系的流程定义的id。
 
 |===============
 
@@ -843,7 +843,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程定义，并返回了请求的认证联系。
+|200|代表已找到流程定义，并返回了请求的身份联系。
 |404|代表未找到请求的流程定义。
 
 |===============
@@ -907,7 +907,7 @@ POST repository/process-definitions/{processDefinitionId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|201|代表已找到流程定义，并已添加认证联系。
+|201|代表已找到流程定义，并已添加身份联系。
 |404|代表未找到请求的流程定义。
 
 |===============
@@ -939,7 +939,7 @@ DELETE repository/process-definitions/{processDefinitionId}/identitylinks/{famil
 |===============
 |参数|必填|值|描述
 |processDefinitionId|是|String|流程定义的id。
-|family|是|String|为++users++或++groups++，取决于认证联系的类型。
+|family|是|String|为++users++或++groups++，取决于身份联系的类型。
 |identityId|是|String|要从候选启动者中移除的userId或groupId。
 
 |===============
@@ -949,8 +949,8 @@ DELETE repository/process-definitions/{processDefinitionId}/identitylinks/{famil
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到流程定义，并已移除该认证联系。响应体设置为空。
-|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的认证联系。
+|204|代表已找到流程定义，并已移除该身份联系。响应体设置为空。
+|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的身份联系。
 
 |===============
 
@@ -981,7 +981,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks/{family}/
 |===============
 |参数|必填|值|描述
 |processDefinitionId|是|String|流程定义的id。
-|family|是|String|为++users++或++groups++，取决于认证联系的类型。
+|family|是|String|为++users++或++groups++，取决于身份联系的类型。
 |identityId|是|String|要获取的候选启动者的userId或groupId。
 
 |===============
@@ -991,8 +991,8 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks/{family}/
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程定义，并已返回认证联系。
-|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的认证联系。
+|200|代表已找到流程定义，并已返回身份联系。
+|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的身份联系。
 
 |===============
 
@@ -1610,7 +1610,7 @@ GET runtime/process-instances
 |superProcessInstanceId|否|String|只返回给定父流程实例id的流程实例（使用调用活动的流程）。
 |subProcessInstanceId|否|String|只返回给定子流程实例id的流程实例（通过调用活动启动的流程）。
 |excludeSubprocesses|否|Boolean|只返回不是子流程的流程实例。
-|includeProcessVariables|否|Boolean|代表在结果中包含流程变量。
+|includeProcessVariables|否|Boolean|是否在结果中包含流程变量。
 |tenantId|否|String|只返回给定tenantId的流程实例。
 |tenantIdLike|否|String|只返回tenantId like给定值的流程实例。
 |withoutTenantId|否|Boolean|如果值为++true++，则只返回没有设置tenantId的流程实例。如果值为++false++，则忽略++withoutTenantId++参数。
@@ -2016,14 +2016,13 @@ POST runtime/process-instances/{processInstanceId}/variables
 PUT runtime/process-instances/{processInstanceId}/variables
 ----
 
+当使用++POST++时，会创建所有传递的变量。如果流程实例中已经存在某个变量，则请求结果为错误（409 - 冲突）。当使用++PUT++时，会创建流程实例中不存在的变量；已存在变量的将会被覆盖，而没有错误。
 
-When using +POST+, all variables that are passed are created. In case one of the variables already exists on the process instance, the request results in an error (409 - CONFLICT). When +PUT+ is used, nonexistent variables are created on the process-instance and existing ones are overridden without any error.
-
-.Create (or update) variables on a process instance - URL 参数
+.为一个流程实例创建（或更新）变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the process instance to the variables for.
+|processInstanceId|是|String|要操作变量的流程实例的id。
 
 |===============
 
@@ -2042,17 +2041,16 @@ When using +POST+, all variables that are passed are created. In case one of the
 ]
 ----
 
+请求体的数组中可以传递任意数量的变量。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。请注意范围将被忽略，流程实例中只能设置++local++变量。
 
-Any number of variables can be passed into the request body array. More information about the variable format can be found in <<restVariables,the REST variables section>>. Note that scope is ignored, only +local+ variables can be set in a process instance.
-
-.Create (or update) variables on a process instance - 响应码
+.为一个流程实例创建（或更新）变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the process instance was found and variable is created.
-|400|Indicates the request body is incomplete or contains illegal values. The 状态描述中包含了关于错误的额外信息。
+|201|代表已找到流程实例，并已创建变量。
+|400|代表请求体不完整，或含有非法值。状态描述中包含了关于错误的额外信息。
 |404|代表未找到请求的流程实例。
-|409|Indicates the process instance was found but already contains a variable with the given name (only thrown when POST method is used). Use the update-method instead.
+|409|代表已找到流程实例，但其已包含了给定名字的变量（只在使用POST方法时抛出）。改用更新方法。
 
 |===============
 
@@ -2074,18 +2072,18 @@ Any number of variables can be passed into the request body array. More informat
 ----
 
 
-==== Update a single variable on a process instance
+==== 为一个流程实例更新一个变量 Update a single variable on a process instance
 
 ----
 PUT runtime/process-instances/{processInstanceId}/variables/{variableName}
 ----
 
-.Update a single variable on a process instance - URL 参数
+.为一个流程实例更新一个变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the process instance to the variables for.
-|variableName|是|String|Name of the variable to get.
+|processInstanceId|是|String|要操作变量的流程实例的id。
+|variableName|是|String|要更新的变量名。
 
 |===============
 
@@ -2101,14 +2099,14 @@ PUT runtime/process-instances/{processInstanceId}/variables/{variableName}
 ----
 
 
-More information about the variable format can be found in <<restVariables,the REST variables section>>. Note that scope is ignored, only +local+ variables can be set in a process instance.
+请求体的数组中可以传递任意数量的变量。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。请注意范围将被忽略，流程实例中只能设置++local++变量。
 
-.Update a single variable on a process instance - 响应码
+.为一个流程实例更新一个变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates both the process instance and variable were found and variable is updated.
-|404|Indicates the requested process instance was not found or the process instance does not have a variable with the given name. 状态描述中包含了关于错误的额外信息。
+|200|代表已找到流程实例与变量，并已更新变量。
+|404|代表未找到请求的流程实例，或者流程实例中没有给定名字的变量。状态描述中包含了关于错误的额外信息。
 
 |===============
 
@@ -2126,16 +2124,16 @@ More information about the variable format can be found in <<restVariables,the R
 ----
 
 
-In case the variable is a binary variable or serializable, the +valueUrl+ points to an URL to fetch the raw value. If it's a plain variable, the value is present in the response. Note that only +local+ scoped variables are returned, as there is no +global+ scope for process-instance variables.
+如果变量是二进制变量或序列化值，则++valueUrl++指向获取原始值的URL。如果是一个简单变量，则在响应中显示值。请注意只会返回++local++范围的变量，因为流程实例变量没有++global++范围。
 
-==== Create a new binary variable on a process-instance
+==== 为一个流程实例创建一个新的二进制变量 Create a new binary variable on a process-instance
 
 ----
 POST runtime/process-instances/{processInstanceId}/variables
 ----
 
 
-.Create a new binary variable on a process-instance - URL 参数
+.为一个流程实例创建一个新的二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -2145,12 +2143,10 @@ POST runtime/process-instances/{processInstanceId}/variables
 
 
 
-**请求体：**
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
-
-* ++name++: Required name of the variable.
-* ++type++: Type of variable that is created. If omitted, +binary+ is assumed and the binary data in the request will be stored as an array of bytes.
+* ++name++: 变量需要的名字。
+* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 
 **成功响应体：**
@@ -2167,40 +2163,38 @@ The request should be of type +multipart/form-data+. There should be a single fi
 ----
 
 
-.Create a new binary variable on a process-instance - 响应码
+.为一个流程实例创建一个新的二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the variable was created and the result is returned.
-|400|Indicates the name of the variable to create was missing. Status message provides additional information.
+|201|代表已创建变量，并已返回结果。
+|400|代表缺少要创建的变量名。状态消息提供了额外信息。
 |404|代表未找到请求的流程实例。
-|409|Indicates the process instance already has a variable with the given name. Use the PUT method to update the task variable instead.
-|415|Indicates the serializable data contains an object for which no class is present in the JVM running the Activiti engine and therefore cannot be deserialized.
+|409|代表流程实例中已经有给定名字的变量。改用PUT方法更新任务变量。
+|415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
 |===============
 
 
 
-==== Update an existing binary variable on a process-instance
+==== 为一个流程实例更新一个已有二进制变量 Update an existing binary variable on a process-instance
 
 ----
 PUT runtime/process-instances/{processInstanceId}/variables
 ----
 
-.Update an existing binary variable on a process-instance - URL 参数
+.为一个流程实例更新一个已有二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the process instance to create the new variable for.
+|processInstanceId|是|String|要更新变量的流程实例的id。
 
 |===============
 
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-**请求体：**
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
-
-* ++name++: Required name of the variable.
-* ++type++: Type of variable that is created. If omitted, +binary+ is assumed and the binary data in the request will be stored as an array of bytes.
+* ++name++: 变量需要的名字。
+* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 **成功响应体：**
 
@@ -2216,44 +2210,44 @@ The request should be of type +multipart/form-data+. There should be a single fi
 ----
 
 
-.Update an existing binary variable on a process-instance - 响应码
+.为一个流程实例更新一个已有二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the variable was updated and the result is returned.
-|400|Indicates the name of the variable to update was missing. Status message provides additional information.
-|404|Indicates the requested process instance was not found or the process instance does not have a variable with the given name.
-|415|Indicates the serializable data contains an object for which no class is present in the JVM running the Activiti engine and therefore cannot be deserialized.
+|200|代表已更新变量，并已返回结果。
+|400|代表缺少要更新的变量名。状态消息提供了额外信息。
+|404|代表未找到请求的流程实例，或者流程实例中没有给定名字的变量。
+|415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
 |===============
 
 
 
-=== Executions
+=== 执行 Executions
 
 
-==== Get an execution
+==== 获取一个执行 Get an execution
 
 ----
 GET runtime/executions/{executionId}
 ----
 
 
-.Get an execution - URL 参数
+.获取一个执行 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to get.
+|executionId|是|String|要获取的执行的id。
 
 |===============
 
 
-.Get an execution - 响应码
+.获取一个执行 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the execution was found and returned.
-|404|Indicates the execution was not found.
+|200|代表已找到并返回执行。
+|404|代表未找到执行
 
 |===============
 
@@ -2276,7 +2270,7 @@ GET runtime/executions/{executionId}
 ----
 
 
-==== Execute an action on an execution
+==== 对一个执行进行操作 Execute an action on an execution
 
 
 ----
@@ -2284,7 +2278,7 @@ PUT runtime/executions/{executionId}
 ----
 
 
-.Execute an action on an execution - URL 参数
+.对一个执行进行操作 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -2292,8 +2286,7 @@ PUT runtime/executions/{executionId}
 
 |===============
 
-
-*Request body (signal an execution):*
+**请求体（为一个执行发信号）：**
 
 [source,json,linenums]
 ----
@@ -2302,8 +2295,7 @@ PUT runtime/executions/{executionId}
 }
 ----
 
-
-*Request body (signal event received for execution):*
+**请求体（为一个执行发信号接收事件）：**
 
 [source,json,linenums]
 ----
@@ -2314,9 +2306,9 @@ PUT runtime/executions/{executionId}
 }
 ----
 
-Notifies the execution that a signal event has been received, requires a +signalName+ parameter. Optional +variables+ can be passed that are set on the execution before the action is executed.
+通知执行，已经接收到了一个信号事件，要求有一个++signalName++参数。可以传递可选的++variables++，将在进行操作前设置到执行中。
 
-*Request body (signal event received for execution):*
+**请求体（为一个执行发消息接收事件）：**
 
 [source,json,linenums]
 ----
@@ -2327,21 +2319,20 @@ Notifies the execution that a signal event has been received, requires a +signal
 }
 ----
 
+通知执行，已经接收到了一个消息事件，要求有一个++messageName++参数。可以传递可选的++variables++，将在进行操作前设置到执行中。
 
-Notifies the execution that a message event has been received, requires a +messageName+ parameter. Optional +variables+ can be passed that are set on the execution before the action is executed.
-
-.Execute an action on an execution - 响应码
+.对一个执行进行操作 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the execution was found and the action is performed.
-|204|Indicates the execution was found, the action was performed and the action caused the execution to end.
-|400|Indicates an illegal action was requested, required parameters are missing in the request body or illegal variables are passed in. 状态描述中包含了关于错误的额外信息。
-|404|Indicates the execution was not found.
+|200|代表已找到执行，并进行了操作。
+|204|代表找到了执行，进行了操作，该操作导致执行结束。
+|400|代表请求了非法的操作，请求中缺少了必要的参数，或者传递了非法的变量。状态描述中包含了关于错误的额外信息。
+|404|代表未找到执行
 
 |===============
 
-**成功响应体：** (in case execution is not ended due to action):*
+**成功响应体（当执行并未因该操作结束时）：**
 
 [source,json,linenums]
 ----
@@ -2359,29 +2350,29 @@ Notifies the execution that a message event has been received, requires a +messa
 ----
 
 
-==== Get active activities in an execution
+==== 获取一个执行中的激活活动 Get active activities in an execution
 
 ----
 GET runtime/executions/{executionId}/activities
 ----
 
-Returns all activities which are active in the execution and in all child-executions (and their children, recursively), if any.
+返回执行中与所有子执行中（以及它们的子执行，递归）激活的所有活动。
 
-.Get active activities in an execution - URL 参数
+.获取一个执行中的激活活动 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to get activities for.
+|executionId|是|String|要获取活动的执行的id。
 
 |===============
 
 
-.Get active activities in an execution - 响应码
+.获取一个执行中的激活活动 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the execution was found and activities are returned.
-|404|Indicates the execution was not found.
+|200|代表已找到执行，并已返回了活动。
+|404|代表未找到执行
 
 |===============
 
@@ -2400,39 +2391,39 @@ Returns all activities which are active in the execution and in all child-execut
 [[restExecutionsGet]]
 
 
-==== List of executions
+==== 列表执行 List of executions
 
 
 ----
 GET runtime/executions
 ----
 
-.List of executions - URL 查询参数
+.列表执行 - URL 查询参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|id|否|String|Only return executions with the given id.
-|activityId|否|String|Only return executions with the given activity id.
-|processDefinitionKey|否|String|Only return executions with the given process definition key.
-|processDefinitionId|否|String|Only return executions with the given process definition id.
-|processInstanceId|否|String|Only return executions which are part of the process instance with the given id.
-|messageEventSubscriptionName|否|String|Only return executions which are subscribed to a message with the given name.
-|signalEventSubscriptionName|否|String|Only return executions which are subscribed to a signal with the given name.
-|parentId|否|String|Only return executions which are a direct child of the given execution.
-|tenantId|否|String|Only return executions with the given tenantId.
-|tenantIdLike|否|String|Only return executions with a tenantId like the given value.
-|withoutTenantId|否|Boolean|If +true+, only returns executions without a tenantId set. 如果值为++false++，则忽略++withoutTenantId++参数。
-|sort|否|String|Sort field, should be either one of +processInstanceId+ (default), +processDefinitionId+, +processDefinitionKey+ or +tenantId+.
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|id|否|String|只返回给定id的执行。
+|activityId|否|String|只返回给定activity id的执行。
+|processDefinitionKey|否|String|只返回给定流程定义key的执行。
+|processDefinitionId|否|String|只返回给定流程定义id的执行。
+|processInstanceId|否|String|只返回给定流程实例中的执行。
+|messageEventSubscriptionName|否|String|只返回订阅了给定名字的消息的执行。
+|signalEventSubscriptionName|否|String|只返回订阅了给定名字的信号的执行。
+|parentId|否|String|只返回给定执行的直接子执行。
+|tenantId|否|String|只返回给定tenantId的执行。
+|tenantIdLike|否|String|只返回tenantId like给定值的执行。
+|withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的执行。如果值为++false++，则忽略++withoutTenantId++参数。
+|sort|否|String|排序字段，需要为++processInstanceId++（默认）、++processDefinitionId++、++processDefinitionKey++或++tenantId++。
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.List of executions - 响应码
+.列表执行 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the executions are returned
+|200|代表请求成功，并返回了执行。
 |400|代表传递的参数格式错误 . 状态描述中包含了额外信息。
 
 |===============
@@ -2477,7 +2468,7 @@ GET runtime/executions
 
 
 
-==== Query executions
+==== 查询执行 Query executions
 
 
 ----
@@ -2511,17 +2502,15 @@ POST query/executions
 }
 ----
 
-
-The request body can contain all possible filters that can be used in the <<restExecutionsGet,List executions>> URL query. On top of these, it's possible to provide an array of +variables+ and +processInstanceVariables+
-to include in the query, with their format <<restQueryVariable, described here>>.
+请求体可以包含所有在<<restExecutionsGet,列表执行>>URL查询中可用的过滤器。另外，也可以在查询中包含一个++variables++与++processInstanceVariables++的数组，使用<<restQueryVariable, 这里描述>>的格式。
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.Query executions - 响应码
+.查询执行 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the executions are returned
+|200|代表请求成功，并返回了执行。
 |400|代表传递的参数格式错误 . 状态描述中包含了额外信息。
 
 |===============
@@ -2565,29 +2554,29 @@ to include in the query, with their format <<restQueryVariable, described here>>
 
 
 
-==== List of variables for an execution
+==== 列表一个执行中的变量 List of variables for an execution
 
 ----
 GET runtime/executions/{executionId}/variables?scope={scope}
 ----
 
 
-.List of variables for an execution - URL 参数
+.列表一个执行中的变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to the variables for.
-|scope|否|String|Either +local+ or +global+. If omitted, both local and global scoped variables are returned.
+|executionId|是|String|要列表变量的执行的id。
+|scope|否|String|可以为++local++或+global++。若省略，则同时返回本地与全局范围变量。
 
 |===============
 
 
-.List of variables for an execution - 响应码
+.列表一个执行中的变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the execution was found and variables are returned.
-|404|Indicates the requested execution was not found.
+|200|代表已找到执行，并已返回变量。
+|404|代表未找到请求的执行。
 
 |===============
 
@@ -2615,35 +2604,34 @@ GET runtime/executions/{executionId}/variables?scope={scope}
 ]
 ----
 
+如果变量是二进制变量或序列化值，则++valueUrl++指向获取原始值的URL。如果是一个简单变量，则在响应中显示值。请注意只会返回++local++范围的变量，因为流程实例变量没有++global++范围。
 
-In case the variable is a binary variable or serializable, the +valueUrl+ points to an URL to fetch the raw value. If it's a plain variable, the value is present in the response.
 
-
-==== Get a variable for an execution
+==== 获取一个执行的一个变量 Get a variable for an execution
 
 ----
 GET runtime/executions/{executionId}/variables/{variableName}?scope={scope}
 ----
 
 
-.Get a variable for an execution - URL 参数
+.获取一个执行的一个变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to the variables for.
-|variableName|是|String|Name of the variable to get.
-|scope|否|String|Either +local+ or +global+. If omitted, local variable is returned (if exists). If not, a global variable is returned (if exists).
+|executionId|是|String|要获取变量的执行的id
+|variableName|是|String|要获取的变量名。
+|scope|否|String|++local++或+global++。若省略，则（存在时）返回本地变量。不存在本地变量时，则（存在时）返回全局变量。
 
 |===============
 
 
-.Get a variable for an execution - 响应码
+.获取一个执行的一个变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates both the execution and variable were found and variable is returned.
-|400|Indicates the request body is incomplete or contains illegal values. The 状态描述中包含了关于错误的额外信息。
-|404|Indicates the requested execution was not found or the execution does not have a variable with the given name in the requested scope (in case scope-query parameter was omitted, variable doesn't exist in local and global scope). 状态描述中包含了关于错误的额外信息。
+|200|代表已找到执行与变量，并已返回变量。
+|400|代表请求体不完整，或者包含不合法值。状态描述中包含了关于错误的额外信息。
+|404|代表未找到请求的执行，或者在请求的范围内执行没有给定名字的变量（若省略了范围查询条件，则本地与全局范围中都没有该变量）。状态描述中包含了关于错误的额外信息。
 
 |===============
 
@@ -2662,10 +2650,9 @@ GET runtime/executions/{executionId}/variables/{variableName}?scope={scope}
 ----
 
 
-In case the variable is a binary variable or serializable, the +valueUrl+ points to an URL to fetch the raw value. If it's a plain variable, the value is present in the response.
+如果变量是二进制变量或序列化值，则++valueUrl++指向获取原始值的URL。如果是一个简单变量，则在响应中显示值。
 
-
-==== Create (or update) variables on an execution
+==== 为一个执行创建（或更新）变量 Create (or update) variables on an execution
 
 ----
 POST runtime/executions/{executionId}/variables
@@ -2675,13 +2662,13 @@ POST runtime/executions/{executionId}/variables
 PUT runtime/executions/{executionId}/variables
 ----
 
-When using +POST+, all variables that are passed are created. In case one of the variables already exists on the execution in the requested scope, the request results in an error (409 - CONFLICT). When +PUT+ is used, nonexistent variables are created on the execution and existing ones are overridden without any error.
+当使用++POST++时，会创建所有传递的变量。如果执行中已经存在某个变量，则请求结果为错误（409 - 冲突）。当使用++PUT++时，会创建执行中不存在的变量；已存在变量的将会被覆盖，而没有错误。
 
-.Create (or update) variables on an execution - URL 参数
+.为一个执行创建（或更新）变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to the variables for.
+|executionId|是|String|要操作变量的执行的id。
 
 |===============
 
@@ -2704,16 +2691,16 @@ When using +POST+, all variables that are passed are created. In case one of the
 ]
 ----
 
-*Note that you can only provide variables that have the same scope. If the request-body array contains variables from mixed scopes, the request results in an error (400 - BAD REQUEST).*Any number of variables can be passed into the request body array. More information about the variable format can be found in <<restVariables,the REST variables section>>. Note that scope is ignored, only +local+ variables can be set in a process instance.
+**请注意只能提供相同范围的变量。如果请求体数组中包含了不同范围的变量，则请求结果为错误（400 - 错误请求）。**请求体的数组中可以传递任意数量的变量。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。（原文如此）请注意范围将被忽略，流程实例中只能设置++local++变量。
 
-.Create (or update) variables on an execution - 响应码
+.为一个执行创建（或更新）变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the execution was found and variable is created.
-|400|Indicates the request body is incomplete or contains illegal values. The 状态描述中包含了关于错误的额外信息。
-|404|Indicates the requested execution was not found.
-|409|Indicates the execution was found but already contains a variable with the given name (only thrown when POST method is used). Use the update-method instead.
+|201|代表已找到执行，并已创建变量。
+|400|代表请求体不完整，或者包含不合法值。状态描述中包含了关于错误的额外信息。
+|404|代表未找到请求的执行。
+|409|代表已找到执行，但其已包含了给定名字的变量（只在使用POST方法时抛出）。改用更新方法。
 
 |===============
 
@@ -2737,7 +2724,7 @@ When using +POST+, all variables that are passed are created. In case one of the
 
 
 
-==== Update a variable on an execution
+==== 为一个执行更新一个变量 Update a variable on an execution
 
 
 ----
@@ -2745,12 +2732,12 @@ PUT runtime/executions/{executionId}/variables/{variableName}
 ----
 
 
-.Update a variable on an execution - URL 参数
+.为一个执行更新一个变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to update the variables for.
-|variableName|是|String|Name of the variable to update.
+|executionId|是|String|要更新变量的执行的id。
+|variableName|是|String|要更新的变量名。
 
 |===============
 
@@ -2767,14 +2754,14 @@ PUT runtime/executions/{executionId}/variables/{variableName}
  }
 ----
 
-More information about the variable format can be found in <<restVariables,the REST variables section>>.
+可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。
 
-.Update a variable on an execution - 响应码
+.为一个执行更新一个变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates both the process instance and variable were found and variable is updated.
-|404|Indicates the requested process instance was not found or the process instance does not have a variable with the given name. 状态描述中包含了关于错误的额外信息。
+|200|代表已找到执行与变量，并已更新变量。
+|404|代表未找到请求的执行，或者执行没有给定名字的变量。状态描述中包含了关于错误的额外信息。
 
 |===============
 
@@ -2792,32 +2779,30 @@ More information about the variable format can be found in <<restVariables,the R
 ----
 
 
-In case the variable is a binary variable or serializable, the +valueUrl+ points to an URL to fetch the raw value. If it's a plain variable, the value is present in the response.
+如果变量是二进制变量或序列化值，则++valueUrl++指向获取原始值的URL。如果是一个简单变量，则在响应中显示值。
 
 
-==== Create a new binary variable on an execution
+==== 为一个执行创建一个新的二进制变量 Create a new binary variable on an execution
 
 ----
 POST runtime/executions/{executionId}/variables
 ----
 
 
-.Create a new binary variable on an execution - URL 参数
+.为一个执行创建一个新的二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to create the new variable for.
+|executionId|是|String|要创建新变量的执行的id。
 
 |===============
 
 
-**请求体：**
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
-
-* ++name++: Required name of the variable.
-* ++type++: Type of variable that is created. If omitted, +binary+ is assumed and the binary data in the request will be stored as an array of bytes.
-* ++scope++: Scope of variable that is created. If omitted, +local+ is assumed.
+* ++name++: 变量需要的名字。
+* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
 
 **成功响应体：**
 
@@ -2833,43 +2818,39 @@ The request should be of type +multipart/form-data+. There should be a single fi
 ----
 
 
-.Create a new binary variable on an execution - 响应码
+.为一个执行创建一个新的二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the variable was created and the result is returned.
-|400|Indicates the name of the variable to create was missing. Status message provides additional information.
-|404|Indicates the requested execution was not found.
-|409|Indicates the execution already has a variable with the given name. Use the PUT method to update the task variable instead.
-|415|Indicates the serializable data contains an object for which no class is present in the JVM running the Activiti engine and therefore cannot be deserialized.
-
+|201|代表已创建变量，并已返回结果。
+|400|代表缺少要创建的变量名。状态消息提供了额外信息。
+|404|代表未找到请求的执行。
+|409|代表执行已包含了给定名字的变量（只在使用POST方法时抛出）。改用PUT方法更新变量方法。
+|415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 |===============
 
 
-
-==== Update an existing binary variable on a process-instance
+==== 为一个执行更新一个已有二进制变量 Update an existing binary variable on a process-instance
 
 ----
 PUT runtime/executions/{executionId}/variables/{variableName}
 ----
 
-.Update an existing binary variable on a process-instance - URL 参数
+.为一个执行更新一个已有二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to create the new variable for.
-|variableName|是|String|The name of the variable to update.
+|executionId|是|String|要更新变量的执行的id。
+|variableName|是|String|要更新的变量名。
 
 |===============
 
 
-**请求体：**
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-* ++name++: Required name of the variable.
-* ++type++: Type of variable that is created. If omitted, +binary+ is assumed and the binary data in the request will be stored as an array of bytes.
-* ++scope++: Scope of variable that is created. If omitted, +local+ is assumed.
-
+* ++name++: 变量需要的名字。
+* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
 
 **成功响应体：**
 
@@ -2885,23 +2866,23 @@ The request should be of type +multipart/form-data+. There should be a single fi
 ----
 
 
-.Update an existing binary variable on a process-instance - 响应码
+.为一个执行更新一个已有二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the variable was updated and the result is returned.
-|400|Indicates the name of the variable to update was missing. Status message provides additional information.
-|404|Indicates the requested execution was not found or the execution does not have a variable with the given name.
-|415|Indicates the serializable data contains an object for which no class is present in the JVM running the Activiti engine and therefore cannot be deserialized.
+|200|代表已更新变量，并已返回结果。
+|400|代表缺少要更新的变量名。状态消息提供了额外信息。
+|404|代表未找到请求的执行，或者执行中没有给定名字的变量。
+|415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
 |===============
 
 
 
-=== Tasks
+=== 任务 Tasks
 
 
-==== Get a task
+==== 获取一个任务 Get a task
 
 ----
 GET runtime/tasks/{taskId}
@@ -2911,7 +2892,7 @@ GET runtime/tasks/{taskId}
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get.
+|taskId|是|String|要获取的任务的id。
 
 |===============
 
@@ -2921,8 +2902,8 @@ GET runtime/tasks/{taskId}
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and returned.
-|404|Indicates the requested task was not found.
+|200|代表已找到并返回了任务。
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -2953,77 +2934,75 @@ GET runtime/tasks/{taskId}
 ----
 
 
-* ++delegationState++: Delegation-state of the task, can be +null+, +"pending"+ or +"resolved".+
+* ++delegationState++: 任务的代理状态，可以为++null++、++"pending"++或++"resolved"++。
 
 
 [[restTasksGet]]
 
 
-==== List of tasks
+==== 列表任务 List of tasks
 
 ----
 GET runtime/tasks
 ----
 
 
-.List of tasks - URL 查询参数
+.列表任务 - URL 查询参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|name|否|String|Only return tasks with the given name.
-|nameLike|否|String|Only return tasks with a name like the given name.
-|description|否|String|Only return tasks with the given description.
-|priority|否|Integer|Only return tasks with the given priority.
-|minimumPriority|否|Integer|Only return tasks with a priority greater than the given value.
-|maximumPriority|否|Integer|Only return tasks with a priority lower than the given value.
-|assignee|否|String|Only return tasks assigned to the given user.
-|assigneeLike|否|String|Only return tasks assigned with an assignee like the given value.
-|owner|否|String|Only return tasks owned by the given user.
-|ownerLike|否|String|Only return tasks assigned with an owner like the given value.
-|unassigned|否|Boolean|Only return tasks that are not assigned to anyone. If +false+ is passed, the value is ignored.
-|delegationState|否|String|Only return tasks that have the given delegation state. Possible values are +pending+ and +resolved+.
-|candidateUser|否|String|Only return tasks that can be claimed by the given user. This includes both tasks where the user is an explicit candidate for and task that are claimable by a group that the user is a member of.
-|candidateGroup|否|String|Only return tasks that can be claimed by a user in the given group.
-|candidateGroups|否|String|Only return tasks that can be claimed by a user in the given groups. Values split by comma.
-|involvedUser|否|String|Only return tasks in which the given user is involved.
-|taskDefinitionKey|否|String|Only return tasks with the given task definition id.
-|taskDefinitionKeyLike|否|String|Only return tasks with a given task definition id like the given value.
-|processInstanceId|否|String|Only return tasks which are part of the process instance with the given id.
-|processInstanceBusinessKey|否|String|Only return tasks which are part of the process instance with the given business key.
-|processInstanceBusinessKeyLike|否|String|Only return tasks which are part of the process instance which has a business key like the given value.
-|processDefinitionKey|否|String|Only return tasks which are part of a process instance which has a process definition with the given key.
-|processDefinitionKeyLike|否|String|Only return tasks which are part of a process instance which has a process definition with a key like the given value.
-|processDefinitionName|否|String|Only return tasks which are part of a process instance which has a process definition with the given name.
-|processDefinitionNameLike|否|String|Only return tasks which are part of a process instance which has a process definition with a name like the given value.
-|executionId|否|String|Only return tasks which are part of the execution with the given id.
-|createdOn|否|ISO Date|Only return tasks which are created on the given date.
-|createdBefore|否|ISO Date|Only return tasks which are created before the given date.
-|createdAfter|否|ISO Date|Only return tasks which are created after the given date.
-|dueOn|否|ISO Date|Only return tasks which are due on the given date.
-|dueBefore|否|ISO Date|Only return tasks which are due before the given date.
-|dueAfter|否|ISO Date|Only return tasks which are due after the given date.
-|withoutDueDate|否|boolean|Only return tasks which don't have a due date. The property is ignored if the value is +false+.
-|withoutDueDate|否|boolean|Only return tasks which don't have a due date. The property is ignored if the value is +false+.
-|withoutDueDate|否|boolean|Only return tasks which don't have a due date. The property is ignored if the value is +false+.
-|excludeSubTasks|否|Boolean|Only return tasks that are not a subtask of another task.
-|active|否|Boolean|If +true+, only return tasks that are not suspended (either part of a process that is not suspended or not part of a process at all). If false, only tasks that are part of suspended process instances are returned.
-|includeTaskLocalVariables|否|Boolean|Indication to include task local variables in the result.
-|includeProcessVariables|否|Boolean|Indication to include process variables in the result.
-|tenantId|否|String|Only return tasks with the given tenantId.
-|tenantIdLike|否|String|Only return tasks with a tenantId like the given value.
-|withoutTenantId|否|Boolean|If +true+, only returns tasks without a tenantId set. 如果值为++false++，则忽略++withoutTenantId++参数。
-|candidateOrAssigned|否|String|Select tasks that has been claimed or assigned to user or waiting to claim by user (candidate user or groups).
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|name|否|String|只返回给定名字的任务。
+|nameLike|否|String|只返回名字like给定名字的任务。
+|description|否|String|只返回给定描述的任务。
+|priority|否|Integer|只返回给定优先级的任务。
+|minimumPriority|否|Integer|只返回优先级高于给定值的任务。
+|maximumPriority|否|Integer|只返回优先级低于给定值的任务。
+|assignee|否|String|只返回指派至给定用户的任务。
+|assigneeLike|否|String|只返回办理人like给定值的任务。
+|owner|否|String|只返回属主为给定用户的任务。
+|ownerLike|否|String|只返回属主like给定值的任务。
+|unassigned|否|Boolean|只返回未指派的任务。如果传递++false++，则忽略本参数。
+|delegationState|否|String|只返回给定代理状态的任务。可用值为++pending++与++resolved++。
+|candidateUser|否|String|只返回可以被给定用户申领的任务。包括用户为候选人，以及用户所在组为候选组的任务。
+|candidateGroup|否|String|只返回可以被给定组中的用户申领的任务。
+|candidateGroups|否|String|只返回可以被给定组中的用户申领的任务。逗号分隔值。
+|involvedUser|否|String|只返回给定用户参与的任务。
+|taskDefinitionKey|否|String|只返回给定任务定义id的任务。
+|taskDefinitionKeyLike|否|String|只返回任务定义id like给定值的任务。
+|processInstanceId|否|String|只返回给定id流程实例中的任务。
+|processInstanceBusinessKey|否|String|只返回给定businessKey流程实例中的任务。
+|processInstanceBusinessKeyLike|否|String|只返回businessKey like给定值的流程实例中的任务。
+|processDefinitionKey|否|String|只返回给定key的流程定义的流程实例中的任务。
+|processDefinitionKeyLike|否|String|只返回key like给定值的流程定义的流程实例中的任务。
+|processDefinitionName|否|String|只返回给定名字的流程定义的流程实例中的任务。
+|processDefinitionNameLike|否|String|只返回名字like给定值的流程定义的流程实例中的任务。
+|executionId|否|String|只返回给定id的执行中的任务。
+|createdOn|否|ISO Date|只返回给定日期创建的任务。
+|createdBefore|否|ISO Date|只返回给定日期之前创建的任务。
+|createdAfter|否|ISO Date|只返回给定日期之后创建的任务。
+|dueOn|否|ISO Date|只返回给定日期到期的任务。
+|dueBefore|否|ISO Date|只返回给定日期前到期的任务。
+|dueAfter|否|ISO Date|只返回给定日期后到期的任务。
+|withoutDueDate|否|boolean|只返回没有到期日期的任务。如果值为++false++则忽略本参数。
+|excludeSubTasks|否|Boolean|只返回不是另一个任务的子任务的任务。
+|active|否|Boolean|如果值为++true++，则只返回未暂停（要么所在流程未暂停，要么根本不在流程中）的任务。如果值为false，则只返回已暂停流程实例中的任务。
+|includeTaskLocalVariables|否|Boolean|是否在结果中包含本地变量。
+|includeProcessVariables|否|Boolean|是否在结果中包含流程变量。
+|tenantId|否|String|只返回给定tenantId的任务。
+|tenantIdLike|否|String|只返回tenantId like给定值的任务。
+|withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的任务。如果值为++false++，则忽略++withoutTenantId++参数。
+|candidateOrAssigned|否|String|选择已被申领，或已指派给用户，或等待用户（候选用户或组）申领的任务。
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.List of tasks - 响应码
+.列表任务 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the tasks are returned
-|400|代表传递的参数格式错误 or that 'delegationState' has an invalid value (other than 'pending' and 'resolved'). 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回任务。
+|400|代表传递的参数格式错误，或'delegationState'使用了不合法的值（不是'pending'与'resolved'）。状态描述中包含了额外信息。
 
 |===============
 
@@ -3064,7 +3043,7 @@ GET runtime/tasks
 
 
 
-==== Query for tasks
+==== 查询任务 Query for tasks
 
 ----
 POST query/tasks
@@ -3100,16 +3079,15 @@ POST query/tasks
 ----
 
 
+支持的JSON参数字段与<<restTasksGet,获取任务集合>>的参数一模一样（除了candidateGroupIn，只能在POST任务查询REST服务中使用），但是使用JSON体参数而不是URL参数，可以进行更高级的查询，也可以避免请求URI太长的错误。另外，查询可以通过任务与流程变量进行过滤。++taskVariables++与++processInstanceVariables++都是JSON数组，包含<<restQueryVariable, 这里描述>>的格式的对象。
 
-All supported JSON parameter fields allowed are exactly the same as the parameters found for <<restTasksGet,getting a collection of tasks>> (except for candidateGroupIn which is only available in this POST task query REST service), but passed in as JSON-body arguments rather than URL-parameters to allow for more advanced querying and preventing errors with request-uri's that are too long. On top of that, the query allows for filtering based on task and process variables. The +taskVariables+ and +processInstanceVariables+ are both JSON-arrays containing objects with the format <<restQueryVariable, as described here.>>
 
-
-.Query for tasks - 响应码
+.查询任务 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the tasks are returned
-|400|代表传递的参数格式错误 or that 'delegationState' has an invalid value (other than 'pending' and 'resolved'). 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回任务。
+|400|代表传递的参数格式错误，或'delegationState'使用了不合法的值（不是'pending'与'resolved'）。状态描述中包含了额外信息。
 
 |===============
 
@@ -3150,7 +3128,7 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 ----
 
 
-==== Update a task
+==== 更新一个任务 Update a task
 
 
 ----
@@ -3174,30 +3152,30 @@ PUT runtime/tasks/{taskId}
 }
 ----
 
-All request values are optional. For example, you can only include the 'assignee' attribute in the request body JSON-object, only updating the assignee of the task, leaving all other fields unaffected. When an attribute is explicitly included and is set to null, the task-value will be updated to null. Example: +{"dueDate" : null}+ will clear the duedate of the task).
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'assignee'属性，则只更新任务的办理人，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则任务值将更新为null。例如：++{"dueDate" : null}++将清空任务的到期日期。
 
 
-.Update a task - 响应码
+.更新一个任务 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was updated.
-|404|Indicates the requested task was not found.
-|409|Indicates the requested task was updated simultaneously.
+|200|代表任务已被更新。
+|404|代表未找到请求的任务。
+|409|代表请求的任务已经被并发同时更新。
 
 |===============
 
 
-**成功响应体：** see response for +runtime/tasks/{taskId}+.
+**成功响应体：**参见++runtime/tasks/{taskId}++的响应。
 
 
-==== Task actions
+==== 任务操作 Task actions
 
 ----
 POST runtime/tasks/{taskId}
 ----
 
-*Complete a task - JSON 体:*
+**完成一个任务 - JSON 体:**
 
 [source,json,linenums]
 ----
@@ -3207,10 +3185,9 @@ POST runtime/tasks/{taskId}
 }
 ----
 
+完成任务。可以使用++variables++参数传递可选的变量数组。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。请注意提供的变量范围将被忽略，变量将设置在父范围中，除非一个本地范围中存在一个变量。这种情况下将被覆盖。与++TaskService.completeTask(taskId, variables)++调用的行为相同。
 
-Completes the task. Optional variable array can be passed in using the +variables+ property. More information about the variable format can be found in <<restVariables,the REST variables section>>. Note that the variable-scope that is supplied is ignored and the variables are set on the parent-scope unless a variable exists in a local scope, which is overridden in this case. This is the same behavior as the +TaskService.completeTask(taskId, variables)+ invocation.
-
-*Claim a task - JSON 体:*
+**申领一个任务 - JSON 体:**
 
 [source,json,linenums]
 ----
@@ -3220,9 +3197,9 @@ Completes the task. Optional variable array can be passed in using the +variable
 }
 ----
 
-Claims the task by the given assignee. If the assignee is +null+, the task is assigned to no-one, claimable again.
+使用给定办理人申领任务。如果办理人为++null++，则取消任务的指派，可以重新申领。
 
-*Delegate a task - JSON 体:*
+**代理一个任务 - JSON 体:**
 
 [source,json,linenums]
 ----
@@ -3232,10 +3209,9 @@ Claims the task by the given assignee. If the assignee is +null+, the task is as
 }
 ----
 
+将任务代理给给定办理人。办理人为必填。
 
-Delegates the task to the given assignee. The assignee is required.
-
-*Resolve a task - JSON 体:*
+**解决一个任务 - JSON 体:**
 
 [source,json,linenums]
 ----
@@ -3245,18 +3221,17 @@ Delegates the task to the given assignee. The assignee is required.
 }
 ----
 
+解决任务代理。任务指派回任务的属主（若有）。
 
-Resolves the task delegation. The task is assigned back to the task owner (if any).
 
-
-.Task actions - 响应码
+.任务操作 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the action was executed.
-|400|When the body contains an invalid value or when the assignee is missing when the action requires it.
-|404|Indicates the requested task was not found.
-|409|Indicates the action cannot be performed due to a conflict. Either the task was updates simultaneously or the task was claimed by another user, in case of the '++claim++' action.
+|200|代表已执行操作。
+|400|代表请求体包含非法值，或者当操作需要时没有提供办理人。
+|404|代表未找到请求的任务。
+|409|代表操作由于冲突无法执行。任务已被并发同时更新，或者在进行'++claim++'操作时，任务已被其他用户申领。
 
 |===============
 
@@ -3264,7 +3239,7 @@ Resolves the task delegation. The task is assigned back to the task owner (if an
 **成功响应体：** see response for +runtime/tasks/{taskId}+.
 
 
-==== Delete a task
+==== 删除一个任务 Delete a task
 
 
 ----
@@ -3272,52 +3247,52 @@ DELETE runtime/tasks/{taskId}?cascadeHistory={cascadeHistory}&deleteReason={dele
 ----
 
 
-.>Delete a task - URL 参数
+.删除一个任务 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to delete.
-|cascadeHistory|False|Boolean|Whether or not to delete the HistoricTask instance when deleting the task (if applicable). If not provided, this value defaults to false.
-|deleteReason|False|String|Reason why the task is deleted. This value is ignored when +cascadeHistory+ is true.
+|taskId|是|String|要删除的任务的id。
+|cascadeHistory|否|Boolean|是否在删除任务时，删除历史任务实例（如果可用）。如果未设置，则默认值为false。
+|deleteReason|否|String|任务删除的原因。如果++cascadeHistory++值为true，则忽略本参数。
 
 |===============
 
 
-.>Delete a task - 响应码
+.删除一个任务 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the task was found and has been deleted. 响应体设置为空。
-|403|Indicates the requested task cannot be deleted because it's part of a workflow.
-|404|Indicates the requested task was not found.
+|204|代表已找到并删除任务。响应体设置为空。
+|403|代表由于请求的任务是工作流的一部分，无法删除。
+|404|代表未找到请求的任务。
 
 |===============
 
 
 
-==== Get all variables for a task
+==== 获取一个任务的所有变量 Get all variables for a task
 
 ----
 GET runtime/tasks/{taskId}/variables?scope={scope}
 ----
 
 
-.Get all variables for a task - URL 参数
+.获取一个任务的所有变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get variables for.
-|scope|False|String|Scope of variables to be returned. When '++local++', only task-local variables are returned. When '++global++', only variables from the task's parent execution-hierarchy are returned. When the parameter is omitted, both local and global variables are returned.
+|taskId|是|String|要获取变量的任务的id。
+|scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，则本地与全局都会返回。
 
 |===============
 
 
-.Get all variables for a task - 响应码
+.获取一个任务的所有变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the requested variables are returned.
-|404|Indicates the requested task was not found.
+|200|代表已找到任务，并已返回请求的变量。
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -3345,33 +3320,33 @@ GET runtime/tasks/{taskId}/variables?scope={scope}
 ]
 ----
 
-The variables are returned as a JSON array. Full response description can be found in the general <<restVariables,REST-variables section>>.
+变量作为一个JSON数组返回。在通用<<restVariables,REST变量章节>>中可以找到全部响应体的描述。
 
 
-==== Get a variable from a task
+==== 从一个任务中获取一个变量 Get a variable from a task
 
 ----
 GET runtime/tasks/{taskId}/variables/{variableName}?scope={scope}
 ----
 
 
-.Get a variable from a task - URL 参数
+.从一个任务中获取一个变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get a variable for.
-|variableName|是|String|The name of the variable to get.
-|scope|False|String|Scope of variable to be returned. When '++local++', only task-local variable value is returned. When '++global++', only variable value from the task's parent execution-hierarchy are returned. When the parameter is omitted, a local variable will be returned if it exists, otherwise a global variable.
+|taskId|是|String|要获取变量的任务的id。
+|variableName|是|String|要获取的变量名。
+|scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，如果存在本地变量就会返回，否则返回全局变量。
 
 |===============
 
 
-.Get a variable from a task - 响应码
+.从一个任务中获取一个变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the requested variables are returned.
-|404|Indicates the requested task was not found or the task doesn't have a variable with the given name (in the given scope). Status message provides additional information.
+|200|代表已找到任务，并已返回请求的变量。
+|404|代表未找到请求的任务，或者任务（在给定范围中）没有给定名字的变量。状态消息提供了额外信息。
 
 |===============
 
@@ -3388,47 +3363,44 @@ GET runtime/tasks/{taskId}/variables/{variableName}?scope={scope}
 }
 ----
 
+在通用<<restVariables,REST变量章节>>中可以找到全部响应体的描述。
 
-Full response body description can be found in the general <<restVariables,REST-variables section>>.
 
-
-==== Get the binary data for a variable
+==== 获取一个变量的二进制数据 Get the binary data for a variable
 
 ----
 GET runtime/tasks/{taskId}/variables/{variableName}/data?scope={scope}
 ----
 
 
-.Get the binary data for a variable - URL 参数
+.获取一个变量的二进制数据 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get a variable data for.
-|variableName|是|String|The name of the variable to get data for. Only variables of type +binary+ and +serializable+ can be used. If any other type of variable is used, a +404+ is returned.
-|scope|False|String|Scope of variable to be returned. When '++local++', only task-local variable value is returned. When '++global++', only variable value from the task's parent execution-hierarchy are returned. When the parameter is omitted, a local variable will be returned if it exists, otherwise a global variable.
+|taskId|是|String|要获取变量的任务的id。
+|variableName|是|String|要获取数据的变量名。只能使用++binary++与++serializable++类型的变量。如果使用其它任何类型的变量，将返回++404++。
+|scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，如果存在本地变量就会返回，否则返回全局变量。
 
 |===============
 
 
 
-.Get the binary data for a variable - 响应码
+.获取一个变量的二进制数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the requested variables are returned.
-|404|Indicates the requested task was not found or the task doesn't have a variable with the given name (in the given scope) or the variable doesn't have a binary stream available. Status message provides additional information.
+|200|代表已找到任务，并已返回请求的变量。
+|404|代表未找到请求的任务，或者任务（在给定范围中）没有给定名字的变量，或者变量没有可用的二进制流。状态消息提供了额外信息。
 
 |===============
 
 
 
-**成功响应体：**
-
-The response body contains the binary value of the variable. When the variable is of type +binary+, the content-type of the response is set to +application/octet-stream+, regardless of the content of the variable or the request accept-type header. In case of +serializable+, +application/x-java-serialized-object+ is used as content-type.
+**成功响应体：**响应体包含了变量的二进制值。如果变量是++binary++类型，则不论变量的content或者请求的accept-type头是什么，响应的content-type都将设置为++application/octet-stream++。如果变量是++serializable++类型，则content-type会使用++application/x-java-serialized-object++。
 
 
 
-==== Create new variables on a task
+==== 为一个任务创建一个新的变量 Create new variables on a task
 
 
 ----
@@ -3436,16 +3408,15 @@ POST runtime/tasks/{taskId}/variables
 ----
 
 
-.Create new variables on a task - URL 参数
+.为一个任务创建一个新的变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to create the new variable for.
+|taskId|是|String|要创建新变量的任务的id。
 
 |===============
 
-
-*Request body for creating simple (non-binary) variables:*
+**创建简单（非二进制）变量的请求体：**
 
 [source,json,linenums]
 ----
@@ -3463,15 +3434,14 @@ POST runtime/tasks/{taskId}/variables
 ----
 
 
-The request body should be an array containing one or more JSON-objects representing the variables that should be created.
+请求体需要是一个数组，包含有一个或多个代表要创建的变量JSON对象
 
-* ++name++: Required name of the variable
-* ++scope++: Scope of variable that is created. If omitted, +local+ is assumed.
-* ++type++: Type of variable that is created. If omitted, reverts to raw JSON-value type (string, boolean, integer or double).
-* ++value++: Variable value.
+* ++name++: 变量需要的名字。
+* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
+* ++type++: 创建的变量的类型。如果忽略，则转换为原始JSON值的类型（string、boolean、integer或double）。
+* ++value++: 变量值。
 
-More information about the variable format can be found in <<restVariables,the REST variables section>>.
-
+可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。
 
 
 **成功响应体：**
@@ -3492,41 +3462,39 @@ More information about the variable format can be found in <<restVariables,the R
 ----
 
 
-.Create new variables on a task - 响应码
+.为一个任务创建一个新的变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the variables were created and the result is returned.
-|400|Indicates the name of a variable to create was missing or that an attempt is done to create a variable on a standalone task (without a process associated) with scope +global+ or an empty array of variables was included in the request or request did not contain an array of variables. Status message provides additional information.
-|404|Indicates the requested task was not found.
-|409|Indicates the task already has a variable with the given name. Use the PUT method to update the task variable instead.
+|201|代表已创建变量，并已返回结果。
+|400|代表缺少要创建的变量名，或者尝试为独立任务（未关联至流程）创建++global++变量，或者请求中包含了空的变量数组，或者请求中没有包含变量数组。状态消息提供了额外信息。
+|404|代表未找到请求的任务。
+|409|代表任务中已有给定名字的变量。改用PUT方法更新任务变量。
 
 |===============
 
 
-==== Create a new binary variable on a task
+==== 为一个任务创建一个新的二进制变量 Create a new binary variable on a task
 
 ----
 POST runtime/tasks/{taskId}/variables
 ----
 
 
-.Create a new binary variable on a task - URL 参数
+.为一个任务创建一个新的二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to create the new variable for.
+|taskId|是|String|要创建新变量的任务的id。
 
 |===============
 
 
-**请求体：**
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
-
-* ++name++: Required name of the variable.
-* ++scope++: Scope of variable that is created. If omitted, +local+ is assumed.
-* ++type++: Type of variable that is created. If omitted, +binary+ is assumed and the binary data in the request will be stored as an array of bytes.
+* ++name++: 变量需要的名字。
+* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
+* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 
 **成功响应体：**
@@ -3542,21 +3510,21 @@ The request should be of type +multipart/form-data+. There should be a single fi
 }
 ----
 
-.Create a new binary variable on a task - 响应码
+.为一个任务创建一个新的二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the variable was created and the result is returned.
-|400|Indicates the name of the variable to create was missing or that an attempt is done to create a variable on a standalone task (without a process associated) with scope +global+. Status message provides additional information.
-|404|Indicates the requested task was not found.
-|409|Indicates the task already has a variable with the given name. Use the PUT method to update the task variable instead.
-|415|Indicates the serializable data contains an object for which no class is present in the JVM running the Activiti engine and therefore cannot be deserialized.
+|201|代表已创建变量，并已返回结果。
+|400|代表缺少要创建的变量名，或者尝试为独立任务（未关联至流程）创建++global++变量。状态消息提供了额外信息。
+|404|代表未找到请求的任务。
+|409|代表任务中已有给定名字的变量。改用PUT方法更新任务变量。
+|415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
 |===============
 
 
 
-==== Update an existing variable on a task
+==== 为一个任务更新一个已有变量 Update an existing variable on a task
 
 
 ----
@@ -3564,17 +3532,16 @@ PUT runtime/tasks/{taskId}/variables/{variableName}
 ----
 
 
-.Update an existing variable on a task - URL 参数
+.为一个任务更新一个已有变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to update the variable for.
-|variableName|是|String|The name of the variable to update.
+|taskId|是|String|要更新变量的任务的id。
+|variableName|是|String|要更新的变量名。
 
 |===============
 
-
-*Request body for updating simple (non-binary) variables:*
+**更新简单（非二进制）变量的请求体：**
 
 [source,json,linenums]
 ----
@@ -3587,14 +3554,14 @@ PUT runtime/tasks/{taskId}/variables/{variableName}
 ----
 
 
-* ++name++: Required name of the variable
-* ++scope++: Scope of variable that is updated. If omitted, +local+ is assumed.
-* ++type++: Type of variable that is updated. If omitted, reverts to raw JSON-value type (string, boolean, integer or double).
-* ++value++: Variable value.
+请求体需要是一个数组，包含有一个或多个代表要创建的变量JSON对象
 
+* ++name++: 变量需要的名字。
+* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
+* ++type++: 创建的变量的类型。如果忽略，则转换为原始JSON值的类型（string、boolean、integer或double）。
+* ++value++: 变量值。
 
-More information about the variable format can be found in <<restVariables,the REST variables section>>.
-
+可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。
 
 **成功响应体：**
 
@@ -3609,43 +3576,40 @@ More information about the variable format can be found in <<restVariables,the R
 ----
 
 
-.Update an existing variable on a task - 响应码
+.为一个任务更新一个已有变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the variables was updated and the result is returned.
-|400|Indicates the name of a variable to update was missing or that an attempt is done to update a variable on a standalone task (without a process associated) with scope +global+. Status message provides additional information.
-|404|Indicates the requested task was not found or the task doesn't have a variable with the given name in the given scope. Status message contains additional information about the error.
+|200|代表已更新变量，并已返回结果。
+|400|代表缺少要创建的变量名，或者尝试为独立任务（未关联至流程）创建++global++变量。状态消息提供了额外信息。
+|404|代表未找到请求的任务，或者任务在给定范围中没有给定名字的变量。状态消息提供了额外信息。
 
 |===============
 
 
 
-==== Updating a binary variable on a task
+==== 为一个任务更新一个二进制变量 Updating a binary variable on a task
 
 ----
 PUT runtime/tasks/{taskId}/variables/{variableName}
 ----
 
-.Updating a binary variable on a task - URL 参数
+.为一个任务更新一个二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to update the variable for.
-|variableName|是|String|The name of the variable to update.
+|taskId|是|String|要更新变量的任务的id。
+|variableName|是|String|要更新的变量名。
 
 |===============
 
 
 
-**请求体：**
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the variable. On top of that, the following additional form-fields can be present:
-
-* ++name++: Required name of the variable.
-* ++scope++: Scope of variable that is updated. If omitted, +local+ is assumed.
-* ++type++: Type of variable that is updated. If omitted, +binary+ is assumed and the binary data in the request will be stored as an array of bytes.
-
+* ++name++: 变量需要的名字。
+* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
+* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 **成功响应体：**
 
@@ -3661,75 +3625,75 @@ The request should be of type +multipart/form-data+. There should be a single fi
 ----
 
 
-.Updating a binary variable on a task - 响应码
+.为一个任务更新一个二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the variable was updated and the result is returned.
-|400|Indicates the name of the variable to update was missing or that an attempt is done to update a variable on a standalone task (without a process associated) with scope +global+. Status message provides additional information.
-|404|Indicates the requested task was not found or the variable to update doesn't exist for the given task in the given scope.
-|415|Indicates the serializable data contains an object for which no class is present in the JVM running the Activiti engine and therefore cannot be deserialized.
+|200|代表已更新变量，并已返回结果。
+|400|代表缺少要创建的变量名，或者尝试为独立任务（未关联至流程）创建++global++变量。状态消息提供了额外信息。
+|404|代表未找到请求的任务，或者任务在给定范围中没有给定名字的变量。
+|415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
 |===============
 
 
 
-==== Delete a variable on a task
+==== 为一个任务删除一个变量 Delete a variable on a task
 
 ----
 DELETE runtime/tasks/{taskId}/variables/{variableName}?scope={scope}
 ----
 
 
-.Delete a variable on a task - URL 参数
+.为一个任务删除一个变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task the variable to delete belongs to.
-|variableName|是|String|The name of the variable to delete.
-|scope|否|String|Scope of variable to delete in. Can be either +local+ or +global+. If omitted, +local+ is assumed.
+|taskId|是|String|要删除的变量所在的任务的id。
+|variableName|是|String|要删除的变量名。
+|scope|否|String|要删除的变量所在的范围。可以为++local++或++global++。若省略，则使用++local++。
 
 |===============
 
 
-.Delete a variable on a task - 响应码
+.为一个任务删除一个变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the task variable was found and has been deleted. 响应体设置为空。
-|404|Indicates the requested task was not found or the task doesn't have a variable with the given name. Status message contains additional information about the error.
+|204|代表已找到并删除任务变量。响应体设置为空。
+|404|代表未找到请求的任务，或者任务在给定范围中没有给定名字的变量。状态消息提供了额外信息。
 
 |===============
 
 
 
-==== Delete all local variables on a task
+==== 为一个任务删除所有本地变量 Delete all local variables on a task
 
 ----
 DELETE runtime/tasks/{taskId}/variables
 ----
 
-.Delete all local variables on a task - URL 参数
+.为一个任务删除所有本地变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task the variable to delete belongs to.
+|taskId|是|String|要删除的变量所在的任务的id。
 
 |===============
 
 
-.Delete all local variables on a task - 响应码
+.为一个任务删除所有本地变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates all local task variables have been deleted. 响应体设置为空。
-|404|Indicates the requested task was not found.
+|204|代表已删除所有本地任务变量。响应体设置为空。
+|404|代表未找到请求的任务。
 
 |===============
 
 
 
-==== Get all identity links for a task
+==== 获取一个任务的所有身份联系 Get all identity links for a task
 
 
 ----
@@ -3737,21 +3701,21 @@ GET runtime/tasks/{taskId}/identitylinks
 ----
 
 
-.Get all identity links for a task - URL 参数
+.获取一个任务的所有身份联系 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task to get the identity links for.
+|taskId|是|String|要获取身份联系的任务的id。
 
 |===============
 
 
-.Get all identity links for a task - 响应码
+.获取一个任务的所有身份联系 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task was found and the requested identity links are returned.
-|404|Indicates the requested task was not found.
+|200|代表已找到任务，并已返回请求的身份联系。
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -3780,18 +3744,17 @@ GET runtime/tasks/{taskId}/identitylinks
 
 
 
-==== Get all identitylinks for a task for either groups or users
+==== 获取一个任务的组或用户的所有身份联系 Get all identitylinks for a task for either groups or users
 
 ----
 GET runtime/tasks/{taskId}/identitylinks/users
 GET runtime/tasks/{taskId}/identitylinks/groups
 ----
 
+只返回目标为用户或组的身份联系。响应体及状态码与获取一个任务的完整身份联系列表时完全相同。
 
-Returns only identity links targetting either users or groups. Response body and status-codes are exactly the same as when getting the full list of identity links for a task.
 
-
-==== Get a single identity link on a task
+==== 获取一个任务的一个身份联系 Get a single identity link on a task
 
 
 
@@ -3800,24 +3763,24 @@ GET runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 ----
 
 
-.Get all identitylinks for a task for either groups or users - URL 参数
+.获取一个任务的一个身份联系 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|The id of the task .
-|family|是|String|Either +groups+ or +users+, depending on what kind of identity is targeted.
-|identityId|是|String|The id of the identity.
-|type|是|String|The type of identity link.
+|taskId|是|String|任务的id。
+|family|是|String|可以为++groups++或++users++，取决于认证目标的类型。
+|identityId|是|String|认证的id。
+|type|是|String|身份联系的类型。
 
 |===============
 
 
-.Get all identitylinks for a task for either groups or users - 响应码
+.获取一个任务的一个身份联系 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task and identity link was found and returned.
-|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. The status contains additional information about this error.
+|200|代表已找到任务及身份联系，并已返回。
+|404|代表未找到请求的任务，或者任务中没有请求的身份联系。状态消息提供了额外信息。
 
 |===============
 
@@ -3835,7 +3798,7 @@ GET runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 ----
 
 
-==== Create an identity link on a task
+==== 为一个任务创建一个身份联系 Create an identity link on a task
 
 
 ----
@@ -3879,7 +3842,7 @@ POST runtime/tasks/{taskId}/identitylinks
 |===============
 |响应码|描述
 |201|Indicates the task was found and the identity link was created.
-|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. The status contains additional information about this error.
+|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. 状态消息提供了额外信息。
 
 |===============
 
@@ -3921,7 +3884,7 @@ DELETE runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 |===============
 |响应码|描述
 |204|Indicates the task and identity link were found and the link has been deleted. 响应体设置为空。
-|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. The status contains additional information about this error.
+|404|Indicates the requested task was not found or the task doesn't have the requested identityLink. 状态消息提供了额外信息。
 
 |===============
 
@@ -3980,7 +3943,7 @@ Parameter +saveProcessInstanceId+ is optional, if +true+ save process instance i
 |响应码|描述
 |201|Indicates the comment was created and the result is returned.
 |400|Indicates the comment is missing from the request.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -4034,7 +3997,7 @@ GET runtime/tasks/{taskId}/comments
 |===============
 |响应码|描述
 |200|Indicates the task was found and the comments are returned.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -4148,7 +4111,7 @@ GET runtime/tasks/{taskId}/events
 |===============
 |响应码|描述
 |200|Indicates the task was found and the events are returned.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -4254,7 +4217,7 @@ Only the attachment name is required to create a new attachment.
 |响应码|描述
 |201|Indicates the attachment was created and the result is returned.
 |400|Indicates the attachment name is missing from the request.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -4307,7 +4270,7 @@ The request should be of type +multipart/form-data+. There should be a single fi
 |响应码|描述
 |201|Indicates the attachment was created and the result is returned.
 |400|Indicates the attachment name is missing from the request or no file was present in the request. The error-message contains additional information.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -4364,7 +4327,7 @@ GET runtime/tasks/{taskId}/attachments
 |===============
 |响应码|描述
 |200|Indicates the task was found and the attachments are returned.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -4441,7 +4404,7 @@ GET runtime/tasks/{taskId}/attachment/{attachmentId}/content
 |===============
 |响应码|描述
 |200|Indicates the task and attachment was found and the requested content is returned.
-|404|Indicates the requested task was not found or the task doesn't have an attachment with the given id or the attachment doesn't have a binary stream available. Status message provides additional information.
+|404|Indicates the requested task was not found or the task doesn't have an attachment with the given id or the attachment doesn't have a binary stream available. 状态消息提供了额外信息。
 
 |===============
 
@@ -4757,7 +4720,7 @@ GET history/historic-process-instances/{processInstanceId}/variables/{variableNa
 |===============
 |响应码|描述
 |200|Indicates the process instance was found and the requested variable data is returned.
-|404|Indicates the requested process instance was not found or the process instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. Status message provides additional information.
+|404|Indicates the requested process instance was not found or the process instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
 
 |===============
 
@@ -4870,7 +4833,7 @@ GET history/historic-process-instances/{processInstanceId}/comments
 |===============
 |响应码|描述
 |200|Indicates the process instance was found and the comments are returned.
-|404|Indicates the requested task was not found.
+|404|代表未找到请求的任务。
 
 |===============
 
@@ -5275,7 +5238,7 @@ GET history/historic-task-instances/{taskId}/variables/{variableName}/data
 |===============
 |响应码|描述
 |200|Indicates the task instance was found and the requested variable data is returned.
-|404|Indicates the requested task instance was not found or the process instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. Status message provides additional information.
+|404|Indicates the requested task instance was not found or the process instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
 
 |===============
 
@@ -5564,7 +5527,7 @@ GET history/historic-variable-instances/{varInstanceId}/data
 |===============
 |响应码|描述
 |200|Indicates the variable instance was found and the requested variable data is returned.
-|404|Indicates the requested variable instance was not found or the variable instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. Status message provides additional information.
+|404|Indicates the requested variable instance was not found or the variable instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
 
 |===============
 
@@ -5718,7 +5681,7 @@ GET history/historic-detail/{detailId}/data
 |===============
 |响应码|描述
 |200|Indicates the historic detail instance was found and the requested variable data is returned.
-|404|Indicates the requested historic detail instance was not found or the historic detail instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. Status message provides additional information.
+|404|Indicates the requested historic detail instance was not found or the historic detail instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
 
 |===============
 
