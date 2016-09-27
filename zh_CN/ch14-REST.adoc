@@ -5,24 +5,24 @@
 
 ==== 安装与认证 Installation and Authentication
 
-Activiti在引擎中包含了REST API，可以通过在servlet容器如Apache Tomcat中，部署activiti-rest.war文件来安装。但是，也可以在其他的web应用中使用，只要在你的应用中包含这些servlet与其映射，并在classpath中添加所有activiti-rest依赖。
+Activiti在引擎中包含了REST API，可以通过在servlet容器如Apache Tomcat中，部署activiti-rest.war文件来安装。但是也可以在其他的web应用中使用，只要在你的应用中包含这些servlet与其映射，并在classpath中添加所有activiti-rest依赖即可。
 
-默认情况下Activiti引擎链接至一个H2内存数据库。可以修改WEB-INF/classes文件夹下的db.properties文件中的数据库设置。REST API使用JSON格式（http://www.json.org），基于Spring MVC（http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html）构建。
+默认情况下Activiti引擎连接至一个H2内存数据库。可以修改WEB-INF/classes文件夹下的db.properties文件中的数据库设置。REST API使用JSON格式 (http://www.json.org) ，基于Spring MVC (http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) 构建。
 
-默认情况下，所有REST资源都需要有一个合法的Activiti已认证用户，使用基础HTTP访问认证，因此在请求时，可以在HTTP头添加++Authorization: Basic ...==++，或者在请求url中包含用户名与密码（例如++http://username:password@localhost...++）。
+默认情况下，所有REST资源都需要有一个有效的的Activiti已认证用户，使用基础HTTP访问认证，因此在请求时，可以在HTTP头添加++Authorization: Basic ...==++，也可以在请求url中包含用户名与密码（例如++http://username:password@localhost...++）。
 
-**建议使用基础认证时同时使用HTTPS。**
+**建议使用基础认证时，同时使用HTTPS。**
 
 ==== 配置 Configuration
 
-Activiti REST web应用使用Spring Java Configuration来启动Activiti引擎，定义基础认证安全使用Spring security，以及为特定的变量处理定义变量转换。可以修改WEB-INF/classes目录下的engine.properties文件，进行少量参数的定义。如果需要高级配置选项，可以在activiti-custom-context.xml文件中覆盖默认的Spring bean，这个文件也在WEB-INF/classes目录下。该文件中已经以注释形式提供了示例配置。也可以在这里通过定义一个新的命名为restResponsefactory的Spring bean，覆盖默认的RestResponseFactory，并使用自定义实现类。
+Activiti REST web应用使用Spring Java Configuration来启动Activiti引擎、定义基础认证安全使用Spring security，以及为特定的变量处理定义变量转换。可以修改WEB-INF/classes目录下的engine.properties文件，定义少量参数。如果需要高级配置选项，可以在activiti-custom-context.xml文件中覆盖默认的Spring bean，这个文件也在WEB-INF/classes目录下。该文件中已经以注释形式提供了示例配置。也可以在这里通过定义一个新的命名为restResponsefactory的Spring bean，覆盖默认的RestResponseFactory，并使用自定义实现类。
 
 [[restUsageInTomcat]]
 
 
 ==== 在Tomcat中使用 Usage in Tomcat
 
-由于link:$$http://tomcat.apache.org/tomcat-7.0-doc/security-howto.html$$[Tomcat中的默认安全参数]，**默认不能使用转义斜线（++%2F++与++%5C++）（返回400结果）。**这可能会影响部署资源与其数据URL，因为URL可能隐含转义斜线。
+由于link:$$http://tomcat.apache.org/tomcat-7.0-doc/security-howto.html$$[Tomcat中的默认安全参数]，**默认不能使用已转义斜线符（++%2F++与++%5C++）（返回400结果）。**这可能会影响部署资源与其数据URL，因为URL可能隐含已转义斜线符。
 
 **当发现非预期的400结果时，设置下列系统参数 +$$-Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true.$$+ **
 
@@ -38,7 +38,7 @@ Activiti REST web应用使用Spring Java Configuration来启动Activiti引擎，
 |+GET+|获取单个资源，或获取一组资源。
 |+POST+|创建一个新资源。在查询结构太复杂，不能放入GET请求的查询URL中时，也用于执行资源查询。
 |+PUT+|更新一个已有资源的参数。也用于在已有资源上的调用动作。
-|+DELETE+|删除一个已有资源。。
+|+DELETE+|删除一个已有资源。
 
 |===============
 
@@ -50,17 +50,17 @@ Activiti REST web应用使用Spring Java Configuration来启动Activiti引擎，
 |+200 - Ok+|操作成功，返回响应（++GET++与++PUT++请求）。
 |++201 - 已创建++|操作成功，已经创建了实体，并在响应体中返回（++POST++请求）。
 |++204 - 无内容++|操作成功，已经删除了实体，因此没有返回的响应体（++DELETE++请求）。
-|++401 - 未认证++|操作失败。操作要求设置认证头。如果请求中有认证头，则提供的鉴证并不合法，或者用户未被认证进行该操作。
+|++401 - 未认证++|操作失败。操作要求设置认证头。如果请求中有认证头，则提供的鉴证并不合法，或者用户未被授权进行该操作。
 |++403 - 禁止++|操作被禁止，且不应重试。这不是鉴证或授权的问题，而是说明不允许该操作。例如：删除一个运行中流程的任务是且永远是不允许的，无论该用户或流程/任务的状态。
 |++404 - 未找到++|操作失败。请求的资源未找到。
 |++405 - 不允许的方法++|操作失败。使用的方法不能用于该资源。例如，更新（PUT）部署资源将导致++405++状态。
 |++409 - 冲突++|操作失败。该操作导致更新一个已被其他操作更新的资源，因此本更新不再有效。也可以表明正在为一个集合创建一个资源，但该集合中已经使用了该标识符。
-|++415 - 不支持的媒体类型++|操作失败。请求提包含了不支持的媒体类型。也会发生在请求体JSON中包含了未知的属性或值，但没有正确的格式/类型来接受。
+|++415 - 不支持的媒体类型++|操作失败。请求提包含了不支持的媒体类型。也会发生在请求体JSON中包含了未知的属性或值，但没有正确的格式/类型来接受的情况下。
 |++500 - 服务器内部错误++|操作失败。执行操作时发生了未知异常。响应体中包含了错误的细节。
 
 |===============
 
-HTTP响应的media-type总是++application/json++，除非请求二进制内容（例如部署资源数据），这时将使用media-type的内容。
+HTTP响应的media-type总是++application/json++，除非请求的是二进制内容（例如部署资源数据）。这时将使用内容的media-type。
 
 ==== 错误响应体 Error response body
 
@@ -89,7 +89,7 @@ HTTP响应的media-type总是++application/json++，除非请求二进制内容�
 [options="header"]
 |===============
 |类型|格式
-|String|纯文本参数。可以包含任何URL允许的合法字符。对于++XXXLike+ +参数，字符串可能会包含通配符++%++（需要进行URL编码）。可以进行like搜索。例如，'++Tas%++'将匹配所有以'Tas'开头的值。
+|String|纯文本参数。可以包含任何URL允许的合法字符。对于++XXXLike++参数，字符串可能会包含通配符++%++（需要进行URL编码）。可以进行like搜索，例如，'Tas%'将匹配所有以'Tas'开头的值。
 |Integer|整形参数。只能包含数字型非十进制值（原文如此，下同），在-2.147.483.648至2.147.483.647之间。
 |Long|长整形参数。只能包含数字型非十进制值，在-9.223.372.036.854.775.808至9.223.372.036.854.775.807之间。
 |Boolean|boolean型参数。可以为++true++或++false++。任何其他值都会导致'++405 - 错误请求++'响应。
@@ -107,7 +107,7 @@ HTTP响应的media-type总是++application/json++，除非请求二进制内容�
 [options="header"]
 |===============
 |类型|格式
-|String|纯文本参数。对于++XXXLike+ +参数，字符串可能会包含通配符++%++。可以进行like搜索。例如，'++Tas%++'将匹配所有以'Tas'开头的值。
+|String|纯文本参数。对于++XXXLike++参数，字符串可能会包含通配符++%++。可以进行like搜索。例如，'Tas%'将匹配所有以'Tas'开头的值。
 |Integer|整形参数，使用JSON数字。只能包含数字型非十进制值（原文如此，下同），在-2.147.483.648至2.147.483.647之间。
 |Long|长整形参数，使用JSON数字。只能包含数字型非十进制值，在-9.223.372.036.854.775.808至9.223.372.036.854.775.807之间。
 |Date|日期型参数，使用JSON文本。使用ISO-8601日期格式（参考link:$$http://en.wikipedia.org/wiki/ISO_8601$$[wikipedia中的ISO-8601]），使用时间与日期组分（例如++2013-04-03T23:45Z++）。
@@ -155,10 +155,10 @@ HTTP响应的media-type总是++application/json++，除非请求二进制内容�
 [options="header"]
 |===============
 |参数|必填|描述
-|name|否|包含在查询中的变量名。在有些使用'++equals++'查询中可以为空，查询**任意变量名**具有给定值的资源。
+|name|否|包含在查询中的变量名。在有些使用'++equals++'的查询中可以为空，查询**任意变量名**为给定值的资源。
 |value|是|包含在查询中的变量值，需要使用给定类型的正确格式。
-|operator|是|查询使用的操作，可以为下列值：++equals、notEquals、equalsIgnoreCase、notEqualsIgnoreCase、lessThan、greaterThan、lessThanOrEquals、greaterThanOrEquals++与++like++。
-|type|否|所用变量的类型。当省略时，会从++value++参数推理类型。任何JSON文本值都认为是++string++类型，JSON boolean值认为是++boolean++类型，JSON数字认为是++long++或++integer++，取决于数字的大小。建议在有疑惑时显示指定类型。其他支持的类型列在下面。
+|operator|是|查询使用的操作，可以为下列值：++equals, notEquals, equalsIgnoreCase, notEqualsIgnoreCase, lessThan, greaterThan, lessThanOrEquals, greaterThanOrEquals++与++like++。
+|type|否|所用变量的类型。当省略时，会从++value++参数推理类型。任何JSON文本值都认为是++string++类型，JSON boolean值认为是++boolean++类型，JSON数字认为是++long++或++integer++，取决于数字的大小。建议在有疑惑时明确指定类型。其他支持的类型列在下面。
 
 
 |===============
@@ -201,10 +201,10 @@ HTTP响应的media-type总是++application/json++，除非请求二进制内容�
 |===============
 |参数|必填|描述
 |name|是|变量名。
-|value|否|变量的值。当写入变量且省略了++value++时，会使用++null++作为值。
+|value|否|变量的值。当写入变量且省略了++value++时，会使用++null++作为value。
 |valueUrl|否|当读取++binary++或++serializable++类型的变量时，这个属性将指向可用于获取原始二进制数据的URL。
-|scope|否|变量的范围。如果值为'++local++'，则变量显式定义在其请求的资源上。如果值为'++global++'，则变量定义在其父上（或者父树中的任意父）。当写入变量且省略了scope时，使用++global++。
-|type|否|变量的类型。查看下面的表格了解类型的更多信息。当写入变量且省略了这个值时，将使用请求的原始JSON属性类型推断，限制在++string++、++double++、++integer++与++boolean++中。建议总是包含类型，以确保不会错误推断类型。
+|scope|否|变量的范围。如果值为'++local++'，则变量明确定义在其请求的资源上。如果值为'++global++'，则变量定义在其父上（或者父树中的任意父）。当写入变量且省略了scope时，使用++global++。
+|type|否|变量的类型。查看下面的表格了解类型的更多信息。当写入变量且省略了这个值时，将使用请求的原始JSON属性类型推断，限制在++string++, ++double++, ++integer++与++boolean++中。建议总是包含类型，以确保不会错误推断类型。
 |===============
 
 
@@ -215,8 +215,7 @@ HTTP响应的media-type总是++application/json++，除非请求二进制内容�
 |string|值按照++java.lang.String++处理。写入变量时使用原始JSON文本。
 |integer|值按照++java.lang.Integer++处理。按约定写入变量时使用JSON数字，失败则退回JSON文本。
 |short|值按照++java.lang.Short++处理。按约定写入变量时使用JSON数字，失败则退回JSON文本。
-|long|
-|short|值按照++java.lang.Long++处理。按约定写入变量时使用JSON数字，失败则退回JSON文本。
+|long|值按照++java.lang.Long++处理。按约定写入变量时使用JSON数字，失败则退回JSON文本。
 |double|值按照++java.lang.Double++处理。按约定写入变量时使用JSON数字，失败则退回JSON文本。
 |boolean|值按照++java.lang.Boolean++处理。按约定写入变量时使用JSON boolean。
 |date|值按照++java.util.Date++处理。写入变量时将转换为ISO-8601日期格式。
@@ -224,7 +223,7 @@ HTTP响应的media-type总是++application/json++，除非请求二进制内容�
 |serializable|代表序列化的Java对象。与++binary++类型一样，++value++属性为null，++valueUrl++包含指向原始二进制流的URL。所有可序列化的变量（不是上述任意类型的）将被暴露为这个类型的变量。
 |===============
 
-可以使用自定义JSON表示，支持额外的变量类型（既可以是简单值，也可以是复杂/嵌套的JSON对象）。通过扩展++org.activiti.rest.service.api.RestResponseFactory++的++initializeVariableConverters()++方法，可以添加额外的++org.activiti.rest.service.api.engine.variable.RestVariableConverter++类，来将你的POJO转换为适合通过REST传输的格式，以及将REST值转换为POJO。实际转换JSON使用Jackson。
+可以使用自定义JSON表示，以支持额外的变量类型（既可以是简单值，也可以是复杂/嵌套的JSON对象）。通过扩展++org.activiti.rest.service.api.RestResponseFactory++的++initializeVariableConverters()++方法，可以添加额外的++org.activiti.rest.service.api.engine.variable.RestVariableConverter++类，来将你的POJO转换为适合通过REST传输的格式，以及将REST值转换为POJO。实际转换JSON使用Jackson。
 
 
 === 部署 Deployment
@@ -247,8 +246,8 @@ GET repository/deployments
 |categoryNotEquals|否|String|只返回不是给定分类的部署。
 |tenantId|否|String|只返回给定tenantId的部署。
 |tenantIdLike|否|String|只返回tenantId like给定值的部署。
-|withoutTenantId|否|Boolean|如果值为++true++，只会返回没有设置tenantId的部署。如果值为++false++，则忽略++withoutTenantId++参数。
-|sort|否|'id'（默认）、'name'、'deploytime'或'tenantId'|用于排序的参数，与'order'一起使用。
+|withoutTenantId|否|Boolean|如果值为++true++，则只返回没有设置tenantId的部署。如果值为++false++，则忽略++withoutTenantId++参数。
+|sort|否|'id'（默认）, 'name', 'deploytime'或'tenantId'|用于排序的参数，与'order'一起使用。
 
 |===============
 
@@ -331,16 +330,16 @@ POST repository/deployments
 
 **请求体：**
 
-请求体需要包含__multipart/form-data__类型的数据。请求中需要只有一个文件，额外文件将被忽略。部署名是传入的文件字段的名字。如果要在一个部署中部署多个资源，需要将资源压缩为zip文件，并确保文件名以++.bar++或++.zip++结尾。
+请求体需要包含__multipart/form-data__类型的数据。请求中需要只有一个文件，多余的文件将被忽略。部署名是传入的文件字段的名字。如果要在一个部署中部署多个资源，需要将资源压缩为zip文件，并确保文件名以++.bar++或++.zip++结尾。
 
-可以在请求体中传递名为++tenantId++的额外参数（表单字段）。这个字段的值将用作部署所在的租户（tenant）的id。
+可以在请求体中传递名为++tenantId++的额外参数（表单字段）。这个字段的值将指定部署所在的租户（tenant）的id。
 
 .创建一个新部署 - 响应码
 [options="header"]
 |===============
 |响应码|描述
 |201|代表成功创建部署
-|400|代表请求体中没有内容，或部署不支持内容的mime-type。状态描述中包含了额外信息。
+|400|代表请求体中没有内容，或部署不支持content的mime-type。状态描述中包含了额外信息。
 
 |===============
 
@@ -384,13 +383,13 @@ DELETE repository/deployments/{deploymentId}
 |===============
 
 
-==== 列表部署中的资源 List resources in a deployment
+==== 列表一个部署中的资源 List resources in a deployment
 
 ----
 GET repository/deployments/{deploymentId}/resources
 ----
 
-.列表部署中的资源 - URL参数
+.列表一个部署中的资源 - URL参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -398,11 +397,11 @@ GET repository/deployments/{deploymentId}/resources
 
 |===============
 
-.列表部署中的资源 - 响应码
+.列表一个部署中的资源 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到部署，并返回了资源的列表。
+|200|代表已找到部署，并已返回资源的列表。
 |404|代表未找到请求的部署。
 
 |===============
@@ -431,12 +430,12 @@ GET repository/deployments/{deploymentId}/resources
 
 
 * ++mediaType++: 包含了资源的媒体类型。使用（可插入的）++MediaTypeResolver++解析，默认包含有限数量的媒体类型映射。
-* ++type++: 资源的类型，可用值为：（原文空缺）
-* ++resource++: 简单老式资源。
-* ++processDefinition++: 包含一个或多个流程定义的资源。通过部署器挑选。
-* ++processImage++: 代表流程定义的图形化输出的资源。
+* ++type++: 资源的类型，可用值为：
+** ++resource++: 原始资源。
+** ++processDefinition++: 包含一个或多个流程定义的资源。通过部署器挑选。
+** ++processImage++: 代表流程定义的图形化输出的资源。
 
-__结果JSON中单个资源的dataUrl参数包含了获取该二进制资源的实际URL。__
+__结果JSON中的dataUrl参数包含了获取该二进制资源的实际URL。__
 
 
 ==== 获取一个部署资源 Get a deployment resource
@@ -459,7 +458,7 @@ GET repository/deployments/{deploymentId}/resources/{resourceId}
 [options="header"]
 |===============
 |响应码|描述
-|200|代表找到了部署与资源，并返回了资源。
+|200|代表已找到部署与资源，并已返回资源。
 |404|代表未找到请求的部署，或者该部署中没有给定id的资源。状态描述包含了额外信息。
 
 |===============
@@ -480,10 +479,10 @@ GET repository/deployments/{deploymentId}/resources/{resourceId}
 
 
 * ++mediaType++: 包含了资源的媒体类型。使用（可插入的）++MediaTypeResolver++解析，默认包含有限数量的媒体类型映射。
-* ++type++: 资源的类型，可用值为：（原文空缺）
-* ++resource++: 简单老式资源。
-* ++processDefinition++: 包含一个或多个流程定义的资源。通过部署器挑选。
-* ++processImage++: 代表流程定义的图形化输出的资源。
+* ++type++: 资源的类型，可用值为：
+** ++resource++: 原始资源。
+** ++processDefinition++: 包含一个或多个流程定义的资源。通过部署器挑选。
+** ++processImage++: 代表流程定义的图形化输出的资源。
 
 
 ==== 获取一个部署资源的内容 Get a deployment resource content
@@ -507,27 +506,27 @@ GET repository/deployments/{deploymentId}/resourcedata/{resourceId}
 [options="header"]
 |===============
 |响应码|描述
-|200|代表找到了部署与资源，并返回了资源。
+|200|代表已找到部署与资源，并已返回资源。
 |404|代表未找到请求的部署，或者该部署中没有给定id的资源。状态描述包含了额外信息。
 
 |===============
 
 **成功响应体：**
 
-响应体将包含所请求资源的二进制资源内容。响应的content-type与资源'mimeType'参数返回的类型相同。同时，设置content-disposition头，让浏览器可以下载文件而不是直接显示。
+响应体将包含所请求资源的二进制资源内容。响应的content-type与资源'mimeType'参数返回的类型相同。同时将设置content-disposition头，让浏览器可以下载文件而不是直接显示。
 
 
 === 流程定义 Process Definitions
 
 
-==== 列表流程定义 List of process definitions
+==== 流程定义的列表 List of process definitions
 
 
 ----
 GET repository/process-definitions
 ----
 
-.List of process definitions - URL 参数
+.流程定义的列表 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -543,20 +542,20 @@ GET repository/process-definitions
 |categoryNotEquals|否|String|只返回不是给定分类的流程定义。
 |deploymentId|否|String|只返回给定id的部署中的流程定义。
 |startableByUser|否|String|只返回给定用户可以启动的流程定义。
-|latest|否|Boolean|只返回流程定义的最新版本。只能与'key'及'keyLike'参数一起使用，使用任何其它参数都将导致400响应。
-|suspended|否|Boolean|如果值为++true++，则只返回暂停的流程定义。如果为值为++false++，则只返回活动的流程定义（未挂起的）。
-|sort|否|'name'（默认）、'id'、'key'、'category'、'deploymentId'与'version'|用于排序的参数，与'order'一起使用。
+|latest|否|Boolean|只返回流程定义的最新版本。只能与'key'及'keyLike'参数一起使用，同时使用任何其它参数都将导致400响应。
+|suspended|否|Boolean|如果值为++true++，则只返回暂停的流程定义。如果为值为++false++，则只返回活动的流程定义（未暂停的）。
+|sort|否|'name'（默认）, 'id', 'key', 'category', 'deploymentId'与'version'|用于排序的参数，与'order'一起使用。
 
 |===============
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.List of process definitions - 响应码
+.流程定义的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，返回了流程定义。
-|400|代表某个参数格式错误，或者'latest'与'key'、'keyLike'以外的其他参数一起使用。状态描述中包含了额外信息。
+|200|代表请求成功，并已返回流程定义。
+|400|代表某个参数格式错误，或者'latest'与'key', 'keyLike'以外的其他参数一起使用。状态描述中包含了额外信息。
 
 |===============
 
@@ -593,7 +592,7 @@ GET repository/process-definitions
 ----
 
 
-* ++graphicalNotationDefined++: 代表包含有图形信息（BPMN DI）的流程定义。
+* ++graphicalNotationDefined++: 代表流程定义中包含有图形信息（BPMN DI）。
 * ++resource++: 包含实际部署的BPMN 2.0 XML。
 * ++diagramResource++: 包含流程的图形化表示。如果没有可用流程图则为null。
 
@@ -617,7 +616,7 @@ GET repository/process-definitions/{processDefinitionId}
 [options="header"]
 |===============
 |响应码|描述
-|200|代表找到并返回了流程定义。
+|200|代表已找到并已返回流程定义。
 |404|代表未找到请求的流程定义。
 
 |===============
@@ -645,12 +644,12 @@ GET repository/process-definitions/{processDefinitionId}
 }
 ----
 
-* ++graphicalNotationDefined++: 代表包含有图形信息（BPMN DI）的流程定义。
+* ++graphicalNotationDefined++: 代表流程定义中包含有图形信息（BPMN DI）。
 * ++resource++: 包含实际部署的BPMN 2.0 XML。
 * ++diagramResource++: 包含流程的图形化表示。如果没有可用流程图则为null。
 
 
-==== 更新流程定义的分类 Update category for a process definition
+==== 更新一个流程定义的分类 Update category for a process definition
 
 ----
 PUT repository/process-definitions/{processDefinitionId}
@@ -667,11 +666,11 @@ PUT repository/process-definitions/{processDefinitionId}
 ----
 
 
-.更新流程定义的分类 - 响应码
+.更新一个流程定义的分类 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表流程的分类已经修改。
+|200|代表已修改流程的分类。
 |400|代表请求体中未定义分类。
 |404|代表未找到请求的流程定义。
 
@@ -691,7 +690,7 @@ GET repository/process-definitions/{processDefinitionId}/resourcedata
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processDefinitionId|是|String|The id of the process definition to get the resource data for.
+|processDefinitionId|是|String|要获取资源的流程定义的id。
 
 |===============
 
@@ -719,7 +718,7 @@ GET repository/process-definitions/{processDefinitionId}/model
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程定义，并返回了模型。
+|200|代表已找到流程定义，并已返回模型。
 |404|代表未找到请求的流程定义。
 
 |===============
@@ -834,7 +833,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processDefinitionId|是|String|要获取身份联系的流程定义的id。
+|processDefinitionId|是|String|要获取身份关联的流程定义的id。
 
 |===============
 
@@ -843,7 +842,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程定义，并返回了请求的身份联系。
+|200|代表已找到流程定义，并已返回请求的身份关联。
 |404|代表未找到请求的流程定义。
 
 |===============
@@ -907,7 +906,7 @@ POST repository/process-definitions/{processDefinitionId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|201|代表已找到流程定义，并已添加身份联系。
+|201|代表已找到流程定义，并已添加身份关联。
 |404|代表未找到请求的流程定义。
 
 |===============
@@ -939,7 +938,7 @@ DELETE repository/process-definitions/{processDefinitionId}/identitylinks/{famil
 |===============
 |参数|必填|值|描述
 |processDefinitionId|是|String|流程定义的id。
-|family|是|String|为++users++或++groups++，取决于身份联系的类型。
+|family|是|String|为++users++或++groups++，取决于身份关联的类型。
 |identityId|是|String|要从候选启动者中移除的userId或groupId。
 
 |===============
@@ -949,8 +948,8 @@ DELETE repository/process-definitions/{processDefinitionId}/identitylinks/{famil
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到流程定义，并已移除该身份联系。响应体设置为空。
-|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的身份联系。
+|204|代表已找到流程定义，并已移除该身份关联。响应体设置为空。
+|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的身份关联。
 
 |===============
 
@@ -981,7 +980,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks/{family}/
 |===============
 |参数|必填|值|描述
 |processDefinitionId|是|String|流程定义的id。
-|family|是|String|为++users++或++groups++，取决于身份联系的类型。
+|family|是|String|为++users++或++groups++，取决于身份关联的类型。
 |identityId|是|String|要获取的候选启动者的userId或groupId。
 
 |===============
@@ -991,8 +990,8 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks/{family}/
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程定义，并已返回身份联系。
-|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的身份联系。
+|200|代表已找到流程定义，并已返回身份关联。
+|404|代表未找到请求的流程定义，或者流程定义中并没有匹配url的身份关联。
 
 |===============
 
@@ -1036,7 +1035,7 @@ GET repository/models
 |tenantId|否|String|只返回给定tenantId的模型。
 |tenantIdLike|否|String|只返回tenantId like给定值的模型。
 |withoutTenantId|否|Boolean|如果值为++true++，则只返回没有设置tenantId的模型。如果值为++false++，则忽略++withoutTenantId++参数。
-|sort|否|'id'（默认）、'category'、'createTime'、'key'、'lastUpdateTime'、'name'、'version'或'tenantId'|用于排序的参数，与'order'一起使用。
+|sort|否|'id'（默认）, 'category', 'createTime', 'key', 'lastUpdateTime', 'name', 'version'或'tenantId'|用于排序的参数，与'order'一起使用。
 
 |===============
 
@@ -1046,7 +1045,7 @@ GET repository/models
 [options="header"]
 |===============
 |响应码|描述
-|200|代表查询成功，并返回了模型。
+|200|代表查询成功，并已返回模型。
 |400|代表传递的参数格式错误。状态描述中包含了额外信息。
 
 |===============
@@ -1154,7 +1153,7 @@ PUT repository/models/{modelId}
 }
 ----
 
-所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'name'属性，则只更新模型的名字，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则模型值将更新为null。例如：++{"metaInfo" : null}++将清空模型的metaInfo。
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'name'属性，则只更新模型的名字，而不影响其它任何字段。若明确包含了一个属性，并设置为null，则模型值将更新为null。例如：++{"metaInfo" : null}++将清空模型的metaInfo。
 
 .更新一个模型 - 响应码
 [options="header"]
@@ -1181,7 +1180,7 @@ PUT repository/models/{modelId}
    "deploymentUrl":"http://localhost:8182/repository/deployments/2",
    "createTime":"2013-06-12T12:31:19.861+0000",
    "lastUpdateTime":"2013-06-12T12:31:19.861+0000",
-   "tenantId":""updatedTenant"
+   "tenantId":"updatedTenant"
 }
 ----
 
@@ -1285,7 +1284,7 @@ GET repository/models/{modelId}/source
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到模型，并返回了源码。
+|200|代表已找到模型，并已返回源码。
 |404|代表未找到请求的模型。
 
 |===============
@@ -1318,7 +1317,7 @@ PUT repository/models/{modelId}/source
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到模型，并更新了源码。
+|200|代表已找到模型，并已更新源码。
 |404|代表未找到请求的模型。
 
 |===============
@@ -1345,7 +1344,7 @@ GET repository/models/{modelId}/source-extra
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到模型，并返回了源码。
+|200|代表已找到模型，并已返回源码。
 |404|代表未找到请求的模型。
 
 |===============
@@ -1378,7 +1377,7 @@ PUT repository/models/{modelId}/source-extra
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到模型，并更新了附加源码。
+|200|代表已找到模型，并已更新附加源码。
 |404|代表未找到请求的模型。
 
 |===============
@@ -1408,7 +1407,7 @@ GET runtime/process-instances/{processInstanceId}
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到并返回了流程实例。
+|200|代表已找到并已返回流程实例。
 |404|代表未找到请求的流程实例。
 
 |===============
@@ -1591,13 +1590,13 @@ POST runtime/process-instances
 [[restProcessInstancesGet]]
 
 
-==== 列表流程实例 List of process instances
+==== 流程实例的列表 List of process instances
 
 ----
 GET runtime/process-instances
 ----
 
-.列表流程实例 - URL 查询参数
+.流程实例的列表 - URL 查询参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -1614,19 +1613,19 @@ GET runtime/process-instances
 |tenantId|否|String|只返回给定tenantId的流程实例。
 |tenantIdLike|否|String|只返回tenantId like给定值的流程实例。
 |withoutTenantId|否|Boolean|如果值为++true++，则只返回没有设置tenantId的流程实例。如果值为++false++，则忽略++withoutTenantId++参数。
-|sort|否|String|排序字段，需要是++id++（默认）、++processDefinitionId++、++tenantId++或++processDefinitionKey++中的一个。
+|sort|否|String|排序字段，需要是++id++（默认）, ++processDefinitionId++, ++tenantId++或++processDefinitionKey++中的一个。
 
 |===============
 
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.列表流程实例 - 响应码
+.流程实例的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，并返回了流程实例。
-|400|代表传递的参数格式错误 . 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回流程实例。
+|400|代表传递的参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -1682,7 +1681,7 @@ POST query/process-instances
 }
 ----
 
-请求体可以包含所有在<<restProcessInstancesGet,列表流程实例>>URL查询中可用的过滤器。另外，也可以在查询中包含一个变量的数组，使用<<restQueryVariable, 这里描述>>的格式。
+请求体可以包含所有在<<restProcessInstancesGet,流程实例的列表>>URL查询中可用的过滤器。另外，也可以在查询中包含一个变量的数组，使用<<restQueryVariable, 这里描述>>的格式。
 
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
@@ -1692,7 +1691,7 @@ POST query/process-instances
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，并返回了流程实例。
+|200|代表请求成功，并已返回流程实例。
 |400|代表传递的参数格式错误。状态描述中包含了额外信息。
 
 |===============
@@ -1743,7 +1742,7 @@ GET runtime/process-instances/{processInstanceId}/diagram
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程实例，并已返回了流程图。
+|200|代表已找到流程实例，并已返回流程图。
 |400|代表已找到请求的流程实例，但该流程未包含任何图形信息（BPMN：DI），因此不能创建流程图。
 |404|代表未找到请求的流程实例。
 
@@ -1776,7 +1775,7 @@ GET runtime/process-instances/{processInstanceId}/identitylinks
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|要查询联系的流程实例的id。
+|processInstanceId|是|String|要查询关联的流程实例的id。
 
 |===============
 
@@ -1785,7 +1784,7 @@ GET runtime/process-instances/{processInstanceId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程实例，并已返回联系。
+|200|代表已找到流程实例，并已返回关联。
 |404|代表未找到请求的流程实例。
 
 |===============
@@ -1825,7 +1824,7 @@ POST runtime/process-instances/{processInstanceId}/identitylinks
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|要添加联系的流程实例。
+|processInstanceId|是|String|要添加关联的流程实例。
 
 |===============
 
@@ -1847,7 +1846,7 @@ POST runtime/process-instances/{processInstanceId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|201|代表已找到流程实例，并已返回联系。
+|201|代表已找到流程实例，并已返回关联。
 |400|代表请求体中未包含userId或type。
 |404|代表未找到请求的流程实例。
 
@@ -1881,8 +1880,8 @@ DELETE runtime/process-instances/{processInstanceId}/identitylinks/users/{userId
 |===============
 |参数|必填|值|描述
 |processInstanceId|是|String|流程实例的id。
-|userId|是|String|要删除联系的用户的id。
-|type|是|String|要删除的联系的类型。
+|userId|是|String|要删除关联的用户的id。
+|type|是|String|要删除的关联的类型。
 
 |===============
 
@@ -1891,8 +1890,8 @@ DELETE runtime/process-instances/{processInstanceId}/identitylinks/users/{userId
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到流程实例，并已删除联系。响应体设置为空
-|404|代表未找到请求的流程实例，或者要删除的联系不存在。响应状态中包含了关于错误的额外信息。
+|204|代表已找到流程实例，并已删除关联。响应体设置为空。
+|404|代表未找到请求的流程实例，或者要删除的关联不存在。响应状态中包含了关于错误的额外信息。
 |===============
 
 **成功响应体：**
@@ -1911,13 +1910,13 @@ DELETE runtime/process-instances/{processInstanceId}/identitylinks/users/{userId
 请注意++groupId++永远为null，因为只有用户才能参与流程实例。
 
 
-==== 列表一个流程实例的变量 List of variables for a process instance
+==== 一个流程实例的变量的列表 List of variables for a process instance
 
 ----
 GET runtime/process-instances/{processInstanceId}/variables
 ----
 
-.列表一个流程实例的变量 - URL 参数
+.一个流程实例的变量的列表 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -1927,11 +1926,11 @@ GET runtime/process-instances/{processInstanceId}/variables
 
 
 
-.列表一个流程实例的变量 - 响应码
+.一个流程实例的变量的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程实例，并返回了变量。
+|200|代表已找到流程实例，并已返回变量。
 |404|代表未找到请求的流程实例。
 
 |===============
@@ -1984,7 +1983,7 @@ GET runtime/process-instances/{processInstanceId}/variables/{variableName}
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到流程实例及变量，并返回了变量。
+|200|代表已找到流程实例及变量，并已返回变量。
 |400|代表请求体不完整，或者包含不合法值。状态描述中包含了关于错误的额外信息。
 |404|代表未找到请求的流程实例，或者流程实例中没有给定名字的变量。状态描述中包含了关于错误的额外信息。
 
@@ -2032,8 +2031,8 @@ PUT runtime/process-instances/{processInstanceId}/variables
 ----
 [
    {
-      "name":"intProcVar"
-      "type":"integer"
+      "name":"intProcVar",
+      "type":"integer",
       "value":123
    },
 
@@ -2083,7 +2082,7 @@ PUT runtime/process-instances/{processInstanceId}/variables/{variableName}
 |===============
 |参数|必填|值|描述
 |processInstanceId|是|String|要操作变量的流程实例的id。
-|variableName|是|String|要更新的变量名。
+|variableName|是|String|要更新的变量的名字。
 
 |===============
 
@@ -2137,7 +2136,7 @@ POST runtime/process-instances/{processInstanceId}/variables
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|是|String|The id of the process instance to create the new variable for.
+|processInstanceId|是|String|要创建新变量的流程实例的id。
 
 |===============
 
@@ -2146,7 +2145,7 @@ POST runtime/process-instances/{processInstanceId}/variables
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++name++: 变量需要的名字。
-* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++type++: 创建的变量的类型。如果省略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 
 **成功响应体：**
@@ -2168,7 +2167,7 @@ POST runtime/process-instances/{processInstanceId}/variables
 |===============
 |响应码|描述
 |201|代表已创建变量，并已返回结果。
-|400|代表缺少要创建的变量名。状态消息提供了额外信息。
+|400|代表缺少要创建的变量的名字。状态消息提供了额外信息。
 |404|代表未找到请求的流程实例。
 |409|代表流程实例中已经有给定名字的变量。改用PUT方法更新任务变量。
 |415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
@@ -2177,13 +2176,13 @@ POST runtime/process-instances/{processInstanceId}/variables
 
 
 
-==== 为一个流程实例更新一个已有二进制变量 Update an existing binary variable on a process-instance
+==== 为一个流程实例更新一个已有的二进制变量 Update an existing binary variable on a process-instance
 
 ----
 PUT runtime/process-instances/{processInstanceId}/variables
 ----
 
-.为一个流程实例更新一个已有二进制变量 - URL 参数
+.为一个流程实例更新一个已有的二进制变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -2194,7 +2193,7 @@ PUT runtime/process-instances/{processInstanceId}/variables
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++name++: 变量需要的名字。
-* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++type++: 创建的变量的类型。如果省略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 **成功响应体：**
 
@@ -2210,12 +2209,12 @@ PUT runtime/process-instances/{processInstanceId}/variables
 ----
 
 
-.为一个流程实例更新一个已有二进制变量 - 响应码
+.为一个流程实例更新一个已有的二进制变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
 |200|代表已更新变量，并已返回结果。
-|400|代表缺少要更新的变量名。状态消息提供了额外信息。
+|400|代表缺少要更新的变量的名字。状态消息提供了额外信息。
 |404|代表未找到请求的流程实例，或者流程实例中没有给定名字的变量。
 |415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
@@ -2282,7 +2281,7 @@ PUT runtime/executions/{executionId}
 [options="header"]
 |===============
 |参数|必填|值|描述
-|executionId|是|String|The id of the execution to execute action on.
+|executionId|是|String|要进行操作的执行的id。
 
 |===============
 
@@ -2301,12 +2300,12 @@ PUT runtime/executions/{executionId}
 ----
 {
   "action":"signalEventReceived",
-  "signalName":"mySignal"
+  "signalName":"mySignal",
   "variables": [  ]
 }
 ----
 
-通知执行，已经接收到了一个信号事件，要求有一个++signalName++参数。可以传递可选的++variables++，将在进行操作前设置到执行中。
+通知执行：已经接收到了一个信号事件。要求有一个++signalName++参数。可以传递可选的++variables++，将在进行操作前设置到执行中。
 
 **请求体（为一个执行发消息接收事件）：**
 
@@ -2314,20 +2313,20 @@ PUT runtime/executions/{executionId}
 ----
 {
   "action":"messageEventReceived",
-  "messageName":"myMessage"
+  "messageName":"myMessage",
   "variables": [  ]
 }
 ----
 
-通知执行，已经接收到了一个消息事件，要求有一个++messageName++参数。可以传递可选的++variables++，将在进行操作前设置到执行中。
+通知执行：已经接收到了一个消息事件。要求有一个++messageName++参数。可以传递可选的++variables++，将在进行操作前设置到执行中。
 
 .对一个执行进行操作 - 响应码
 [options="header"]
 |===============
 |响应码|描述
 |200|代表已找到执行，并进行了操作。
-|204|代表找到了执行，进行了操作，该操作导致执行结束。
-|400|代表请求了非法的操作，请求中缺少了必要的参数，或者传递了非法的变量。状态描述中包含了关于错误的额外信息。
+|204|代表已找到执行，进行了操作，该操作导致执行结束。
+|400|代表请求了非法的操作，请求中缺少必要的参数，或者传递了非法的变量。状态描述中包含了关于错误的额外信息。
 |404|代表未找到执行
 
 |===============
@@ -2371,7 +2370,7 @@ GET runtime/executions/{executionId}/activities
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到执行，并已返回了活动。
+|200|代表已找到执行，并已返回活动。
 |404|代表未找到执行
 
 |===============
@@ -2391,14 +2390,14 @@ GET runtime/executions/{executionId}/activities
 [[restExecutionsGet]]
 
 
-==== 列表执行 List of executions
+==== 执行的列表 List of executions
 
 
 ----
 GET runtime/executions
 ----
 
-.列表执行 - URL 查询参数
+.执行的列表 - URL 查询参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -2413,18 +2412,18 @@ GET runtime/executions
 |tenantId|否|String|只返回给定tenantId的执行。
 |tenantIdLike|否|String|只返回tenantId like给定值的执行。
 |withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的执行。如果值为++false++，则忽略++withoutTenantId++参数。
-|sort|否|String|排序字段，需要为++processInstanceId++（默认）、++processDefinitionId++、++processDefinitionKey++或++tenantId++。
+|sort|否|String|排序字段，需要为++processInstanceId++（默认）, ++processDefinitionId++, ++processDefinitionKey++或++tenantId++。
 
 |===============
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.列表执行 - 响应码
+.执行的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，并返回了执行。
-|400|代表传递的参数格式错误 . 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回执行。
+|400|代表传递的参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -2510,7 +2509,7 @@ POST query/executions
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，并返回了执行。
+|200|代表请求成功，并已返回执行。
 |400|代表传递的参数格式错误 . 状态描述中包含了额外信息。
 
 |===============
@@ -2554,24 +2553,24 @@ POST query/executions
 
 
 
-==== 列表一个执行中的变量 List of variables for an execution
+==== 一个执行中的变量的列表 List of variables for an execution
 
 ----
 GET runtime/executions/{executionId}/variables?scope={scope}
 ----
 
 
-.列表一个执行中的变量 - URL 参数
+.一个执行中的变量的列表 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
 |executionId|是|String|要列表变量的执行的id。
-|scope|否|String|可以为++local++或+global++。若省略，则同时返回本地与全局范围变量。
+|scope|否|String|可以为++local++或++global++。若省略，则同时返回本地与全局范围的变量。
 
 |===============
 
 
-.列表一个执行中的变量 - 响应码
+.一个执行中的变量的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
@@ -2604,8 +2603,7 @@ GET runtime/executions/{executionId}/variables?scope={scope}
 ]
 ----
 
-如果变量是二进制变量或序列化值，则++valueUrl++指向获取原始值的URL。如果是一个简单变量，则在响应中显示值。请注意只会返回++local++范围的变量，因为流程实例变量没有++global++范围。
-
+如果变量是二进制变量或序列化值，则++valueUrl++指向获取原始值的URL。如果是一个简单变量，则在响应中显示值。
 
 ==== 获取一个执行的一个变量 Get a variable for an execution
 
@@ -2619,8 +2617,8 @@ GET runtime/executions/{executionId}/variables/{variableName}?scope={scope}
 |===============
 |参数|必填|值|描述
 |executionId|是|String|要获取变量的执行的id
-|variableName|是|String|要获取的变量名。
-|scope|否|String|++local++或+global++。若省略，则（存在时）返回本地变量。不存在本地变量时，则（存在时）返回全局变量。
+|variableName|是|String|要获取的变量的名字。
+|scope|否|String|++local++或++global++。若省略，则（存在时）返回本地变量。不存在本地变量时，则（存在时）返回全局变量。
 
 |===============
 
@@ -2680,8 +2678,8 @@ PUT runtime/executions/{executionId}/variables
 ----
 [
    {
-      "name":"intProcVar"
-      "type":"integer"
+      "name":"intProcVar",
+      "type":"integer",
       "value":123,
       "scope":"local"
    }
@@ -2691,7 +2689,7 @@ PUT runtime/executions/{executionId}/variables
 ]
 ----
 
-**请注意只能提供相同范围的变量。如果请求体数组中包含了不同范围的变量，则请求结果为错误（400 - 错误请求）。**请求体的数组中可以传递任意数量的变量。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。（原文如此）请注意范围将被忽略，流程实例中只能设置++local++变量。
+**请注意只能提供相同范围的变量。如果请求体数组中包含了不同范围的变量，则请求结果为错误（400 - 错误请求）。**请求体的数组中可以传递任意数量的变量。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。
 
 .为一个执行创建（或更新）变量 - 响应码
 [options="header"]
@@ -2737,7 +2735,7 @@ PUT runtime/executions/{executionId}/variables/{variableName}
 |===============
 |参数|必填|值|描述
 |executionId|是|String|要更新变量的执行的id。
-|variableName|是|String|要更新的变量名。
+|variableName|是|String|要更新的变量的名字。
 
 |===============
 
@@ -2801,8 +2799,8 @@ POST runtime/executions/{executionId}/variables
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++name++: 变量需要的名字。
-* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
-* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
+* ++type++: 创建的变量的类型。如果省略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++scope++: 创建变量的范围。如果省略，则使用++local++。
 
 **成功响应体：**
 
@@ -2823,9 +2821,9 @@ POST runtime/executions/{executionId}/variables
 |===============
 |响应码|描述
 |201|代表已创建变量，并已返回结果。
-|400|代表缺少要创建的变量名。状态消息提供了额外信息。
+|400|代表缺少要创建的变量的名字。状态消息提供了额外信息。
 |404|代表未找到请求的执行。
-|409|代表执行已包含了给定名字的变量（只在使用POST方法时抛出）。改用PUT方法更新变量方法。
+|409|代表执行已包含了给定名字的变量（只在使用POST方法时抛出）。改用PUT方法更新变量。
 |415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 |===============
 
@@ -2841,7 +2839,7 @@ PUT runtime/executions/{executionId}/variables/{variableName}
 |===============
 |参数|必填|值|描述
 |executionId|是|String|要更新变量的执行的id。
-|variableName|是|String|要更新的变量名。
+|variableName|是|String|要更新的变量的名字。
 
 |===============
 
@@ -2849,8 +2847,8 @@ PUT runtime/executions/{executionId}/variables/{variableName}
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++name++: 变量需要的名字。
-* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
-* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
+* ++type++: 创建的变量的类型。如果省略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++scope++: 创建变量的范围。如果省略，则使用++local++。
 
 **成功响应体：**
 
@@ -2871,7 +2869,7 @@ PUT runtime/executions/{executionId}/variables/{variableName}
 |===============
 |响应码|描述
 |200|代表已更新变量，并已返回结果。
-|400|代表缺少要更新的变量名。状态消息提供了额外信息。
+|400|代表缺少要更新的变量的名字。状态消息提供了额外信息。
 |404|代表未找到请求的执行，或者执行中没有给定名字的变量。
 |415|代表序列化数据中包含了一个运行Activiti引擎的JVM中不存在的类的对象，因此不能反序列化。
 
@@ -2888,7 +2886,7 @@ PUT runtime/executions/{executionId}/variables/{variableName}
 GET runtime/tasks/{taskId}
 ----
 
-.Get a task - URL 参数
+.获取一个任务 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -2898,7 +2896,7 @@ GET runtime/tasks/{taskId}
 
 
 
-.Get a task - 响应码
+.获取一个任务 - 响应码
 [options="header"]
 |===============
 |响应码|描述
@@ -2940,14 +2938,14 @@ GET runtime/tasks/{taskId}
 [[restTasksGet]]
 
 
-==== 列表任务 List of tasks
+==== 任务的列表 List of tasks
 
 ----
 GET runtime/tasks
 ----
 
 
-.列表任务 - URL 查询参数
+.任务的列表 - URL 查询参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -2997,7 +2995,7 @@ GET runtime/tasks
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.列表任务 - 响应码
+.任务的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
@@ -3152,7 +3150,7 @@ PUT runtime/tasks/{taskId}
 }
 ----
 
-所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'assignee'属性，则只更新任务的办理人，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则任务值将更新为null。例如：++{"dueDate" : null}++将清空任务的到期日期。
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'assignee'属性，则只更新任务的办理人，而不影响其它任何字段。若明确包含了一个属性，并设置为null，则任务值将更新为null。例如：++{"dueDate" : null}++将清空任务的到期日期。
 
 
 .更新一个任务 - 响应码
@@ -3185,7 +3183,7 @@ POST runtime/tasks/{taskId}
 }
 ----
 
-完成任务。可以使用++variables++参数传递可选的变量数组。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。请注意提供的变量范围将被忽略，变量将设置在父范围中，除非一个本地范围中存在一个变量。这种情况下将被覆盖。与++TaskService.completeTask(taskId, variables)++调用的行为相同。
+完成任务。可以使用++variables++参数传递可选的变量数组。可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。请注意提供的变量范围将被忽略，变量将设置在父范围中，除非一个本地范围中存在该变量。这种情况下将会覆盖。与++TaskService.completeTask(taskId, variables)++调用的行为相同。
 
 **申领一个任务 - JSON 体:**
 
@@ -3236,7 +3234,7 @@ POST runtime/tasks/{taskId}
 |===============
 
 
-**成功响应体：** see response for +runtime/tasks/{taskId}+.
+**成功响应体：**参见++runtime/tasks/{taskId}++的响应。
 
 
 ==== 删除一个任务 Delete a task
@@ -3282,7 +3280,7 @@ GET runtime/tasks/{taskId}/variables?scope={scope}
 |===============
 |参数|必填|值|描述
 |taskId|是|String|要获取变量的任务的id。
-|scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，则本地与全局都会返回。
+|scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，则本地与全局变量都会返回。
 
 |===============
 
@@ -3335,7 +3333,7 @@ GET runtime/tasks/{taskId}/variables/{variableName}?scope={scope}
 |===============
 |参数|必填|值|描述
 |taskId|是|String|要获取变量的任务的id。
-|variableName|是|String|要获取的变量名。
+|variableName|是|String|要获取的变量的名字。
 |scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，如果存在本地变量就会返回，否则返回全局变量。
 
 |===============
@@ -3378,7 +3376,7 @@ GET runtime/tasks/{taskId}/variables/{variableName}/data?scope={scope}
 |===============
 |参数|必填|值|描述
 |taskId|是|String|要获取变量的任务的id。
-|variableName|是|String|要获取数据的变量名。只能使用++binary++与++serializable++类型的变量。如果使用其它任何类型的变量，将返回++404++。
+|variableName|是|String|要获取数据的变量的名字。只能使用++binary++与++serializable++类型的变量。如果使用其它任何类型的变量，将返回++404++。
 |scope|否|String|要返回的变量的范围。若值为'++local++'，则只返回任务本地变量。若值为'++global++'，则只返回任务的父执行树中的变量。若省略该参数，如果存在本地变量就会返回，否则返回全局变量。
 
 |===============
@@ -3434,11 +3432,11 @@ POST runtime/tasks/{taskId}/variables
 ----
 
 
-请求体需要是一个数组，包含有一个或多个代表要创建的变量JSON对象
+请求体需要是一个数组，包含有一个或多个代表要创建的变量的JSON对象
 
 * ++name++: 变量需要的名字。
-* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
-* ++type++: 创建的变量的类型。如果忽略，则转换为原始JSON值的类型（string、boolean、integer或double）。
+* ++scope++: 创建变量的范围。如果省略，则使用++local++。
+* ++type++: 创建的变量的类型。如果省略，则转换为原始JSON值的类型（string、boolean、integer或double）。
 * ++value++: 变量值。
 
 可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。
@@ -3493,8 +3491,8 @@ POST runtime/tasks/{taskId}/variables
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++name++: 变量需要的名字。
-* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
-* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++scope++: 创建变量的范围。如果省略，则使用++local++。
+* ++type++: 创建的变量的类型。如果省略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 
 **成功响应体：**
@@ -3537,7 +3535,7 @@ PUT runtime/tasks/{taskId}/variables/{variableName}
 |===============
 |参数|必填|值|描述
 |taskId|是|String|要更新变量的任务的id。
-|variableName|是|String|要更新的变量名。
+|variableName|是|String|要更新的变量的名字。
 
 |===============
 
@@ -3557,8 +3555,8 @@ PUT runtime/tasks/{taskId}/variables/{variableName}
 请求体需要是一个数组，包含有一个或多个代表要创建的变量JSON对象
 
 * ++name++: 变量需要的名字。
-* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
-* ++type++: 创建的变量的类型。如果忽略，则转换为原始JSON值的类型（string、boolean、integer或double）。
+* ++scope++: 创建变量的范围。如果省略，则使用++local++。
+* ++type++: 创建的变量的类型。如果省略，则转换为原始JSON值的类型（string、boolean、integer或double）。
 * ++value++: 变量值。
 
 可以在<<restVariables,REST变量章节>>找到关于变量格式的更多信息。
@@ -3599,7 +3597,7 @@ PUT runtime/tasks/{taskId}/variables/{variableName}
 |===============
 |参数|必填|值|描述
 |taskId|是|String|要更新变量的任务的id。
-|variableName|是|String|要更新的变量名。
+|variableName|是|String|要更新的变量的名字。
 
 |===============
 
@@ -3608,8 +3606,8 @@ PUT runtime/tasks/{taskId}/variables/{variableName}
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++name++: 变量需要的名字。
-* ++scope++: 创建变量的范围。如果忽略，则使用++local++。
-* ++type++: 创建的变量的类型。如果忽略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
+* ++scope++: 创建变量的范围。如果省略，则使用++local++。
+* ++type++: 创建的变量的类型。如果省略，则使用++binary++，并且将请求中的二进制数据保存为字节数组。
 
 **成功响应体：**
 
@@ -3649,8 +3647,8 @@ DELETE runtime/tasks/{taskId}/variables/{variableName}?scope={scope}
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|要删除的变量所在的任务的id。
-|variableName|是|String|要删除的变量名。
+|taskId|是|String|要删除的变量所在任务的id。
+|variableName|是|String|要删除的变量的名字。
 |scope|否|String|要删除的变量所在的范围。可以为++local++或++global++。若省略，则使用++local++。
 
 |===============
@@ -3677,7 +3675,7 @@ DELETE runtime/tasks/{taskId}/variables
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|要删除的变量所在的任务的id。
+|taskId|是|String|要删除的变量所在任务的id。
 
 |===============
 
@@ -3693,7 +3691,7 @@ DELETE runtime/tasks/{taskId}/variables
 
 
 
-==== 获取一个任务的所有身份联系 Get all identity links for a task
+==== 获取一个任务的所有身份关联 Get all identity links for a task
 
 
 ----
@@ -3701,20 +3699,20 @@ GET runtime/tasks/{taskId}/identitylinks
 ----
 
 
-.获取一个任务的所有身份联系 - URL 参数
+.获取一个任务的所有身份关联 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是|String|要获取身份联系的任务的id。
+|taskId|是|String|要获取身份关联的任务的id。
 
 |===============
 
 
-.获取一个任务的所有身份联系 - 响应码
+.获取一个任务的所有身份关联 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到任务，并已返回请求的身份联系。
+|200|代表已找到任务，并已返回请求的身份关联。
 |404|代表未找到请求的任务。
 
 |===============
@@ -3744,17 +3742,17 @@ GET runtime/tasks/{taskId}/identitylinks
 
 
 
-==== 获取一个任务的组或用户的所有身份联系 Get all identitylinks for a task for either groups or users
+==== 获取一个任务的组或用户的所有身份关联 Get all identitylinks for a task for either groups or users
 
 ----
 GET runtime/tasks/{taskId}/identitylinks/users
 GET runtime/tasks/{taskId}/identitylinks/groups
 ----
 
-只返回目标为用户或组的身份联系。响应体及状态码与获取一个任务的完整身份联系列表时完全相同。
+只返回目标为用户或组的身份关联。响应体及状态码与获取一个任务的完整身份关联列表时完全相同。
 
 
-==== 获取一个任务的一个身份联系 Get a single identity link on a task
+==== 获取一个任务的一个身份关联 Get a single identity link on a task
 
 
 
@@ -3763,24 +3761,24 @@ GET runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 ----
 
 
-.获取一个任务的一个身份联系 - URL 参数
+.获取一个任务的一个身份关联 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
 |taskId|是|String|任务的id。
 |family|是|String|可以为++groups++或++users++，取决于身份目标的类型。
 |identityId|是|String|身份的id。
-|type|是|String|身份联系的类型。
+|type|是|String|身份关联的类型。
 
 |===============
 
 
-.获取一个任务的一个身份联系 - 响应码
+.获取一个任务的一个身份关联 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|代表已找到任务及身份联系，并已返回。
-|404|代表未找到请求的任务，或者任务中没有请求的身份联系。状态消息提供了额外信息。
+|200|代表已找到任务及身份关联，并已返回。
+|404|代表未找到请求的任务，或者任务中没有请求的身份关联。状态消息提供了额外信息。
 
 |===============
 
@@ -3798,7 +3796,7 @@ GET runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 ----
 
 
-==== 为一个任务创建一个身份联系 Create an identity link on a task
+==== 为一个任务创建一个身份关联 Create an identity link on a task
 
 
 ----
@@ -3806,7 +3804,7 @@ POST runtime/tasks/{taskId}/identitylinks
 ----
 
 
-.为一个任务创建一个身份联系 - URL 参数
+.为一个任务创建一个身份关联 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -3835,12 +3833,12 @@ POST runtime/tasks/{taskId}/identitylinks
 }
 ----
 
-.为一个任务创建一个身份联系 - 响应码
+.为一个任务创建一个身份关联 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|代表已找到任务，并已创建身份联系。
-|404|代表未找到任务，或任务中没有请求的身份联系。状态消息提供了额外信息。
+|201|代表已找到任务，并已创建身份关联。
+|404|代表未找到任务，或任务中没有请求的身份关联。状态消息提供了额外信息。
 
 |===============
 
@@ -3859,30 +3857,30 @@ POST runtime/tasks/{taskId}/identitylinks
 ----
 
 
-==== 为一个任务删除一个身份联系 Delete an identity link on a task
+==== 为一个任务删除一个身份关联 Delete an identity link on a task
 
 ----
 DELETE runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 ----
 
-.为一个任务删除一个身份联系 - URL 参数
+.为一个任务删除一个身份关联 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
 |taskId|是|String|任务的id。
 |family|是|String|可以为++groups++或++users++，取决于身份目标的类型。
 |identityId|是|String|身份的id。
-|type|是|String|身份联系的类型。
+|type|是|String|身份关联的类型。
 
 |===============
 
 
-.为一个任务删除一个身份联系 - 响应码
+.为一个任务删除一个身份关联 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到任务与身份联系，并已删除身份联系。响应体设置为空。
-|404|代表未找到任务，或任务中没有请求的身份联系。状态消息提供了额外信息。
+|204|代表已找到任务与身份关联，并已删除身份关联。响应体设置为空。
+|404|代表未找到任务，或任务中没有请求的身份关联。状态消息提供了额外信息。
 
 |===============
 
@@ -3927,7 +3925,7 @@ POST runtime/tasks/{taskId}/comments
   "processInstanceUrl" : "http://localhost:8081/activiti-rest/service/history/historic-process-instances/100/comments/123",
   "message" : "This is a comment on the task.",
   "author" : "kermit",
-  "time" : "2014-07-13T13:13:52.232+08:00"
+  "time" : "2014-07-13T13:13:52.232+08:00",
   "taskId" : "101",
   "processInstanceId" : "100"
 }
@@ -3970,8 +3968,8 @@ GET runtime/tasks/{taskId}/comments
     "taskUrl" : "http://localhost:8081/activiti-rest/service/runtime/tasks/101/comments/123",
     "processInstanceUrl" : "http://localhost:8081/activiti-rest/service/history/historic-process-instances/100/comments/123",
     "message" : "This is a comment on the task.",
-    "author" : "kermit"
-    "time" : "2014-07-13T13:13:52.232+08:00"
+    "author" : "kermit",
+    "time" : "2014-07-13T13:13:52.232+08:00",
     "taskId" : "101",
     "processInstanceId" : "100"
   },
@@ -3981,7 +3979,7 @@ GET runtime/tasks/{taskId}/comments
     "processInstanceUrl" : "http://localhost:8081/activiti-rest/service/history/historic-process-instances/100/comments/456",
     "message" : "This is another comment on the task.",
     "author" : "gonzo",
-    "time" : "2014-07-13T13:13:52.232+08:00"
+    "time" : "2014-07-13T13:13:52.232+08:00",
     "taskId" : "101",
     "processInstanceId" : "100"
   }
@@ -4027,7 +4025,7 @@ GET runtime/tasks/{taskId}/comments/{commentId}
   "processInstanceUrl" : "http://localhost:8081/activiti-rest/service/history/historic-process-instances/100/comments/123",
   "message" : "This is a comment on the task.",
   "author" : "kermit",
-  "time" : "2014-07-13T13:13:52.232+08:00"
+  "time" : "2014-07-13T13:13:52.232+08:00",
   "taskId" : "101",
   "processInstanceId" : "100"
 }
@@ -4063,8 +4061,8 @@ DELETE runtime/tasks/{taskId}/comments/{commentId}
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到任务与备注，并已删除备注。响应体设置为空
-|404|代表未找到请求的任务，或任务没有给定ID的备注。
+|204|代表已找到任务与备注，并已删除备注。响应体设置为空。
+|404|代表未找到请求的任务，或任务没有给定id的备注。
 
 |===============
 
@@ -4427,7 +4425,7 @@ DELETE runtime/tasks/{taskId}/attachments/{attachmentId}
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到任务与附件，并已删除附件。响应体设置为空
+|204|代表已找到任务与附件，并已删除附件。响应体设置为空。
 |404|代表未找到请求的任务，或者任务中没有给定ID的附件。
 
 |===============
@@ -4525,7 +4523,7 @@ GET history/historic-process-instances
 |===============
 |响应码|描述
 |200|代表可以查询历史流程实例。
-|400|代表某个传递的参数格式错误。状态描述中包含了额外信息。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -4602,7 +4600,7 @@ POST query/historic-process-instances
 |===============
 |响应码|描述
 |200|代表请求成功，并已返回实例。
-|400|代表某个传递的参数格式错误。状态描述中包含了额外信息。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -4663,7 +4661,7 @@ DELETE history/historic-process-instances/{processInstanceId}
 |===============
 
 
-==== 获取一个历史流程实例的身份联系 Get the identity links of a historic process instance
+==== 获取一个历史流程实例的身份关联 Get the identity links of a historic process instance
 
 
 ----
@@ -4675,7 +4673,7 @@ GET history/historic-process-instance/{processInstanceId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，并已返回身份联系。
+|200|代表请求成功，并已返回身份关联。
 |404|代表未找到流程实例。
 
 |===============
@@ -4867,7 +4865,7 @@ GET history/historic-process-instances/{processInstanceId}/comments/{commentId}
 |===============
 |响应码|描述
 |200|代表已找到历史流程实例与备注，并已返回备注。
-|404|代表未找到请求的历史流程实例，或者历史流程实例中没有给定ID的备注。
+|404|代表未找到请求的历史流程实例，或者历史流程实例中没有给定id的备注。
 
 |===============
 
@@ -4893,7 +4891,7 @@ DELETE history/historic-process-instances/{processInstanceId}/comments/{commentI
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到历史流程实例与备注，并已删除备注。响应体设置为空
+|204|代表已找到历史流程实例与备注，并已删除备注。响应体设置为空。
 |404|代表未找到请求的流程实例，或历史流程实例中没有给定ID的备注
 
 |===============
@@ -4966,7 +4964,7 @@ GET history/historic-task-instances
 |processInstanceId|否|String|历史任务实例所在流程实例的id。
 |processDefinitionKey|否|String|历史任务实例所在流程定义key。
 |processDefinitionKeyLike|否|String|历史任务实例所在流程，流程定义key匹配给定值。
-|processDefinitionId|否|String|历史任务实例所在流程定义id。
+|processDefinitionId|否|String|历史任务实例所在流程定义的id。
 |processDefinitionName|否|String|历史任务实例所在流程定义名。
 |processDefinitionNameLike|否|String|历史任务实例所在流程，流程定义名匹配给定值。
 |processBusinessKey|否|String|历史任务实例所在流程实例businessKey。
@@ -4988,7 +4986,7 @@ GET history/historic-task-instances
 |taskPriority|否|String|历史任务实例的优先级。
 |finished|否|Boolean|是否已完成历史任务实例。
 |processFinished|否|Boolean|是否为已完成流程实例的历史任务实例。
-|parentTaskId|否|String|历史任务实例的可选父任务id。
+|parentTaskId|否|String|历史任务实例的可选父任务的id。
 |dueDate|否|Date|只返回到期日期等于该日期的历史任务实例。
 |dueDateAfter|否|Date|只返回到期日期在该日期之后的历史任务实例。
 |dueDateBefore|否|Date|只返回到期日期在该日期之前的历史任务实例。
@@ -5186,7 +5184,7 @@ DELETE history/historic-task-instances/{taskId}
 
 
 
-==== 获取一个历史任务实例的身份联系 Get the identity links of a historic task instance
+==== 获取一个历史任务实例的身份关联 Get the identity links of a historic task instance
 
 ----
 GET history/historic-task-instance/{taskId}/identitylinks
@@ -5196,7 +5194,7 @@ GET history/historic-task-instance/{taskId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|200|代表请求成功，并已返回身份联系。
+|200|代表请求成功，并已返回身份关联。
 |404|代表未找到该任务实例。
 
 |===============
@@ -5258,11 +5256,11 @@ GET history/historic-activity-instances
 |activityInstanceId|否|String|历史活动实例的id。
 |activityName|否|String|历史活动实例的名字。
 |activityType|否|String|历史活动实例的元素类型。
-|executionId|否|String|历史活动实例的执行id。
+|executionId|否|String|历史活动实例的执行的id。
 |finished|否|Boolean|是否已完成的历史活动实例。
 |taskAssignee|否|String|历史活动实例的办理人。
-|processInstanceId|否|String|历史活动实例的流程实例id。
-|processDefinitionId|否|String|历史活动实例的流程定义id。
+|processInstanceId|否|String|历史活动实例的流程实例的id。
+|processDefinitionId|否|String|历史活动实例的流程定义的id。
 |tenantId|否|String|只返回给定tenantId的实例。
 |tenantIdLike|否|String|只返回tenantId like给定值的实例。
 |withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的实例。如果值为++false++，则忽略++withoutTenantId++参数。
@@ -5394,8 +5392,8 @@ GET history/historic-variable-instances
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|否|String|历史变量实例的流程实例id。
-|taskId|否|String|历史变量实例的任务id。
+|processInstanceId|否|String|历史变量实例的流程实例的id。
+|taskId|否|String|历史变量实例的任务的id。
 |excludeTaskVariables|否|Boolean|是否从结果中排除任务变量。
 |variableName|否|String|历史变量实例的变量名。
 |variableNameLike|否|String|历史变量实例的变量名'like'操作。
@@ -5427,7 +5425,7 @@ GET history/historic-variable-instances
       "taskId" : "6",
       "variable" : {
         "name" : "myVariable",
-        "variableScope", "global",
+        "variableScope": "global",
         "value" : "test"
       }
     }
@@ -5495,7 +5493,7 @@ POST query/historic-variable-instances
       "taskId" : "6",
       "variable" : {
         "name" : "myVariable",
-        "variableScope", "global",
+        "variableScope": "global",
         "value" : "test"
       }
     }
@@ -5546,10 +5544,10 @@ GET history/historic-detail
 |===============
 |参数|必填|值|描述
 |id|否|String|历史详情的id。
-|processInstanceId|否|String|历史详情的流程实例id。
-|executionId|否|String|历史详情的执行id。
-|activityInstanceId|否|String|历史详情的活动实例id。
-|taskId|否|String|历史详情的任务id。
+|processInstanceId|否|String|历史详情的流程实例的id。
+|executionId|否|String|历史详情的执行的id。
+|activityInstanceId|否|String|历史详情的活动实例的id。
+|taskId|否|String|历史详情的任务的id。
 |selectOnlyFormProperties|否|Boolean|是否只在结果中返回表单参数。
 |selectOnlyVariableUpdates|否|Boolean|是否只在结果中返回变量更新。
 
@@ -5578,7 +5576,7 @@ GET history/historic-detail
       "processInstanceId" : "5",
       "processInstanceUrl" : "http://localhost:8182/history/historic-process-instances/5",
       "executionId" : "6",
-      "activityInstanceId", "10",
+      "activityInstanceId": "10",
       "taskId" : "6",
       "taskUrl" : "http://localhost:8182/history/historic-task-instances/6",
       "time" : "2013-04-17T10:17:43.902+0000",
@@ -5586,7 +5584,7 @@ GET history/historic-detail
       "revision" : 2,
       "variable" : {
         "name" : "myVariable",
-        "variableScope", "global",
+        "variableScope": "global",
         "value" : "test"
       },
       "propertyId": null,
@@ -5640,7 +5638,7 @@ POST query/historic-detail
       "processInstanceId" : "5",
       "processInstanceUrl" : "http://localhost:8182/history/historic-process-instances/5",
       "executionId" : "6",
-      "activityInstanceId", "10",
+      "activityInstanceId": "10",
       "taskId" : "6",
       "taskUrl" : "http://localhost:8182/history/historic-task-instances/6",
       "time" : "2013-04-17T10:17:43.902+0000",
@@ -5648,7 +5646,7 @@ POST query/historic-detail
       "revision" : 2,
       "variable" : {
         "name" : "myVariable",
-        "variableScope", "global",
+        "variableScope": "global",
         "value" : "test"
       },
       "propertyId" : null,
@@ -5698,8 +5696,8 @@ GET form/form-data
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是（如果没有processDefinitionId）|String|需要获取表单数据的相应任务id。
-|processDefinitionId|是（如果没有taskId）|String|需要获取启动事件表单数据的相应流程定义id。
+|taskId|是（如果没有processDefinitionId）|String|需要获取表单数据的相应任务的id。
+|processDefinitionId|是（如果没有taskId）|String|需要获取启动事件表单数据的相应流程定义的id。
 
 |===============
 
@@ -5872,7 +5870,7 @@ GET management/tables/{tableName}
 [options="header"]
 |===============
 |参数|必填|值|描述
-|tableName|是|String|要获取的表名。
+|tableName|是|String|要获取的表的名字。
 
 |===============
 
@@ -5911,7 +5909,7 @@ GET management/tables/{tableName}/columns
 [options="header"]
 |===============
 |参数|必填|值|描述
-|tableName|是|String|要获取的表名。
+|tableName|是|String|要获取的表的名字。
 
 |===============
 
@@ -5964,7 +5962,7 @@ GET management/tables/{tableName}/data
 [options="header"]
 |===============
 |参数|必填|值|描述
-|tableName|是|String|要获取的表名。
+|tableName|是|String|要获取的表的名字。
 
 |===============
 
@@ -6092,7 +6090,7 @@ GET management/engine
 POST runtime/signals
 ----
 
-通知引擎，已经接受到一个信号事件，而不直接关联到特定的执行。
+通知引擎，已经接收到一个信号事件，而不直接关联到特定的执行。
 
 **JSON体：**
 
@@ -6302,7 +6300,7 @@ GET management/jobs
 |tenantId|只返回给定tenantId的作业。|String
 |tenantIdLike|只返回tenantId like给定值的作业。|String
 |withoutTenantId|如果值为++true++，则只返回未设置tenantId的作业。如果值为++false++，则忽略++withoutTenantId++参数。|Boolean
-|sort|用于排序结果的字段，需要为++id++、++dueDate++、++executionId++、++processInstanceId++、++retries++或++tenantId++中的一个。|String
+|sort|用于排序结果的字段，需要为++id++, ++dueDate++, ++executionId++, ++processInstanceId++, ++retries++或++tenantId++中的一个。|String
 |===============
 
 可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
@@ -6414,7 +6412,7 @@ GET identity/users
 |emailLike|只返回email like给定值的用户。使用++%++作为通配符。|String
 |memberOfGroup|只返回给定组的成员用户|String
 |potentialStarter|只返回给定id的流程定义的潜在启动者用户。|String
-|sort|用于排序结果的字段，需要为++id++、++firstName++、++lastname++或++email++中的一个。|String
+|sort|用于排序结果的字段，需要为++id++, ++firstName++, ++lastname++或++email++中的一个。|String
 
 |===============
 
@@ -6486,7 +6484,7 @@ PUT identity/users/{userId}
 ----
 
 
-所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'firstName'属性，则只更新用户的firstName，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则用户值将更新为null。例如：++{"firstName" : null}++将清空用户的firstName。
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'firstName'属性，则只更新用户的firstName，而不影响其它任何字段。若明确包含了一个属性，并设置为null，则用户值将更新为null。例如：++{"firstName" : null}++将清空用户的firstName。
 
 .更新一个用户 - 响应码
 [options="header"]
@@ -6530,7 +6528,7 @@ POST identity/users
 |===============
 
 
-**成功响应体：** see response for +identity/users/{userId}+.
+**成功响应体：**参见++identity/users/{userId}++的响应。
 
 ==== 删除一个用户 Delete a user
 
@@ -6830,7 +6828,7 @@ DELETE identity/users/{userId}/info/{key}
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到用户，并已删除给定key的信息。响应体设置为空
+|204|代表已找到用户，并已删除给定key的信息。响应体设置为空。
 |404|代表未找到请求的用户，或用户没有给定key的信息。状态描述中包含了关于错误的额外信息。
 
 |===============
@@ -6901,7 +6899,7 @@ GET identity/groups
 |nameLike|只返回名字like给定值的组。使用++%++作为通配符。|String
 |member|只返回有给定用户名作为成员的组。|String
 |potentialStarter|只返回给定id的流程定义的潜在启动者组。|String
-|sort|用于排序结果的字段，需要为++id++、++name++或++type++中的一个。|String
+|sort|用于排序结果的字段，需要为++id++, ++name++或++type++中的一个。|String
 
 |===============
 
@@ -6957,7 +6955,7 @@ PUT identity/groups/{groupId}
 ----
 
 
-所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'name'属性，则只更新组的名字，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则组值将更新为null。
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'name'属性，则只更新组的名字，而不影响其它任何字段。若明确包含了一个属性，并设置为null，则组值将更新为null。
 
 
 .更新一个组 - 响应码
@@ -7000,7 +6998,7 @@ POST identity/groups
 
 |===============
 
-**成功响应体：** see response for +identity/groups/{groupId}+.
+**成功响应体：**参见++identity/groups/{groupId}++的响应。
 
 
 ==== 删除一个组 Delete a group
@@ -7110,7 +7108,7 @@ DELETE identity/groups/{groupId}/members/{userId}
 [options="header"]
 |===============
 |响应码|描述
-|204|代表已找到组，并已删除成员。响应体设置为空
+|204|代表已找到组，并已删除成员。响应体设置为空。
 |404|代表未找到请求的组，或用户不是组的成员。状态描述中包含了关于错误的额外信息。
 
 |===============
