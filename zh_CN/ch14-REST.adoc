@@ -4951,70 +4951,70 @@ GET history/historic-task-instances/{taskId}
 [[restHistoricTaskInstancesGet]]
 
 
-==== Get historic task instances
+==== 获取历史任务实例 Get historic task instances
 
 ----
 GET history/historic-task-instances
 ----
 
 
-.Get historic task instances - URL 参数
+.获取历史任务实例 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|否|String|An id of the historic task instance.
-|processInstanceId|否|String|The process instance id of the historic task instance.
-|processDefinitionKey|否|String|The process definition key of the historic task instance.
-|processDefinitionKeyLike|否|String|The process definition key of the historic task instance, which matches the given value.
-|processDefinitionId|否|String|The process definition id of the historic task instance.
-|processDefinitionName|否|String|The process definition name of the historic task instance.
-|processDefinitionNameLike|否|String|The process definition name of the historic task instance, which matches the given value.
-|processBusinessKey|否|String|The process instance business key of the historic task instance.
-|processBusinessKeyLike|否|String|The process instance business key of the historic task instance that matches the given value.
-|executionId|否|String|The execution id of the historic task instance.
-|taskDefinitionKey|否|String|The task definition key for tasks part of a process
-|taskName|否|String|The task name of the historic task instance.
-|taskNameLike|否|String|The task name with 'like' operator for the historic task instance.
-|taskDescription|否|String|The task description of the historic task instance.
-|taskDescriptionLike|否|String|The task description with 'like' operator for the historic task instance.
-|taskDefinitionKey|否|String|The task identifier from the process definition for the historic task instance.
-|taskDeleteReason|否|String|The task delete reason of the historic task instance.
-|taskDeleteReasonLike|否|String|The task delete reason with 'like' operator for the historic task instance.
-|taskAssignee|否|String|The assignee of the historic task instance.
-|taskAssigneeLike|否|String|The assignee with 'like' operator for the historic task instance.
-|taskOwner|否|String|The owner of the historic task instance.
-|taskOwnerLike|否|String|The owner with 'like' operator for the historic task instance.
-|taskInvolvedUser|否|String|An involved user of the historic task instance.
-|taskPriority|否|String|The priority of the historic task instance.
-|finished|否|Boolean|Indication if the historic task instance is finished.
-|processFinished|否|Boolean|Indication if the process instance of the historic task instance is finished.
-|parentTaskId|否|String|An optional parent task id of the historic task instance.
-|dueDate|否|Date|Return only historic task instances that have a due date equal this date.
-|dueDateAfter|否|Date|Return only historic task instances that have a due date after this date.
-|dueDateBefore|否|Date|Return only historic task instances that have a due date before this date.
-|withoutDueDate|否|Boolean|Return only historic task instances that have no due-date. When +false+ is provided as value, this parameter is ignored.
-|taskCompletedOn|否|Date|Return only historic task instances that have been completed on this date.
-|taskCompletedAfter|否|Date|Return only historic task instances that have been completed after this date.
-|taskCompletedBefore|否|Date|Return only historic task instances that have been completed before this date.
-|taskCreatedOn|否|Date|Return only historic task instances that were created on this date.
-|taskCreatedBefore|否|Date|Return only historic task instances that were created before this date.
-|taskCreatedAfter|否|Date|Return only historic task instances that were created after this date.
-|includeTaskLocalVariables|否|Boolean|An indication if the historic task instance local variables should be returned as well.
-|includeProcessVariables|否|Boolean|An indication if the historic task instance global variables should be returned as well.
-|tenantId|否|String|Only return historic task instances with the given tenantId.
-|tenantIdLike|否|String|Only return historic task instances with a tenantId like the given value.
-|withoutTenantId|否|Boolean|If +true+, only returns historic task instances without a tenantId set. 如果值为++false++，则忽略++withoutTenantId++参数。
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|taskId|否|String|历史任务实例的id。
+|processInstanceId|否|String|历史任务实例所在流程实例的id。
+|processDefinitionKey|否|String|历史任务实例所在流程定义key。
+|processDefinitionKeyLike|否|String|历史任务实例所在流程，流程定义key匹配给定值。
+|processDefinitionId|否|String|历史任务实例所在流程定义id。
+|processDefinitionName|否|String|历史任务实例所在流程定义名。
+|processDefinitionNameLike|否|String|历史任务实例所在流程，流程定义名匹配给定值。
+|processBusinessKey|否|String|历史任务实例所在流程实例businessKey。
+|processBusinessKeyLike|否|String|历史任务实例所在流程，流程实例businessKey匹配给定值。
+|executionId|否|String|历史任务实例的所在执行的id。
+|taskDefinitionKey|否|String|流程任务部分的任务定义key。
+|taskName|否|String|历史任务实例的任务名。
+|taskNameLike|否|String|历史任务实例的任务名'like'操作。
+|taskDescription|否|String|历史任务实例的任务描述。
+|taskDescriptionLike|否|String|历史任务实例的任务描述'like'操作。
+|taskDefinitionKey|否|String|历史任务实例从流程定义得到的任务标识符。
+|taskDeleteReason|否|String|历史任务实例的任务删除原因。
+|taskDeleteReasonLike|否|String|历史任务实例的任务删除原因'like'操作。
+|taskAssignee|否|String|历史任务实例的办理人。
+|taskAssigneeLike|否|String|历史任务实例的办理人'like'操作。
+|taskOwner|否|String|历史任务实例的属主。
+|taskOwnerLike|否|String|历史任务实例的属主'like'操作。
+|taskInvolvedUser|否|String|历史任务实例的一个相关用户。
+|taskPriority|否|String|历史任务实例的优先级。
+|finished|否|Boolean|是否已完成历史任务实例。
+|processFinished|否|Boolean|是否为已完成流程实例的历史任务实例。
+|parentTaskId|否|String|历史任务实例的可选父任务id。
+|dueDate|否|Date|只返回到期日期等于该日期的历史任务实例。
+|dueDateAfter|否|Date|只返回到期日期在该日期之后的历史任务实例。
+|dueDateBefore|否|Date|只返回到期日期在该日期之前的历史任务实例。
+|withoutDueDate|否|Boolean|只返回未设置到期日期的历史任务实例。如果值为++false++，则忽略本参数。
+|taskCompletedOn|否|Date|只返回在该日期完成的历史任务实例。
+|taskCompletedAfter|否|Date|只返回在该日期之后完成的历史任务实例。
+|taskCompletedBefore|否|Date|只返回在该日期之前完成的历史任务实例。
+|taskCreatedOn|否|Date|只返回在该日期创建的历史任务实例。
+|taskCreatedBefore|否|Date|只返回在该日期之前创建的历史任务实例。
+|taskCreatedAfter|否|Date|只返回在该日期之后创建的历史任务实例。
+|includeTaskLocalVariables|否|Boolean|是否同时返回历史任务实例的本地变量。
+|includeProcessVariables|否|Boolean|是否同时返回历史任务实例的全局变量。
+|tenantId|否|String|只返回给定tenantId的历史任务实例。
+|tenantIdLike|否|String|只返回teantId like给定值的历史任务实例。
+|withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的历史任务实例。如果值为++false++，则忽略++withoutTenantId++参数。
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.Get historic task instances - 响应码
+.获取历史任务实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that historic process instances could be queried.
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表可以查询历史任务实例。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5074,14 +5074,14 @@ GET history/historic-task-instances
 ----
 
 
-==== Query for historic task instances
+==== 查询历史任务实例 Query for historic task instances
 
 ----
 POST query/historic-task-instances
 ----
 
 
-*Query for historic task instances - Request body:*
+**查询历史任务实例 - 请求体：**
 
 [source,json,linenums]
 ----
@@ -5101,14 +5101,15 @@ POST query/historic-task-instances
 ----
 
 
-All supported JSON parameter fields allowed are exactly the same as the parameters found for <<restHistoricTaskInstancesGet,getting a collection of historic task instances>>, but passed in as JSON-body arguments rather than URL-parameters to allow for more advanced querying and preventing errors with request-uri's that are too long. On top of that, the query allows for filtering based on process variables. The +taskVariables+ and +processVariables+ properties are JSON-arrays containing objects with the format <<restQueryVariable, as described here.>>
+支持的JSON参数字段与<<restHistoricTaskInstancesGet,获取历史任务实例集合>>的参数一模一样，但是使用JSON体参数而不是URL参数，可以进行更高级的查询，也可以避免请求URI太长的错误。另外，查询可以通过流程变量进行过滤。++variables++参数是一个JSON数组，包含<<restQueryVariable, 这里描述>>的格式的对象。
 
-.Query for historic task instances - 响应码
+
+.查询历史任务实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the tasks are returned
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回任务。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5168,7 +5169,7 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 ----
 
 
-==== Delete a historic task instance
+==== 删除一个历史任务实例 Delete a historic task instance
 
 ----
 DELETE history/historic-task-instances/{taskId}
@@ -5178,14 +5179,14 @@ DELETE history/historic-task-instances/{taskId}
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that the historic task instance was deleted.
-|404|Indicates that the historic task instance could not be found.
+|200|代表已删除历史任务实例。
+|404|代表未找到该历史任务实例。
 
 |===============
 
 
 
-==== Get the identity links of a historic task instance
+==== 获取一个历史任务实例的身份联系 Get the identity links of a historic task instance
 
 ----
 GET history/historic-task-instance/{taskId}/identitylinks
@@ -5195,8 +5196,8 @@ GET history/historic-task-instance/{taskId}/identitylinks
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the identity links are returned
-|404|Indicates the task instance could not be found.
+|200|代表请求成功，并已返回身份联系。
+|404|代表未找到该任务实例。
 
 |===============
 
@@ -5219,64 +5220,64 @@ GET history/historic-task-instance/{taskId}/identitylinks
 ----
 
 
-==== Get the binary data for a historic task instance variable
+==== 获取一个历史流程实例变量的二进制数据 Get the binary data for a historic task instance variable
 
 ----
 GET history/historic-task-instances/{taskId}/variables/{variableName}/data
 ----
 
-.Get the binary data for a historic task instance variable - 响应码
+.获取一个历史流程实例变量的二进制数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the task instance was found and the requested variable data is returned.
-|404|Indicates the requested task instance was not found or the process instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
+|200|代表已找到任务实例，并已返回请求的变量数据。
+|404|代表未找到请求的任务实例，或流程实例中没有给定名字的变量，或者变量没有可用的二进制流。状态消息提供了额外信息。
 
 |===============
 
 
 **成功响应体：**
 
-The response body contains the binary value of the variable. When the variable is of type +binary+, the content-type of the response is set to +application/octet-stream+, regardless of the content of the variable or the request accept-type header. In case of +serializable+, +application/x-java-serialized-object+ is used as content-type.
 
+响应体包含了变量的二进制值。如果变量是++binary++类型，则不论变量的content或者请求的accept-type头是什么，响应的content-type都将设置为++application/octet-stream++。如果变量是++serializable++类型，则content-type会使用++application/x-java-serialized-object++。
 
 [[restHistoricActivityInstancesGet]]
 
 
-==== Get historic activity instances
+==== 获取历史活动实例 Get historic activity instances
 
 ----
 GET history/historic-activity-instances
 ----
 
-.Get historic activity instances - URL 参数
+.获取历史活动实例 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|activityId|否|String|An id of the activity instance.
-|activityInstanceId|否|String|An id of the historic activity instance.
-|activityName|否|String|The name of the historic activity instance.
-|activityType|否|String|The element type of the historic activity instance.
-|executionId|否|String|The execution id of the historic activity instance.
-|finished|否|Boolean|Indication if the historic activity instance is finished.
-|taskAssignee|否|String|The assignee of the historic activity instance.
-|processInstanceId|否|String|The process instance id of the historic activity instance.
-|processDefinitionId|否|String|The process definition id of the historic activity instance.
-|tenantId|否|String|Only return instances with the given tenantId.
-|tenantIdLike|否|String|Only return instances with a tenantId like the given value.
-|withoutTenantId|否|Boolean|If +true+, only returns instances without a tenantId set. 如果值为++false++，则忽略++withoutTenantId++参数。
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
-
+|activityId|否|String|活动实例的id。
+|activityInstanceId|否|String|历史活动实例的id。
+|activityName|否|String|历史活动实例的名字。
+|activityType|否|String|历史活动实例的元素类型。
+|executionId|否|String|历史活动实例的执行id。
+|finished|否|Boolean|是否已完成的历史活动实例。
+|taskAssignee|否|String|历史活动实例的办理人。
+|processInstanceId|否|String|历史活动实例的流程实例id。
+|processDefinitionId|否|String|历史活动实例的流程定义id。
+|tenantId|否|String|只返回给定tenantId的实例。
+|tenantIdLike|否|String|只返回tenantId like给定值的实例。
+|withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的实例。如果值为++false++，则忽略++withoutTenantId++参数。
 |===============
 
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.Get historic activity instances - 响应码
+
+.获取历史活动实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that historic activity instances could be queried.
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表可以查询历史活动实例。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5316,7 +5317,7 @@ GET history/historic-activity-instances
 ----
 
 
-==== Query for historic activity instances
+==== 查询历史活动实例 Query for historic activity instances
 
 ----
 POST query/historic-activity-instances
@@ -5333,15 +5334,15 @@ POST query/historic-activity-instances
 ----
 
 
-All supported JSON parameter fields allowed are exactly the same as the parameters found for <<restHistoricTaskInstancesGet,getting a collection of historic task instances>>, but passed in as JSON-body arguments rather than URL-parameters to allow for more advanced querying and preventing errors with request-uri's that are too long.
+支持的JSON参数字段与<<restHistoricTaskInstancesGet,获取历史任务实例集合（原文如此）>>的参数一模一样，但是使用JSON体参数而不是URL参数，可以进行更高级的查询，也可以避免请求URI太长的错误。
 
 
-.Query for historic activity instances - 响应码
+.查询历史活动实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the activities are returned
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回活动。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5383,32 +5384,32 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 [[restHistoricVariableInstancesGet]]
 
 
-==== List of historic variable instances
+==== 历史变量实例的列表 List of historic variable instances
 
 ----
 GET history/historic-variable-instances
 ----
 
-.List of historic variable instances - URL 参数
+.历史变量实例的列表 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|processInstanceId|否|String|The process instance id of the historic variable instance.
-|taskId|否|String|The task id of the historic variable instance.
-|excludeTaskVariables|否|Boolean|Indication to exclude the task variables from the result.
-|variableName|否|String|The variable name of the historic variable instance.
-|variableNameLike|否|String|The variable name using the 'like' operator for the historic variable instance.
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|processInstanceId|否|String|历史变量实例的流程实例id。
+|taskId|否|String|历史变量实例的任务id。
+|excludeTaskVariables|否|Boolean|是否从结果中排除任务变量。
+|variableName|否|String|历史变量实例的变量名。
+|variableNameLike|否|String|历史变量实例的变量名'like'操作。
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.List of historic variable instances - 响应码
+.历史变量实例的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that historic variable instances could be queried.
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表可以查询历史变量实例。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5441,7 +5442,7 @@ GET history/historic-variable-instances
 
 
 
-==== Query for historic variable instances
+==== 查询历史变量实例 Query for historic variable instances
 
 ----
 POST query/historic-variable-instances
@@ -5468,14 +5469,15 @@ POST query/historic-variable-instances
 ----
 
 
-All supported JSON parameter fields allowed are exactly the same as the parameters found for <<restHistoricVariableInstancesGet,getting a collection of historic process instances>>, but passed in as JSON-body arguments rather than URL-parameters to allow for more advanced querying and preventing errors with request-uri's that are too long. On top of that, the query allows for filtering based on process variables. The +variables+ property is a JSON-array containing objects with the format <<restQueryVariable, as described here.>>
+支持的JSON参数字段与<<restHistoricVariableInstancesGet,获取历史变量实例集合>>的参数一模一样，但是使用JSON体参数而不是URL参数，可以进行更高级的查询，也可以避免请求URI太长的错误。另外，查询可以通过流程变量进行过滤。++variables++参数是一个JSON数组，包含<<restQueryVariable, 这里描述>>的格式的对象。
 
-.Query for historic variable instances - 响应码
+
+.查询历史变量实例 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the tasks are returned
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回变量。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5507,59 +5509,60 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 ----
 
 
-====Get the binary data for a historic task instance variable
+==== 获取历史任务实例变量的二进制数据 Get the binary data for a historic task instance variable
 
 
 ----
 GET history/historic-variable-instances/{varInstanceId}/data
 ----
 
-.Get the binary data for a historic task instance variable - 响应码
+.获取历史任务实例变量的二进制数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the variable instance was found and the requested variable data is returned.
-|404|Indicates the requested variable instance was not found or the variable instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
+|200|代表已找到变量实例，并已返回请求的变量数据。
+|404|代表未找到请求的变量实例，或变量实例中没有给定名字的变量（原文如此），或变量没有可用的二进制流。状态消息提供了额外信息。
 
 |===============
 
 
 **成功响应体：**
 
-The response body contains the binary value of the variable. When the variable is of type +binary+, the content-type of the response is set to +application/octet-stream+, regardless of the content of the variable or the request accept-type header. In case of +serializable+, +application/x-java-serialized-object+ is used as content-type.
+
+响应体包含了变量的二进制值。如果变量是++binary++类型，则不论变量的content或者请求的accept-type头是什么，响应的content-type都将设置为++application/octet-stream++。如果变量是++serializable++类型，则content-type会使用++application/x-java-serialized-object++。
 
 
 [[restHistoricDetailGet]]
 
 
-==== Get historic detail
+==== 获取历史详情 Get historic detail
 
 ----
 GET history/historic-detail
 ----
 
-.Get historic detail - URL 参数
+.获取历史详情 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|id|否|String|The id of the historic detail.
-|processInstanceId|否|String|The process instance id of the historic detail.
-|executionId|否|String|The execution id of the historic detail.
-|activityInstanceId|否|String|The activity instance id of the historic detail.
-|taskId|否|String|The task id of the historic detail.
-|selectOnlyFormProperties|否|Boolean|Indication to only return form properties in the result.
-|selectOnlyVariableUpdates|否|Boolean|Indication to only return variable updates in the result.
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|id|否|String|历史详情的id。
+|processInstanceId|否|String|历史详情的流程实例id。
+|executionId|否|String|历史详情的执行id。
+|activityInstanceId|否|String|历史详情的活动实例id。
+|taskId|否|String|历史详情的任务id。
+|selectOnlyFormProperties|否|Boolean|是否只在结果中返回表单参数。
+|selectOnlyVariableUpdates|否|Boolean|是否只在结果中返回变量更新。
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
-.Get historic detail - 响应码
+.获取历史详情 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that historic detail could be queried.
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表可以查询历史详情。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5599,7 +5602,7 @@ GET history/historic-detail
 ----
 
 
-==== Query for historic details
+==== 查询历史详情 Query for historic details
 
 ----
 POST query/historic-detail
@@ -5614,14 +5617,14 @@ POST query/historic-detail
 ----
 
 
-All supported JSON parameter fields allowed are exactly the same as the parameters found for <<restHistoricDetailGet,getting a collection of historic process instances>>, but passed in as JSON-body arguments rather than URL-parameters to allow for more advanced querying and preventing errors with request-uri's that are too long.
+支持的JSON参数字段与<<restHistoricDetailGet,获取历史详情集合>>的参数一模一样，但是使用JSON体参数而不是URL参数，可以进行更高级的查询，也可以避免请求URI太长的错误。
 
-.Query for historic details - 响应码
+.查询历史详情 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the historic details are returned
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表请求成功，并已返回历史详情。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
@@ -5661,51 +5664,52 @@ All supported JSON parameter fields allowed are exactly the same as the paramete
 ----
 
 
-==== Get the binary data for a historic detail variable
+==== 获取历史详情变量的二进制数据 Get the binary data for a historic detail variable
 
 ----
 GET history/historic-detail/{detailId}/data
 ----
 
 
-.Get the binary data for a historic detail variable - 响应码
+.获取历史详情变量的二进制数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the historic detail instance was found and the requested variable data is returned.
-|404|Indicates the requested historic detail instance was not found or the historic detail instance doesn't have a variable with the given name or the variable doesn't have a binary stream available. 状态消息提供了额外信息。
+|200|代表已找到历史详情实例，并已返回请求的变量数据。
+|404|代表未找到请求的历史详情实例，或历史详情实例中没有给定名字的变量，或变量没有可用的二进制流。状态消息提供了额外信息。
 
 |===============
 
 
 **成功响应体：**
 
-The response body contains the binary value of the variable. When the variable is of type +binary+, the content-type of the response is set to +application/octet-stream+, regardless of the content of the variable or the request accept-type header. In case of +serializable+, +application/x-java-serialized-object+ is used as content-type.
 
-=== Forms
+响应体包含了变量的二进制值。如果变量是++binary++类型，则不论变量的content或者请求的accept-type头是什么，响应的content-type都将设置为++application/octet-stream++。如果变量是++serializable++类型，则content-type会使用++application/x-java-serialized-object++。
 
-==== Get form data
+=== 表单 Forms
+
+==== 获取表单数据 Get form data
 
 ----
 GET form/form-data
 ----
 
-.Get form data - URL 参数
+.获取表单数据 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|taskId|是 (if no processDefinitionId)|String|The task id corresponding to the form data that needs to be retrieved.
-|processDefinitionId|是 (if no taskId)|String|The process definition id corresponding to the start event form data that needs to be retrieved.
+|taskId|是（如果没有processDefinitionId）|String|需要获取表单数据的相应任务id。
+|processDefinitionId|是（如果没有taskId）|String|需要获取启动事件表单数据的相应流程定义id。
 
 |===============
 
 
-.Get form data - 响应码
+.获取表单数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates that form data could be queried.
-|404|Indicates that form data could not be found.
+|200|代表可以查询表单数据。
+|404|代表未找到该表单数据。
 
 |===============
 
@@ -5756,13 +5760,13 @@ GET form/form-data
 ----
 
 
-==== Submit task form data
+==== 提交任务表单数据 Submit task form data
 
 ----
 POST form/form-data
 ----
 
-*Request body for task form:*
+**任务表单的请求体：**
 
 [source,json,linenums]
 ----
@@ -5777,8 +5781,7 @@ POST form/form-data
 }
 ----
 
-
-*Request body for start event form:*
+**启动事件表单的请求体：**
 
 [source,json,linenums]
 ----
@@ -5795,17 +5798,17 @@ POST form/form-data
 ----
 
 
-.Submit task form data - 响应码
+.提交任务表单数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates request was successful and the form data was submitted
-|400|Indicates an parameter was passed in the wrong format. 状态描述中包含了额外信息。
+|200|代表请求成功，并已提交表单数据。
+|400|代表传递的某个参数格式错误。状态描述中包含了额外信息。
 
 |===============
 
 
-**成功响应体：** for start event form data (no response for task form data):*
+**启动事件表单数据的成功响应体（任务表单数据没有响应）：**
 
 [source,json,linenums]
 ----
@@ -5821,19 +5824,19 @@ POST form/form-data
 ----
 
 
-=== Database tables
+=== 数据库表 Database tables
 
-==== List of tables
+==== 表的列表 List of tables
 
 ----
 GET management/tables
 ----
 
-.List of tables - 响应码
+.表的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the request was successful.
+|200|代表请求成功。
 
 |===============
 
@@ -5858,18 +5861,18 @@ GET management/tables
 ----
 
 
-==== Get a single table
+==== 获取一个表 Get a single table
 
 ----
 GET management/tables/{tableName}
 ----
 
 
-.Get a single table - URL 参数
+.获取一个表 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|tableName|是|String|The name of the table to get.
+|tableName|是|String|要获取的表名。
 
 |===============
 
@@ -5886,29 +5889,29 @@ GET management/tables/{tableName}
 ----
 
 
-.Get a single table - 响应码
+.获取一个表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the table exists and the table count is returned.
-|404|Indicates the requested table does not exist.
+|200|代表存在该表，并已返回表记录数。
+|404|代表不存在请求的表。
 
 |===============
 
 
 
 
-==== Get column info for a single table
+==== 获取一个表的列信息 Get column info for a single table
 
 ----
 GET management/tables/{tableName}/columns
 ----
 
-.Get column info for a single table - URL 参数
+.获取一个表的列信息 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|tableName|是|String|The name of the table to get.
+|tableName|是|String|要获取的表名。
 
 |===============
 
@@ -5940,40 +5943,40 @@ GET management/tables/{tableName}/columns
 ----
 
 
-.Get column info for a single table - 响应码
+.获取一个表的列信息 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the table exists and the table column info is returned.
-|404|Indicates the requested table does not exist.
+|200|代表存在该表，并已返表的列信息。
+|404|代表不存在请求的表。
 
 |===============
 
 
 
-==== Get row data for a single table
+==== 获取一个表的行数据 Get row data for a single table
 
 ----
 GET management/tables/{tableName}/data
 ----
 
-.Get row data for a single table - URL 参数
+.获取一个表的行数据 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|tableName|是|String|The name of the table to get.
+|tableName|是|String|要获取的表名。
 
 |===============
 
 
-.Get row data for a single table - URL 查询参数
+.获取一个表的行数据 - URL 查询参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|start|否|Integer|Index of the first row to fetch. Defaults to 0.
-|size|否|Integer|Number of rows to fetch, starting from +start+. Defaults to 10.
-|orderAscendingColumn|否|String|Name of the column to sort the resulting rows on, ascending.
-|orderDescendingColumn|否|String|Name of the column to sort the resulting rows on, descending.
+|start|否|Integer|要读取的第一行的index。默认为0。
+|size|否|Integer|要读取的行数，从++start++开始。默认为10。
+|orderAscendingColumn|否|String|结果行要用来排序的列名，顺序。
+|orderDescendingColumn|否|String|结果行要用来排序的列名，逆序。
 
 |===============
 
@@ -6007,26 +6010,25 @@ GET management/tables/{tableName}/data
 }
 ----
 
-.Get row data for a single table - 响应码
+.获取一个表的行数据 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the table exists and the table row data is returned.
-|404|Indicates the requested table does not exist.
+|200|代表存在该表，并已返回表的行数据。
+|404|代表不存在请求的表。
 
 |===============
 
 
-=== Engine
+=== 引擎 Engine
 
-==== Get engine properties
+==== 获取引擎参数 Get engine properties
 
 ----
 GET management/properties
 ----
 
-
-Returns a read-only view of the properties used internally in the engine.
+返回引擎内部使用的参数的只读视图。
 
 **成功响应体：**
 
@@ -6040,24 +6042,23 @@ Returns a read-only view of the properties used internally in the engine.
 ----
 
 
-.Get engine properties - 响应码
+.获取引擎参数 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the properties are returned.
+|200|代表已返回参数。
 
 |===============
 
 
 
-==== Get engine info
+==== 获取引擎信息 Get engine info
 
 ----
 GET management/engine
 ----
 
-
-Returns a read-only view of the engine that is used in this REST-service.
+返回本REST服务使用的引擎的只读视图。
 
 
 **成功响应体：**
@@ -6073,26 +6074,25 @@ Returns a read-only view of the engine that is used in this REST-service.
 ----
 
 
-.Get engine info - 响应码
+.获取引擎信息 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the engine info is returned.
+|200|代表已返回引擎信息。
 
 |===============
 
 
 
-=== Runtime
+=== 运行时 Runtime
 
-==== Signal event received
+==== 已接收到信号事件 Signal event received
 
 ----
 POST runtime/signals
 ----
 
-
-Notifies the engine that a signal event has been received, not explicitly related to a specific execution.
+通知引擎，已经接受到一个信号事件，而不直接关联到特定的执行。
 
 **JSON体：**
 
@@ -6110,46 +6110,45 @@ Notifies the engine that a signal event has been received, not explicitly relate
 ----
 
 
-.Signal event received - JSON体参数
+.已接收到信号事件 - JSON体参数
 [options="header"]
 |===============
 |参数|描述|必填
-|signalName|Name of the signal|是
-|tenantId|ID of the tenant that the signal event should be processed in|否
-|async|If +true+, handling of the signal will happen asynchronously. Return code will be +202 - Accepted+ to indicate the request is accepted but not yet executed. If +false+,
-                    handling the signal will be done immediately and result (++200 - OK++) will only return after this completed successfully. Defaults to ++false++ if omitted.|否
-|variables|Array of variables (in the general variables format) to use as payload to pass along with the signal. Cannot be used in case +async+ is set to +true+, this will result in an error.|否
+|signalName|信号的名字|是
+|tenantId|需要处理信号事件的租户的ID|否
+|async|如果值为++true++，则会异步处理信号。返回码将为++202 - 已接受++，代表请求已接受，但还未执行。如果值为++false++，则会立即处理信号，在执行成功完成后才将返回结果（++200 - OK++）。如果省略，默认值为++false++。|否
+|variables|作为载荷与信号一同传递的变量（以通用变量格式）的数组。如果++async++设置为++true++则不能使用，否则结果为错误。|否
 
 |===============
 
 
 **成功响应体：**
 
-.Signal event received - 响应码
+.已接收到信号事件 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicated signal has been processed and no errors occurred.
-|202|Indicated signal processing is queued as a job, ready to be executed.
-|400|Signal not processed. The signal name is missing or variables are used together with async, which is not allowed. Response body contains additional information about the error.
+|200|代表已处理信号，且没有发生错误。
+|202|代表已将信号放入作业队列，可以开始执行。
+|400|未处理信号。缺少信号名，或变量与异步一同使用。响应体中包含错误的额外信息。
 
 |===============
 
 
 
-=== Jobs
+=== 作业 Jobs
 
-==== Get a single job
+==== 获取一个作业 Get a single job
 
 ----
 GET management/jobs/{jobId}
 ----
 
-.Get a single job - URL 参数
+.获取一个作业 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|jobId|是|String|The id of the job to get.
+|jobId|是|String|要获取的作业的id。
 
 |===============
 
@@ -6174,45 +6173,45 @@ GET management/jobs/{jobId}
 }
 ----
 
-.Get a single job - 响应码
+.获取一个作业 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the job exists and is returned.
-|404|Indicates the requested job does not exist.
+|200|代表存在该作业，并已返回。
+|404|代表不存在请求的作业。
 
 |===============
 
 
 
-==== Delete a job
+==== 删除一个作业 Delete a job
 
 ----
 DELETE management/jobs/{jobId}
 ----
 
 
-.Delete a job - URL 参数
+.删除一个作业 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|jobId|是|String|The id of the job to delete.
+|jobId|是|String|要删除的作业的id。
 
 |===============
 
 
-.Delete a job - 响应码
+.删除一个作业 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the job was found and has been deleted. 响应体设置为空。
-|404|Indicates the requested job was not found.
+|204|代表已找到并已删除作业。响应体设置为空。
+|404|代表未找到请求的作业。
 
 |===============
 
 
 
-==== Execute a single job
+==== 执行一个作业 Execute a single job
 
 ----
 POST management/jobs/{jobId}
@@ -6229,54 +6228,54 @@ POST management/jobs/{jobId}
 ----
 
 
-.Execute a single job - JSON体参数
+.执行一个作业 - JSON体参数
 [options="header"]
 |===============
 |参数|描述|必填
-|action|Action to perform. Only +execute+ is supported.|是
+|action|要进行的操作，只支持++execute++。|是
 
 |===============
 
 
-.Execute a single job - 响应码
+.执行一个作业 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the job was executed. 响应体设置为空。
-|404|Indicates the requested job was not found.
-|500|Indicates the an exception occurred while executing the job. The status-description contains additional detail about the error. The full error-stacktrace can be fetched later on if needed.
+|204|代表已执行该作业。响应体设置为空。
+|404|代表未找到请求的作业。
+|500|代表执行作业时发生异常。状态描述中包含了错误的额外细节。如果需要，之后可以获取完整的异常栈。
 
 |===============
 
 
 
-==== Get the exception stacktrace for a job
+==== 获取一个作业的异常栈 Get the exception stacktrace for a job
 
 ----
 GET management/jobs/{jobId}/exception-stacktrace
 ----
 
 
-.Get the exception stacktrace for a job - URL 参数
+.获取一个作业的异常栈 - URL 参数
 [options="header"]
 |===============
 |参数|描述|必填
-|jobId|Id of the job to get the stacktrace for.|是
+|jobId|要获取异常栈的作业的id。|是
 
 |===============
 
 
-.Get the exception stacktrace for a job - 响应码
+.获取一个作业的异常栈 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the requested job was not found and the stacktrace has been returned. The response contains the raw stacktrace and always has a Content-type of +text/plain+.
-|404|Indicates the requested job was not found or the job doesn't have an exception stacktrace. Status-description contains additional information about the error.
+|200|代表已找到请求的作业，并已返回异常栈。响应包含原始的异常栈，并总是用++text/plain++的Content-type。
+|404|代表未找到请求的作业，或作业没有异常栈。状态描述中包含了错误的额外信息。。
 
 |===============
 
 
-==== Get a list of jobs
+==== 获取作业的列表 Get a list of jobs
 
 
 ----
@@ -6284,30 +6283,29 @@ GET management/jobs
 ----
 
 
-.Get a list of jobs - URL 查询参数
+.获取作业的列表 - URL 查询参数
 [options="header"]
 |===============
-|Parameter|Description|Type
-|id|Only return job with the given id|String
-|processInstanceId|Only return jobs part of a process with the given id|String
-|executionId|Only return jobs part of an execution with the given id|String
-|processDefinitionId|Only return jobs with the given process definition id|String
-|withRetriesLeft|If +true+, only return jobs with retries left. If false, this parameter is ignored.|Boolean
-|executable|If +true+, only return jobs which are executable. If false, this parameter is ignored.|Boolean
-|timersOnly|If +true+, only return jobs which are timers. If false, this parameter is ignored. Cannot be used together with +$$'messagesOnly'$$+.|Boolean
-|messagesOnly|If +true+, only return jobs which are messages. If false, this parameter is ignored. Cannot be used together with +$$'timersOnly'$$+|Boolean
-|withException|If +true+, only return jobs for which an exception occurred while executing it. If false, this parameter is ignored.|Boolean
-|dueBefore|Only return jobs which are due to be executed before the given date. Jobs without duedate are never returned using this parameter.|Date
-|dueAfter|Only return jobs which are due to be executed after the given date. Jobs without duedate are never returned using this parameter.|Date
-|exceptionMessage|Only return jobs with the given exception message|String
-|tenantId|否|String|Only return jobs with the given tenantId.
-|tenantIdLike|否|String|Only return jobs with a tenantId like the given value.
-|withoutTenantId|否|Boolean|If +true+, only returns jobs without a tenantId set. 如果值为++false++，则忽略++withoutTenantId++参数。
-|sort|Field to sort results on, should be one of +id+, +dueDate+, +executionId+, +processInstanceId+, +retries+ or +tenantId+.|String
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
-
+|参数|描述|类型
+|id|只返回给定id的作业|String
+|processInstanceId|只返回给定id的流程中的作业|String
+|executionId|只返回给定id的执行中的作业|String
+|processDefinitionId|只返回给定流程定义的作业|String
+|withRetriesLeft|如果值为++true++，则只返回还能重试的作业。如果值为false，则忽略本参数。|Boolean
+|executable|如果值为++true++，则只返回可执行的作业。如果值为false，则忽略本参数。|Boolean
+|timersOnly|如果值为++true++，则只返回定时器作业。如果值为false，则忽略本参数。不能与 +$$'messagesOnly'$$+ 一起使用|Boolean
+|messagesOnly|如果值为++true++，则只返回消息作业。如果值为false，则忽略本参数。不能与 +$$'timersOnly'$$+ 一起使用|Boolean
+|withException|如果值为++true++，则只返回执行时发生了异常的作业。如果值为false，则忽略本参数。|Boolean
+|dueBefore|只返回将在给定日期前执行的作业。使用本参数不会返回没有执行日期的作业。|Date
+|dueAfter|只返回将在给定日期后执行的作业。使用本参数不会返回没有执行日期的作业。|Date
+|exceptionMessage|只返回带有给定异常消息的作业|String
+|tenantId|只返回给定tenantId的作业。|String
+|tenantIdLike|只返回tenantId like给定值的作业。|String
+|withoutTenantId|如果值为++true++，则只返回未设置tenantId的作业。如果值为++false++，则忽略++withoutTenantId++参数。|Boolean
+|sort|用于排序结果的字段，需要为++id++、++dueDate++、++executionId++、++processInstanceId++、++retries++或++tenantId++中的一个。|String
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
 **成功响应体：**
 
@@ -6342,31 +6340,31 @@ GET management/jobs
 ----
 
 
-.Get a list of jobs - 响应码
+.获取作业的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the requested jobs were returned.
-|400|Indicates an illegal value has been used in a url query parameter or the both +$$'messagesOnly'$$+ and +$$'timersOnly'$$+ are used as parameters. Status description contains additional details about the error.
+|200|代表已返回请求的作业。
+|400|代表在url查询参数中使用了非法的值，或 +$$'messagesOnly'$$+ 与 +$$'timersOnly'$$+ 同时用作参数。状态描述中包含了错误的额外信息。
 
 |===============
 
 
 
-=== Users
+=== 用户 Users
 
-==== Get a single user
+==== 获取一个用户 Get a single user
 
 ----
 GET identity/users/{userId}
 ----
 
 
-.Get a single user - URL 参数
+.获取一个用户 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to get.
+|userId|是|String|要获取的用户的id。
 
 |===============
 
@@ -6385,42 +6383,42 @@ GET identity/users/{userId}
 ----
 
 
-.Get a single user - 响应码
+.获取一个用户 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user exists and is returned.
-|404|Indicates the requested user does not exist.
+|200|代表存在该用户，并已返回。
+|404|代表不存在请求的用户。
 
 |===============
 
 
 
-==== Get a list of users
+==== 获取用户的列表 Get a list of users
 
 
 ----
 GET identity/users
 ----
 
-.Get a list of users - URL 查询参数
+.获取用户的列表 - URL 查询参数
 [options="header"]
 |===============
-|Parameter|Description|Type
-|id|Only return user with the given id|String
-|firstName|Only return users with the given firstname|String
-|lastName|Only return users with the given lastname|String
-|email|Only return users with the given email|String
-|firstNameLike|Only return userswith a firstname like the given value. Use +%+ as wildcard-character.|String
-|lastNameLike|Only return users with a lastname like the given value. Use +%+ as wildcard-character.|String
-|emailLike|Only return users with an email like the given value. Use +%+ as wildcard-character.|String
-|memberOfGroup|Only return users which are a member of the given group.|String
-|potentialStarter|Only return users which are potential starters for a process-definition with the given id.|String
-|sort|Field to sort results on, should be one of +id+, +firstName+, +lastname+ or +email+.|String
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|参数|描述|类型
+|id|只返回给定id的用户|String
+|firstName|只返回给定firstname的用户|String
+|lastName|只返回给定lastname的用户|String
+|email|只返回给定email的用户|String
+|firstNameLike|只返回firstname like给定值的用户。使用++%++作为通配符。|String
+|lastNameLike|只返回lastname like给定值的用户。使用++%++作为通配符。|String
+|emailLike|只返回email like给定值的用户。使用++%++作为通配符。|String
+|memberOfGroup|只返回给定组的成员用户|String
+|potentialStarter|只返回给定id的流程定义的潜在启动者用户。|String
+|sort|用于排序结果的字段，需要为++id++、++firstName++、++lastname++或++email++中的一个。|String
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
 **成功响应体：**
 
@@ -6459,17 +6457,17 @@ GET identity/users
 ----
 
 
-.Get a list of users - 响应码
+.获取用户的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the requested users were returned.
+|200|代表已返回请求的用户。
 
 |===============
 
 
 
-==== Update a user
+==== 更新一个用户 Update a user
 
 ----
 PUT identity/users/{userId}
@@ -6487,24 +6485,24 @@ PUT identity/users/{userId}
 }
 ----
 
-All request values are optional. For example, you can only include the 'firstName' attribute in the request body JSON-object, only updating the firstName of the user, leaving all other fields unaffected. When an attribute is explicitly included and is set to null, the user-value will be updated to null. Example: +{"firstName" : null}+ will clear the firstName of the user).
 
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'firstName'属性，则只更新用户的firstName，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则用户值将更新为null。例如：++{"firstName" : null}++将清空用户的firstName。
 
-.Update a user - 响应码
+.更新一个用户 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user was updated.
-|404|Indicates the requested user was not found.
-|409|Indicates the requested user was updated simultaneously.
+|200|代表已更新该用户。
+|404|代表未找到请求的用户。
+|409|代表请求的用户已被并发同时更新。
 
 |===============
 
 
-**成功响应体：** see response for +identity/users/{userId}+.
+**成功响应体：**参见++identity/users/{userId}++的响应。
 
 
-==== Create a user
+==== 创建一个用户 Create a user
 
 ----
 POST identity/users
@@ -6522,120 +6520,120 @@ POST identity/users
 }
 ----
 
-.Create a user - 响应码
+.创建一个用户 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the user was created.
-|400|Indicates the id of the user was missing.
+|201|代表已创建该用户。
+|400|代表缺少用户的id。
 
 |===============
 
 
 **成功响应体：** see response for +identity/users/{userId}+.
 
-==== Delete a user
+==== 删除一个用户 Delete a user
 
 ----
 DELETE identity/users/{userId}
 ----
 
-.Delete a user - URL 参数
+.删除一个用户 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to delete.
+|userId|是|String|要删除的用户的id。
 
 |===============
 
 
 
-.Delete a user - 响应码
+.删除一个用户 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the user was found and  has been deleted. 响应体设置为空。
-|404|Indicates the requested user was not found.
+|204|代表已找到并删除该用户。响应体设置为空。
+|404|代表未找到请求的用户。
 
 |===============
 
 
-==== Get a user's picture
+==== 获取一个用户的图片 Get a user's picture
 
 ----
 GET identity/users/{userId}/picture
 ----
 
 
-.Get a user's picture - URL 参数
+.获取一个用户的图片 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to get the picture for.
+|userId|是|String|要获取图片的用户的id。
 
 |===============
 
 
 **响应体：**
 
-The response body contains the raw picture data, representing the user's picture. The Content-type of the response corresponds to the mimeType that was set when creating the picture.
+响应体包含原始图片数据，代表用户的图片。响应的Content-type与创建图片时设置的mimeType有关。
 
-.Get a user's picture - 响应码
+.获取一个用户的图片 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user was found and has a picture, which is returned in the body.
-|404|Indicates the requested user was not found or the user does not have a profile picture. Status-description contains additional information about the error.
+|200|代表已找到用户，并已在响应体中返回了图片。
+|404|代表未找到请求的用户，或用户没有设置图片。状态描述中包含了错误的额外信息。
 
 |===============
 
 
 
-==== Updating a user's picture
+==== 更新一个用户的图片 Updating a user's picture
 
 ----
 GET identity/users/{userId}/picture
 ----
 
-.Updating a user's picture - URL 参数
+.更新一个用户的图片 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to get the picture for.
+|userId|是|String|要更新图片的用户的id。
 
 |===============
 
 
 **请求体：**
 
-The request should be of type +multipart/form-data+. There should be a single file-part included with the binary value of the picture. On top of that, the following additional form-fields can be present:
+**请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
-* ++mimeType++: Optional mime-type for the uploaded picture. If omitted, the default of +image/jpeg+ is used as a mime-type for the picture.
+* ++mimeType++: 可选的上传图片的mime-type。如果省略，则默认使用++image/jpeg++作为该图片的mime-type。
 
 
-.Updating a user's picture - 响应码
+.更新一个用户的图片 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user was found and the picture has been updated. The response-body is left empty intentionally.
-|404|Indicates the requested user was not found.
+|200|代表已找到该用户，并已更新图片。响应体设置为空。
+|404|代表未找到请求的用户。
 
 |===============
 
 
 
-==== List a user's info
+==== 列表一个用户的信息 List a user's info
 
 ----
 PUT identity/users/{userId}/info
 ----
 
 
-.List a user's info - URL 参数
+.列表一个用户的信息 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to get the info for.
+|userId|是|String|要获取信息的用户的id。
 
 |===============
 
@@ -6658,31 +6656,31 @@ PUT identity/users/{userId}/info
 ----
 
 
-.List a user's info - 响应码
+.列表一个用户的信息 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user was found and list of info (key and url) is returned.
-|404|Indicates the requested user was not found.
+|200|代表已找到用户，并已返回信息（key与url）的列表。
+|404|代表未找到请求的用户。
 
 |===============
 
 
 
 
-==== Get a user's info
+==== 获取一条用户信息 Get a user's info
 
 ----
 GET identity/users/{userId}/info/{key}
 ----
 
 
-.Get a user's info - URL 参数
+.获取一条用户信息 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to get the info for.
-|key|是|String|The key of the user info to get.
+|userId|是|String|要获取信息的用户的id。
+|key|是|String|要获取的用户信息的key。
 
 |===============
 
@@ -6699,29 +6697,29 @@ GET identity/users/{userId}/info/{key}
 ----
 
 
-.Get a user's info - 响应码
+.获取一条用户信息 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user was found and the user has info for the given key..
-|404|Indicates the requested user was not found or the user doesn't have info for the given key. 状态描述中包含了关于错误的额外信息。
+|200|代表已找到用户，该用户也有给定key的信息。
+|404|代表未找到请求的用户，或用户没有给定key的信息。状态描述中包含了关于错误的额外信息。
 
 |===============
 
 
 
-==== Update a user's info
+==== 更新一条用户信息 Update a user's info
 
 ----
 PUT identity/users/{userId}/info/{key}
 ----
 
-.Update a user's info - URL 参数
+.更新一条用户信息 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to update the info for.
-|key|是|String|The key of the user info to update.
+|userId|是|String|要更新信息的用户的id。
+|key|是|String|要更新的用户信息的key。
 
 |===============
 
@@ -6746,30 +6744,30 @@ PUT identity/users/{userId}/info/{key}
 }
 ----
 
-.Update a user's info - 响应码
+.更新一条用户信息 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the user was found and the info has been updated.
-|400|Indicates the value was missing from the request body.
-|404|Indicates the requested user was not found or the user doesn't have info for the given key. 状态描述中包含了关于错误的额外信息。
+|200|代表已找到用户，并已更新信息。
+|400|代表请求体中缺少value。
+|404|代表未找到请求的用户，或用户没有给定key的信息。状态描述中包含了关于错误的额外信息。
 
 |===============
 
 
 
-==== Create a new user's info entry
+==== 创建一条新的用户信息记录 Create a new user's info entry
 
 ----
 POST identity/users/{userId}/info
 ----
 
 
-.Create a new user's info entry - URL 参数
+.创建一条新的用户信息记录 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to create the info for.
+|userId|是|String|要创建信息的用户的id。
 
 |===============
 
@@ -6797,53 +6795,53 @@ POST identity/users/{userId}/info
 ----
 
 
-.Create a new user's info entry - 响应码
+.创建一条新的用户信息记录 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the user was found and the info has been created.
-|400|Indicates the key or value was missing from the request body. 状态描述中包含了关于错误的额外信息。
-|404|Indicates the requested user was not found.
-|409|Indicates there is already an info-entry with the given key for the user, update the resource instance (++PUT++).
+|201|代表已找到用户，并已创建信息。
+|400|代表请求体中缺少key或value。状态描述中包含了关于错误的额外信息。
+|404|代表未找到请求的用户。
+|409|代表用户已有给定key的信息记录，改用更新资源实例（++PUT++）。
 
 |===============
 
 
 
-==== Delete a user's info
+==== 删除一条用户信息 Delete a user's info
 
 ----
 DELETE identity/users/{userId}/info/{key}
 ----
 
 
-.Delete a user's info - URL 参数
+.删除一条用户信息 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|userId|是|String|The id of the user to delete the info for.
-|key|是|String|The key of the user info to delete.
+|userId|是|String|要删除信息的用户的id。
+|key|是|String|要删除的用户信息的key。
 
 |===============
 
 
 
-.Delete a user's info - 响应码
+.删除一条用户信息 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the user was found and the info for the given key has been deleted. 响应体设置为空
-|404|Indicates the requested user was not found or the user doesn't have info for the given key. 状态描述中包含了关于错误的额外信息。
+|204|代表已找到用户，并已删除给定key的信息。响应体设置为空
+|404|代表未找到请求的用户，或用户没有给定key的信息。状态描述中包含了关于错误的额外信息。
 
 |===============
 
 
 
-=== Groups
+=== 组 Groups
 
 
 
-==== Get a single group
+==== 获取一个组 Get a single group
 
 
 
@@ -6852,11 +6850,11 @@ GET identity/groups/{groupId}
 ----
 
 
-.Get a single group - URL 参数
+.获取一个组 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|groupId|是|String|The id of the group to get.
+|groupId|是|String|要获取的组的id。
 
 |===============
 
@@ -6874,18 +6872,18 @@ GET identity/groups/{groupId}
 ----
 
 
-.Get a single group - 响应码
+.获取一个组 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the group exists and is returned.
-|404|Indicates the requested group does not exist.
+|200|代表存在并已返回该组。
+|404|代表不存在请求的组。
 
 |===============
 
 
 
-==== Get a list of groups
+==== 获取组的列表 Get a list of groups
 
 
 ----
@@ -6893,21 +6891,21 @@ GET identity/groups
 ----
 
 
-.Get a list of groups - URL 查询参数
+.获取组的列表 - URL 查询参数
 [options="header"]
 |===============
-|Parameter|Description|Type
-|id|Only return group with the given id|String
-|name|Only return groups with the given name|String
-|type|Only return groups with the given type|String
-|nameLike|Only return groups with a name like the given value. Use +%+ as wildcard-character.|String
-|member|Only return groups which have a member with the given username.|String
-|potentialStarter|Only return groups which members are potential starters for a process-definition with the given id.|String
-|sort|Field to sort results on, should be one of +id+, +name+ or +type+.|String
-|可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
+|参数|描述|类型
+|id|只返回给定id的组|String
+|name|只返回给定名字的组|String
+|type|只返回给定类型的组|String
+|nameLike|只返回名字like给定值的组。使用++%++作为通配符。|String
+|member|只返回有给定用户名作为成员的组。|String
+|potentialStarter|只返回给定id的流程定义的潜在启动者组。|String
+|sort|用于排序结果的字段，需要为++id++、++name++或++type++中的一个。|String
 
 |===============
 
+可以在这个URL中使用通用<<restPagingAndSort,分页与排序查询参数>>。
 
 **成功响应体：**
 
@@ -6931,18 +6929,18 @@ GET identity/groups
 ----
 
 
-.Get a list of groups - 响应码
+.获取组的列表 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the requested groups were returned.
+|200|代表已返回请求的组。
 
 |===============
 
 
 
 
-==== Update a group
+==== 更新一个组 Update a group
 
 ----
 PUT identity/groups/{groupId}
@@ -6959,23 +6957,23 @@ PUT identity/groups/{groupId}
 ----
 
 
-All request values are optional. For example, you can only include the 'name' attribute in the request body JSON-object, only updating the name of the group, leaving all other fields unaffected. When an attribute is explicitly included and is set to null, the group-value will be updated to null.
+所有的请求值都是可选的。例如，可以只在请求体的JSON对象中包含'name'属性，则只更新组的名字，而不影响其它所有字段。当显式包含了一个属性，并设置为null，则组值将更新为null。
 
 
-.Update a group - 响应码
+.更新一个组 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|200|Indicates the group was updated.
-|404|Indicates the requested group was not found.
-|409|Indicates the requested group was updated simultaneously.
+|200|代表已更新组。
+|404|代表未找到请求的组。
+|409|代表请求的组已被并发同时更新。
 
 |===============
 
 
-**成功响应体：** see response for +identity/groups/{groupId}+.
+**成功响应体：**参见++identity/groups/{groupId}++的响应。
 
-==== Create a group
+==== 创建一个组 Create a group
 
 ----
 POST identity/groups
@@ -6993,52 +6991,51 @@ POST identity/groups
 ----
 
 
-.Create a group - 响应码
+.创建一个组 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the group was created.
-|400|Indicates the id of the group was missing.
+|201|代表已创建组。
+|400|代表缺少组的id。
 
 |===============
 
 **成功响应体：** see response for +identity/groups/{groupId}+.
 
 
-==== Delete a group
+==== 删除一个组 Delete a group
 
 ----
 DELETE identity/groups/{groupId}
 ----
 
 
-.Delete a group - URL 参数
+.删除一个组 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|groupId|是|String|The id of the group to delete.
+|groupId|是|String|要删除的组的id。
 
 |===============
 
 
-.Delete a group - 响应码
+.删除一个组 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the group was found and  has been deleted. 响应体设置为空。
-|404|Indicates the requested group was not found.
+|204|代表已找到并已删除组。响应体设置为空。
+|404|代表未找到请求的组。
 
 |===============
 
 
 
-==== Get members in a group
+==== 获取一个组中的成员 Get members in a group
 
-There is no GET allowed on +identity/groups/members+. Use the +identity/users?memberOfGroup=sales+ URL to get all users that are part of a particular group.
+++identity/groups/members++不能使用GET。使用++identity/users?memberOfGroup=sales++URL获取特定组中的所有用户。
 
 
-
-==== Add a member to a group
+==== 为一个组添加一个成员 Add a member to a group
 
 
 
@@ -7047,11 +7044,11 @@ POST identity/groups/{groupId}/members
 ----
 
 
-.Add a member to a group - URL 参数
+.为一个组添加一个成员 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|groupId|是|String|The id of the group to add a member to.
+|groupId|是|String|要添加成员的组的id。
 
 |===============
 
@@ -7067,14 +7064,14 @@ POST identity/groups/{groupId}/members
 ----
 
 
-.Add a member to a group - 响应码
+.为一个组添加一个成员 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|201|Indicates the group was found and the member has been added.
-|404|Indicates the userId was not included in the request body.
-|404|Indicates the requested group was not found.
-|409|Indicates the requested user is already a member of the group.
+|201|代表已找到组，并已添加成员。
+|404|代表请求体中没有包含userId。
+|404|代表未找到请求的组。
+|409|代表请求的用户已经是组的成员。
 
 |===============
 
@@ -7091,30 +7088,30 @@ POST identity/groups/{groupId}/members
 ----
 
 
-==== Delete a member from a group
+==== 从一个组中删除一个成员 Delete a member from a group
 
 
 ----
 DELETE identity/groups/{groupId}/members/{userId}
 ----
 
-.Delete a member from a group - URL 参数
+.从一个组中删除一个成员 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
-|groupId|是|String|The id of the group to remove a member from.
-|userId|是|String|The id of the user to remove.
+|groupId|是|String|要移除成员的组的id。
+|userId|是|String|要移除的用户的id。
 
 |===============
 
 
 
-.Delete a member from a group - 响应码
+.从一个组中删除一个成员 - 响应码
 [options="header"]
 |===============
 |响应码|描述
-|204|Indicates the group was found and the member has been deleted. The 响应体设置为空
-|404|Indicates the requested group was not found or that the user is not a member of the group. The 状态描述中包含了关于错误的额外信息。
+|204|代表已找到组，并已删除成员。响应体设置为空
+|404|代表未找到请求的组，或用户不是组的成员。状态描述中包含了关于错误的额外信息。
 
 |===============
 
