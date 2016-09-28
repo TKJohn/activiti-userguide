@@ -1,10 +1,10 @@
 [[chapter_ldap]]
 
-== 集成LDAP LDAP integration
+== 集成LDAP (LDAP integration)
 
-公司通常已经有了LDAP（Lightweight Directory Access Protocol，轻量级目录访问协议）系统形式的用户与组存储。从5.14版本开始，Activiti提供了一个立即可用的解决方案，可以简单配置Activiti应如何与LDAP系统连接。
+公司通常已经有了LDAP（Lightweight Directory Access Protocol，轻量级目录访问协议）系统形式的用户与组存储。从5.14版本开始，Activiti提供了一个立即可用的解决方案，可以简单配置Activiti与LDAP系统连接的方式。
 
-在Activiti 5.14版本以前，也可以为Activiti集成LDAP。然而，在5.14中大幅简化了配置。然而，配置LDAP的“老”方法仍然可用。实际上，简化配置只是在“老”基础上进行的包装。
+在Activiti 5.14版本以前，也可以为Activiti集成LDAP。然而，在5.14中大幅简化了配置。但配置LDAP的“老”方法仍然可用。实际上，简化配置只是在“老”基础上进行的包装。
     
 
 [[ldap_usage]]
@@ -31,8 +31,8 @@
 
 目前LDAP集成有两大使用场景：
 
-* 可以通过IdentityService进行认证。在例如使用Activiti Explorer，并需要通过LDAP登录时很有用。
-* 获取一个组中的用户。在例如查询一个特定用户可见的任务（也就是说，特定候选组的任务）时很重要。
+* 通过IdentityService进行认证。例如在使用Activiti Explorer，并需要通过LDAP登录时很有用。
+* 获取一个组中的用户。例如在查询一个特定用户可见的任务（也就是说，特定候选组的任务）时很重要。
                 
 
 [[ldap_configuration]]
@@ -97,7 +97,7 @@
 |password|连接LDAP系统的密码|String|
 |initialContextFactory|连接LDAP的InitialContextFactory的名字|String|com.sun.jndi.ldap.LdapCtxFactory
 |securityAuthentication|连接LDAP系统时使用的'java.naming.security.authentication'参数|String|simple
-|customConnectionParameters|用于设置没有专门设置器的所有LDAP连接参数。例如 http://docs.oracle.com/javase/tutorial/jndi/ldap/jndi.html 中的自定义参数。这些参数用于配制连接池，指定安全选项，等等。当创建到LDAP系统的连接时，会提供所有设置的参数。|Map<String, String>|
+|customConnectionParameters|用于设置没有专门setter的所有LDAP连接参数。例如 http://docs.oracle.com/javase/tutorial/jndi/ldap/jndi.html 中的自定义参数。这些参数用于配制连接池，指定安全选项，等等。当创建到LDAP系统的连接时，会提供所有设置的参数。|Map<String, String>|
 
 |baseDn|开始搜索用户与组的基础“区分名”（distinguished name，DN）|String|
 |userBaseDn|开始搜索用户的基础“区分名”（distinguished name，DN）。如果未提供，则使用baseDn（见上）|String|
@@ -139,7 +139,7 @@
 |===============
 
 
-请注意使用活动目录（Active Directory）时：Activiti论坛的用户报告，在使用活动目录时，需要将'InitialDirContext'设置为Context.REFERRAL。可以通过customConnectionParameters map像上面介绍的传递。
+使用活动目录（Active Directory）时请注意：Activiti论坛的用户报告，在使用活动目录时，需要将'InitialDirContext'设置为Context.REFERRAL。可以通过customConnectionParameters map按上面介绍的方法传递。
         
 
 [[lda-explorer]]
@@ -148,10 +148,10 @@
 === 在Explorer中集成LDAP (Integrate LDAP in Explorer)
 
       
-* 在++activiti-standalone-context.xml++中添加上面介绍的LDAp配置
+* 在++activiti-standalone-context.xml++中添加上面介绍的LDAP配置
 * 在WEB-INF/lib中添加activiti-ldap jar
 * 移除++demoDataGenerator++ bean，因为它会尝试添加用户（在集成LDAP时不允许）
-* 为++activiti-ui.context++中++explorerApp++ bean添加下列配置：
+* 为++activiti-ui.context++中的++explorerApp++ bean添加下列配置：
                         
 [source,xml,linenums]
 ----
