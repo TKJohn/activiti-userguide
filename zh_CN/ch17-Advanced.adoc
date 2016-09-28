@@ -1,51 +1,42 @@
 
-== Advanced
+== 高级 Advanced
 
-The following sections cover advanced use cases of using Activiti, that go beyond typical execution of BPMN 2.0 processes. As such, a certain proficiency and experience with Activiti is advisable to understand the material here.
+下面的章节介绍了Activiti的高级用例，超过了传统的BPMN 2.0流程的执行。因此，要理解这里的材料需要对Activiti足够熟练与精通。
 
 [[advanced_parseHandlers]]
 
-=== Async and job executor
+=== 异步与作业执行器 Async and job executor
 
-Starting from version 5.17.0 Activiti provides the Async executor in addition to the existing job executor. Both executors deal with timers and asynchronous jobs in the Activiti Engine, so only one executor can be enabled.
-This section will explain the difference between the Async executor and the job executor and why we recommend to use the Async executor. Note that by default Activiti uses the existing job executor because we don't want to enable the Async executor without making an explicit configuration for it.
+从5.17.0版本开始，Activiti在已有的作业执行器之外，还提供了异步执行器。在Activiti引擎中，两个执行器都处理定时器与异步作业，因此只能启用一个执行器。这个章节将介绍异步执行器与作业执行器的区别，以及为什么我们推荐使用异步执行器。请注意默认情况下Activiti使用已有的作业执行器，因为我们不希望没有进行明确的配置就启用异步执行器。
 
-==== Async executor design
+==== 异步执行器的设计 Async executor design
 
-The Async executor contains a thread pool to execute timer and asynchronous jobs. When enabled, the Engine will call the Async executor with a persisted asynchronous job entity and the thread pool will asynchronously execute the job.
-This is major difference with the old Job executor, because in that case the asynchronous job is persisted and the job executor will poll the database for new jobs.
-In case a job is found it will lock the job and execute it, which means a lot of additional database traffic. The Async executor will execute the asynchronous job directly without first polling the database.
-In case the asynchronous job is an exclusive job, the Async executor will first lock the process instance execution and if that succeeds execute the job and unlock the process instance execution again.
-If the process instance lock fails, it will retry.
+异步执行器包含了一个用于执行定时器与异步作业的线程池。当启用时，引擎将会使用已经持久化的异步作业实体调用异步执行器，然后线程池将异步地执行该作业。这是与老的作业执行器的主要区别，因为在这种情况下，异步作业已被持久化，而作业执行器将会轮询数据库获取新作业。如果找到了一个作业，将锁定并执行它，这意味着大量额外的数据库通信。异步执行器会直接执行异步作业，而不会先轮询数据库。如果异步作业是一个排他作业，异步执行器将首先锁定流程实例的执行，如果成功将执行作业，并解锁流程实例执行。如果锁定流程实例失败，则会重试。
 
-In the case of timer jobs the logic is different from asynchronous jobs and the implementation is similar between the Async and the Job executor.
-The Async executor will poll the database for timer jobs which are due to be executed. The job will then be locked and executed.
+对于定时器作业，逻辑与异步作业不同，异步与作业执行器的实现相近。异步执行器将轮询数据库中将要到时执行的定时器作业。然后会锁定并执行作业。
 
-==== Job executor design
+==== 作业执行器的设计 Job executor design
 
-The job executor also contains a thread pool to execute timer and asynchronous jobs. When activated, the Job executor will poll the database for asynchronous jobs and timer jobs due.
-In case a job is found it will lock the job and execute it, which means a lot of additional database traffic. On the other side, the Async executor will execute the asynchronous job directly without first polling the database.
+作业执行器也包含了一个用于执行定时器与异步作业的线程池。当启用时，作业执行器会轮询数据库，获取异步作业与定时器作业的到期时间。如果找到了一个作业，执行器将锁定并执行该作业，这意味着大量额外的数据库通信。相对应的，异步执行器会直接执行异步作业，而不会首先轮询数据库。
 
-==== Advantages of the Async executor
+==== 异步执行器的优点 Advantages of the Async executor
 
-* Less database queries because asynchronous jobs are executed without polling the database
-* For non-exclusive jobs there's no chance to run into OptimisticLockingExceptions anymore
-* Exclusive jobs are now locked at process instance level instead of the cumbersome logic of queuing exclusive jobs in the Job Executor
+* 更少的数据库查询，因为异步作业不通过轮询数据库就执行
+* 对于非排他作业，不会再遇到OptimisticLockingExceptions（乐观锁异常）
+* 排他作业现在锁定在流程实例级别，而不是在作业执行器中那样，使用笨重的逻辑查询排他作业。
 
-==== Async executor configuration
+==== 配置异步执行器 Async executor configuration
 
-It's possible to define thread pool sizes and other configurations for the Async executor.
-It's always advised to look into the default settings of the Async executor and validate if they match the requirements of your process instances.
+可以为异步执行器定义线程池大小与其他配置项。我们建议查看异步执行器的默认设置，核实其是否符合你的流程实例的要求。
 
-To override the default settings of the job executor a new bean needs to be injected into the process engine configuration, like:
+要覆盖异步执行器的默认设置，需要在流程引擎配置中注入一个新的bean，像是：
 
 [source,xml,linenums]
 ----
 <property name="asyncExecutor" ref="asyncExecutor" />
 ----
 
-The default Async executor can be used to override the default settings, but you can of course also extend from the DefaultAsyncJobExecutor class.
-In the following configuration listing, the DefaultAsyncJobExecutor is used with new values for its properties:
+可以覆盖默认的异步执行器，以覆盖默认设置，但是当然也可以从DefaultAsyncJobExecutor类扩展。下面列出的配置中，DefaultAsyncJobExecutor的参数使用了新的值：
 
 [source,xml,linenums]
 ----
@@ -63,30 +54,32 @@ In the following configuration listing, the DefaultAsyncJobExecutor is used with
 </bean>
 ----
 
-.Async executor configuration options
+.异步执行器配置选项
 [options="header"]
 |===============
-|Name|Default value|Description
-|corePoolSize|2|The minimal number of threads that are kept alive in the thread pool for job execution.
-|maxPoolSize|10|The maximum number of threads that are kept alive in the thread pool for job execution.
-|keepAliveTime|5000|The time (in milliseconds) a thread used for job execution must be kept alive before it is destroyed. Default setting is 0. Having a non-default setting of 0 takes resources, but in the case of many job executions it avoids creating new threads all the time.
-|queueSize|100|The size of the queue on which jobs to be executed are placed.
-|maxTimerJobsPerAcquisition|1|The number of timer jobs that are fetched from the database in one query.
-|maxAsyncJobsDuePerAcquisition|1|The number of asynchronous jobs due that are fetched from the database in one query.
-|defaultAsyncJobAcquireWaitTimeInMillis|10000|The time in milliseconds between asynchronous job due queries being executed.
-|defaultTimerJobAcquireWaitTimeInMillis|10000|The time in milliseconds between timer job queries being executed.
-|timerLockTimeInMillis|300000|The time in milliseconds that a timer job is locked before being retried again. The Activiti Engine considers the timer job to have failed after this period of time and will retry.
-|asyncJobLockTimeInMillis|300000|The time in milliseconds that an asynchronous job is locked before being retried again. The Activiti Engine considers the asynchronous job to have failed after this period of time and will retry.
+|名字|默认值|描述
+|corePoolSize|2|线程池中为执行作业保留的最小线程数量。
+|maxPoolSize|10|线程池中为执行作业保留的最大线程数量。
+|keepAliveTime|5000|在销毁作业执行所用的线程前，需要保持活动的时间（以毫秒计）。默认设置为5000。设置为0非默认值会消耗资源，但在有大量执行作业的时候，可以避免总是创建新线程。
+
+|queueSize|100|放置待执行作业的队列的大小。
+|maxTimerJobsPerAcquisition|1|在一次查询中获取的将到期定时器作业的数量。
+|maxAsyncJobsDuePerAcquisition|1|在一次数据库查询中获取的异步作业的数量。
+|defaultAsyncJobAcquireWaitTimeInMillis|10000|在执行异步作业查询之间等待的时间，以毫秒计。
+|defaultTimerJobAcquireWaitTimeInMillis|10000|在执行将到期定时器作业查询之间等待的时间，以毫秒计。
+|timerLockTimeInMillis|300000|在重试之前，定时器作业锁定的时间，以毫秒计。在该时间之后，Activiti引擎会视为定时器作业已经失败，并将重试。
+
+|asyncJobLockTimeInMillis|300000|在重试之前，异步作业锁定的时间，以毫秒计。在该时间之后，Activiti引擎会视为异步作业已经失败，并将重试。
 
 |===============
 
-=== Hooking into process parsing
+=== 深入流程解析 Hooking into process parsing
 
-A BPMN 2.0 xml needs to be parsed to the Activiti internal model to be executed on the Activiti engine. This parsing happens during a deployment of the process or when a process is not found in memory, and the xml is fetched from the database.
+一个BPMN 2.0 XML需要解析为Activiti的内部模型，才能在Activiti引擎中执行。解析发生在部署流程时；或没有在内存中找到流程的时候，这时将会从数据库获取XML。
 
-For each of these processes, the +BpmnParser+ class creates a new +BpmnParse+ instance. This instance will be used as container for all things that are done during parsing. The parsing on itself is very simple: for each BPMN 2.0 element, there is a matching instance of the +org.activiti.engine.parse.BpmnParseHandler+ available in the engine. As such, the parser has a map which basically maps a BPMN 2.0 element class to an instance of +BpmnParseHandler+. By default, Activiti has +BpmnParseHandler+ instances to handle all supported elements and also uses it to attach execution listeners to steps of the process for creating the history.
+对于每一个流程，++BpmnParser++类都会创建一个新的++BpmnParser++实例。这个实例会用作所有在解析时要做的事情的容器。解析本身很简单：对于每一个BPMN 2.0元素，引擎中都有一个对应的++org.activiti.engine.parse.BpmnParseHandler++的实例。因此，解析器会将一个BPMN 2.0元素类映射至一个++BpmnParseHandler++实例。默认情况下，Activiti使用++BpmnParseHandler++实例处理所有支持的元素，并用其为流程的步骤附加执行监听器，以创建历史。
 
-It is possible to add custom instances of +org.activiti.engine.parse.BpmnParseHandler+ to the Activiti engine. An often seen use case is for example to add execution listeners to certain steps that fire events to some queue for event processing. The history handling is done in such a way internally in Activiti. To add such custom handlers, the Activiti configuration needs to be tweaked:
+可以在Activiti引擎中添加++org.activiti.engine.parse.BpmnParseHandler++的自定义实例。常见用例时，例如为特定步骤添加执行监听器，用于向某个事件处理队列触发事件。Activiti内部使用这种方式处理历史。要添加这种自定义处理器，需要调整Activiti配置：
 
 [source,xml,linenums]
 ----
@@ -104,9 +97,9 @@ It is possible to add custom instances of +org.activiti.engine.parse.BpmnParseHa
 </property>
 ----
 
-The list of +BpmnParseHandler+ instances that is configured in the +preBpmnParseHandlers+ property are added before any of the default handlers. Likewise, the +postBpmnParseHandlers+ are added after those. This can be important if the order of things matter for the logic contained in the custom parse handlers.
+在++preBpmnParseHandlers++参数中配置的++BpmnParseHandler++实例的列表将添加在任何默认处理器之前。类似的，++postBpmnParseHandlers++中的将添加在之后。在顺序会影响自定义解析处理器中包含的逻辑时很重要。
 
-+org.activiti.engine.parse.BpmnParseHandler+ is a simple interface:
+++org.activiti.engine.parse.BpmnParseHandler++是一个简单的接口：
 
 [source,java,linenums]
 ----
@@ -119,7 +112,7 @@ public interface BpmnParseHandler {
 }
 ----
 
-The +getHandledTypes()+ method returns a collection of all the types handled by this parser.  The possible types are a subclass of +BaseElement+, as directed by the generic type of the collection. You can also extend the +AbstractBpmnParseHandler+ class and override the +getHandledType()+ method, which only returns one Class and not a collection. This class contains also some helper methods shared by many of the default parse handlers.  The +BpmnParseHandler+ instance will be called when the parser encounters any of the returned types by this method. In the following example, whenever a process contained in a BPMN 2.0 xml is encountered, it  will execute the logic in the +executeParse+ method (which is a typecasted method that replaces the regular +parse+ method on the +BpmnParseHandler+ interface).
+++getHandledTypes()++方法返回该解析器处理的所有类型的集合。可用的类型是++BaseElement++的子类，通过集合的泛型指定。也可以扩展++AbstractBpmnParseHandler++类，并覆盖++getHandledType()+方法，它只返回一个类而不是一个集合。这个类也包含了一些默认解析处理器共享的辅助方法。当解析器遇到任何该方法的返回类型时，将调用++BpmnParseHandler++实例。在下面的例子里，当遇到BPMN 2.0 XML中包含的流程时，将会执行++executeParse++方法（这是一个类型转换方法，取代了++BpmnParseHandler++接口中的普通++parse++方法）中的逻辑。
 
 [source,java,linenums]
 ----
@@ -136,9 +129,9 @@ public class TestBPMNParseHandler extends AbstractBpmnParseHandler<Process> {
 }
 ----
 
-*Important note:* when writing custom parse handler, do not use any of the internal  classes that are used to parse the BPMN 2.0 constructs. This will cause difficult to find bugs. The safe way to implement a custom handler is to implement the _BpmnParseHandler_ interface or extends the internal abstract class _org.activiti.engine.impl.bpmn.parser.handler.AbstractBpmnParseHandler_.
+**重要提示：**当撰写自定义解析处理器时，不要使用任何用于解析BPMN 2.0结构的内部类。这将导致很难查找bug。实现一个自定义处理器安全的做法是实现__BpmnParseHandler__接口，或扩展内部抽象类__org.activiti.engine.impl.bpmn.parser.handler.AbstractBpmnParseHandler__。
 
-It is possible (but less common) to replace the default +BpmnParseHandler+ instances that are responsible for the parsing of the BPMN 2.0 elements to the internal Activiti model. This can be done by following snippet of logic:
+可以（但不常见）替换默认的++BpmnParseHandler++实例，该实例用于将BPMN 2.0元素解析为Activiti内部模型。可以通过下面的代码片段实现：
 
 [source,xml,linenums]
 ----
@@ -149,7 +142,7 @@ It is possible (but less common) to replace the default +BpmnParseHandler+ insta
 </property>
 ----
 
-A simple example could for example be to force all of the service tasks to be asynchronous:
+简单的例子是用于将所有服务任务都强制异步执行：
 
 [source,java,linenums]
 ----
@@ -157,10 +150,10 @@ public class CustomUserTaskBpmnParseHandler extends ServiceTaskParseHandler {
 
   protected void executeParse(BpmnParse bpmnParse, ServiceTask serviceTask) {
 
-    // Do the regular stuff
+    // 进行常规操作 Do the regular stuff
     super.executeParse(bpmnParse, serviceTask);
 
-    // Make always async
+    // 保证异步 Make always async
     ActivityImpl activity = findActivity(bpmnParse, serviceTask.getId());
     activity.setAsync(true);
   }
@@ -172,13 +165,13 @@ public class CustomUserTaskBpmnParseHandler extends ServiceTaskParseHandler {
 [[advanced.uuid.generator]]
 
 
-=== UUID id generator for high concurrency
+=== 高并发下使用的UUID id生成器 UUID id generator for high concurrency
 
-In some (very) high concurrency load cases, the default id generator may cause exceptions due to not being able to fetch new id blocks quickly enough. Every process engine has one id generator. The default id generator reserves a block of ids in the database, such that no other engine will be able to use id's from the same block. During  engine operations, when the default id generator notices that the id block is used up, a new transaction is started to fetch a new block. In (very) limited use cases this can cause problems when there is a real high load. For most use cases the default id generator is more than sufficient. The default +org.activiti.engine.impl.db.DbIdGenerator+ also has a property +idBlockSize+ which can be configured to set the size of the reserved block of ids and to tweak the behavior of the id fetching.
+在某些（非常）高并发负载的情况下，默认的id生成器可能会由于不能足够快地获取新的id块而产生异常。每一个流程引擎都有一个id生成器。默认的id生成器在数据库中保留一个块的id，这样其他引擎就不能使用同一个块中的id。在引擎操作时，当默认的id生成器发现id块已经用完，就会启动一个新的事务，来获取一个新的块。在（非常）有限的使用场景下，当负载非常高时可能导致问题。对于大多数用例来说，默认的id生成器已经足够使用了。默认的++org.activiti.engine.impl.db.DbIdGenerator++也有一个++idBlockSize++参数，用于配置保留的id块的大小，可以调整获取id的行为。
 
-The alternative to the default id generator is the +org.activiti.engine.impl.persistence.StrongUuidGenerator+, which generates a unique link:$$http://en.wikipedia.org/wiki/Universally_unique_identifier$$[UUID] locally and uses that as identifier for all entities. Since the UUID is generated without the need for database access, it copes better with very high concurrency use cases. Do note that performance may differ from the default id generator (both positive and negative) depending on the machine.
+默认的id生成器的替代品是++org.activiti.engine.impl.persistence.StrongUuidGenerator++，它会在本地生成一个唯一的link:$$http://en.wikipedia.org/wiki/Universally_unique_identifier$$[UUID]，并将其用作所有实体的标识符。因为UUID不需要访问数据库就能生成，因此在非常高并发的使用场景下更合适。请注意取决于机器，性能可能与默认的id生成器不同（更好更坏都有可能）。
 
-The UUID generator can be configured in the activiti configuration as follows:
+可以在activiti配置中，像下面这样配置UUID生成器：
 
 [source,xml,linenums]
 ----
@@ -187,8 +180,7 @@ The UUID generator can be configured in the activiti configuration as follows:
 </property>
 ----
 
-
-The use of the UUID id generator depends on the following extra dependency:
+使用UUID id生成器使用下列额外依赖：
 
 [source,xml,linenums]
 ----
@@ -203,16 +195,15 @@ The use of the UUID id generator depends on the following extra dependency:
 [[advanced.tenancy]]
 
 
-=== Multitenancy
+=== 多租户 Multitenancy
 
+总的来说，多租户是一个软件为多个不同组织提供服务的概念。其核心是数据是隔离的，一个组织不能看到其他组织的数据。在这个上下文中，一个这种组织（或部门、团队……）被称为一个__租户（tenant）__。
 
-Multitenancy in general is a concept where the software is capable of serving multiple different organizations. Key is that the data is partitioned and no organization can see the data of other ones. In this context, such an organization (or a department, or a team or ...) is called a _tenant_.
+请注意它与多实例安装方式有本质区别，其中多实例安装是指每一个组织都分别运行一个Activiti流程引擎实例（并使用不同的数据库账户）。尽管Activiti比较轻量级，运行一个流程引擎实例不会花费太多资源，但仍然增加了复杂性与维护量。但是，在某些用力下可能是正确的解决方案。
 
-Note that this is fundamentally different from a multi-instance setup, where an Activiti Process Engine instance is running for each organization separately (and with a different database schema). Although Activiti is lightweight, and running a Process Engine instance doesn't take much resources, it does add complexity and more maintenance. But, for some use cases it might be the right solution.
+Activiti中的多租户主要围绕着隔离数据实现。要注意__Activiti并不强制多租户规则__。这意味着当查询与使用数据时并不会验证进行操作的用户属于正确的租户。这应该在调用Activiti引擎的层次实现。Activiti确保可以存储租户信息，并在获取流程数据时使用。
 
-Multitenancy in Activiti is mainly implemented around partitioning the data. It is important to  note that _Activiti does not enforce multi tenancy rules_. This means it will not verify when querying and using data whether the user doing the operation is belonging to the correct tenant. This should be done in the layer calling the Activiti engine. Activiti does make sure that tenant information can be stored and used when retrieving process data.
-
-When deploying process definition to the Activiti Process Engine it is possible to pass a _tenant identifier_. This is a string (e.g. a UUID, department id, etc.), limited to 256 characters which is uniquely identifies the tenant:
+在Activiti流程引擎中部署流程定义时，可以传递一个__租户标识符（tenant identifier）__。这是一个字符串（例如一个UUID，部门id，等等……），限制为256个字符长，唯一标识租户：
 
 [source,java,linenums]
 ----
@@ -222,19 +213,18 @@ repositoryService.createDeployment()
             .deploy();
 ----
 
+在部署时传递一个租户id带有下列含义：
 
-Passing a tenant id during a deployment has following implications:
+* 部署中包含的所有流程定义都将从该部署集成租户标识符。
+* 从这些流程定义启动的所有流程实例都将从流程定义继承租户标识符。
+* 在执行流程实例时，运行时创建的所有任务都将从流程实例继承租户标识符。独立任务也可以有租户标识符。
+* 执行流程实例时创建的所有执行都将从流程实例继承租户标识符。
+* 触发一个信号抛出事件（在流程内或通过API）时可以提供一个租户标识符。这个信号将只在该租户的上下文中执行：也就是说，如果有多个使用相同名字的信号捕获事件，只会调用带有正确租户标识符的事件。
+* 所有作业（定时器与异步延续）要么从流程定义（例如定时器启动事件），要么从流程实例（运行时创建的作业，例如异步延续）继承租户标识符。这可以用于在自定义作业执行器中为部分租户设置优先级。
+* 所有历史实体（历史流程实例、任务与活动）都从其对应的运行时对象继承租户标识符。
+* 另外，模型也可以有租户标识符（模型在例如Activiti Modeler存储BPMN 2.0模型的时候使用）。
 
-* All the process definitions contained in the deployment inherit the tenant identifier from this deployment.
-* All process instances started from those process definitions inherit this tenant identifier from the process definition.
-* All tasks created at runtime when executing the process instance inherit this tenant identifier from the process instance. Standalone tasks can have a tenant identifier too.
-* All executions created during process instance execution inherit this tenant identifier from the process instance.
-* Firing a signal throw event (in the process itself or through the API) can be done whilst providing a tenant identifier. The signal will only be executed in the tenant context: i.e. if there are multiple signal catch events with the same name, only the one with the correct tenant identifier will actually be called.
-* All jobs (timers and async continuations) inherit the tenant identifier from either the process definition (e.g. timer start event) or the process instance (when a job is created at runtime, e.g. an async continuation). This could potentially be used for giving priority to some tenants in a custom job executor.
-* All the historic entities (historic process instance, task and activities) inherit the tenant identifier from their runtime counterparts.
-* As a side note, models can have a tenant identifier too (models are used e.g. by the Activiti Modeler to store BPMN 2.0 models).
-
-To actually make use of the tenant identifier on the process data, all the query API's have the capability to filter on tenant. For example (and can be replaced by the relevant query implementation of the other entities):
+为了实际使用流程数据上的租户标识符，所有查询API都可以通过租户过滤。例如（也可以使用其他实体的对应查询实现替换）：
 
 [source,java,linenums]
 ----
@@ -245,13 +235,13 @@ runtimeService.createProcessInstanceQuery()
     .list()
 ----
 
-The query API's also allow to filter on the tenant identifier with _like_ semantics  and also to filter out entities without tenant id.
+查询API也可以使用__like__语义通过租户标识符过滤，也可以过滤掉没有租户标识符的实体。
 
-*Important implementation detail:* due to database quirks (more specifically: null handling in unique constraints) the _default_ tenant identifier value indicating _no tenant_ is the *empty string*. The combination of (process definition key, process definition version, tenant identifier) needs to be unique (and there is a database constraint checking this). Also note that the tenant identifier shouldn't be set to null, as this will affect the queries since certain databases (Oracle) treat empty string as a null value (that's why the query _.withoutTenantId_ does a check against the empty string or null). This means that the same process definition (with same process definition key) can be deployed for multiple tenants, each with their own versioning. This does not affect the usage when tenancy is not used.
+**重要的实现细节：**由于数据库的原因（更确切地说，唯一约束的null处理），__默认的__代表__没有租户__的租户标识符为**空字符串**。（流程定义key，流程定义版本，租户标识符）的组合需要是唯一的（并且通过数据库约束检查）。也请注意租户标识符不能设置为null，不然会影响查询，因为某些数据库（Oracle）将空字符串当做null值（这就是为什么__.withoutTenantId__查询不检查空字符串还是null）。这意味着同一个流程定义（有相同的流程定义key）可以为多个租户部署，每一个租户都有他们自己的版本。未使用租户时不会影响使用。
 
-*Do note that all of the above does not conflict with running multiple Activiti instances in a cluster.*
+**请注意上面所说都不与在集群中运行多个Activiti实例冲突。**
 
-[Experimental] It is possible to change the tenant identifier by calling the _changeDeploymentTenantId(String deploymentId, String newTenantId)_ method on the _repositoryService_. This will change the tenant identifier everywhere it was inherited before. This can be useful when going from a non-multitenant setup to a multitenant configuration. See the Javadoc on the method for more detailed information.
+[试验性] 可以调用__repositoryService__的__changeDeploymentTenantId(String deploymentId, String newTenantId)__方法修改租户标识符。这将修改每一处之前继承的租户标识符。在从非多租户环境迁移至多租户配置时很有用。查看该方法的Javadoc了解更多细节信息。
 
 [[advanced.custom.sql.queries]]
 
