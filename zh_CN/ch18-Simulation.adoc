@@ -1,45 +1,44 @@
 
-== Simulation with Activiti-Crystalball (Experimental)
+== 使用Activiti-Crystalball仿真（试验性） Simulation with Activiti-Crystalball (Experimental)
 
 [[crb-introduction]]
 
 
-=== Introduction
+=== 介绍 Introduction
 
 [[crb-overview]]
 
-==== Short overview
+==== 简介 Short overview
 
-activiti-crystalball (CrystalBall) is simulation engine for Activiti Business Process Management Platform. CrystalBall allows use of simulation for:
+activiti-crystalball（CrystalBall）是一个用于Activiti业务流程管理平台的仿真引擎。CrystalBall仿真可以用于：
       
-* decision support - for production workflow (e.g. should we add now more resources to the system to meet due dates?).
-* optimisation and understanding - testing changes and understanding their impacts.
-* training - simulation can be used to train staff before roll out.
+* 支持决策——对于生产工作流（例如，我们是否要在系统中增加更多资源，以满足截止日期？）。
+* 优化与理解——测试变更并理解其影响。
+* 培训——仿真可以在员工铺开使用前进行培训。
 * ... 
 
 
 [[crb-unique]]
 
 
-==== CrystalBall is unique
+==== CrystalBall是唯一的 CrystalBall is unique
 
-No need to:
-      
-* create separate simulation models and engines.
-* create different reporting for simulation.
-* feed simulation engine with a lot of data.
+不需要：
 
-CrystalBall simulator is based on Activiti. That's why it is easy to copy data and start simulation and be able to replay workflow behavior from the history.
+* 创建单独的仿真模型与引擎。
+* 为仿真创建不同的报告。
+* 为仿真引擎提供大量数据。
+
+CrystalBall仿真器基于Activiti。这就是为什么可以很轻易地复制数据并启动仿真，也可以从历史中重放工作流行为。
     
 
 [[crb-inside]]
 
 
-=== CrystalBall inside
+=== 深入CrystalBall (CrystalBall inside)
 
+CrystalBall是一个link:$$http://en.wikipedia.org/wiki/Discrete_event_simulation$$[离散事件仿真器]。最简单的实现是org.activiti.crystalball.simulator.SimpleSimulationRun。
 
-CrystalBall is a link:$$http://en.wikipedia.org/wiki/Discrete_event_simulation$$[discrete event simulator]. The simplest implementation is org.activiti.crystalball.simulator.SimpleSimulationRun.
-  
 [source,java,linenums]  
 ----
 init();
@@ -54,21 +53,21 @@ while (!simulationEnd(event)) {
 close();  
 ----
 
-
-SimulationRun is able to execute simulation events generated from different sources (see link:$$#crb-playback$$[PlayBack]).
+SimulationRun也可以执行不同来源生成的仿真事件（参见link:$$#crb-playback$$[回放]）。
 
 
 [[crb-history-analysis]]
 
 
-=== History analysis
+=== 历史分析 History analysis
 
-One of the usecases where simulation can be used is analysis of the history. The production environment does not give any chance to repeat and debug bugs. That's why it is almost impossible to get process engine into the state which is the same as it was on the production environment on the time when bug occurred. The problem is not the hardware but
-        
-* time - process instance run can take several months.
-* concurrency - process instance run can interfere with another one and bug can be found only in the case of parallel execution of both of them.
-* users - a lot of users can participate on the process instance execution. It takes a lot of effort to get process instance to the state where error occurred.
-            
+仿真的一个使用场景是用于分析历史。生产环境不能用于重现并查找bug。这就是为什么几乎不可能将流程引擎调整到生产环境发生bug时一样的状态。问题不在硬件而是：
+
+* 时间——流程实例可能需要好几个月。
+* 并发——流程实例运行时可能与其它的实例相互影响，只有在它们都并行执行的时候才会发现问题。
+* 用户——大量用户可以参与流程实例执行。将流程实例调整到错误发生时的状态会花费大量精力。
+
+
 The simulation can address mentioned issues easily. Simulation time is virtual and does not depend on real time. Activiti process engine itself is virtual. There is no need to create virtual process engine which is used in the simulation experiment. In this case concurrency can be addressed naturally. Users' behavior can be logged and replayed from this log or predicted and generated on demand.
       
 The best way to analyze history is to re-live it once more time. The re-living is hardly achievable in real life but it can be achieved by simulation.
