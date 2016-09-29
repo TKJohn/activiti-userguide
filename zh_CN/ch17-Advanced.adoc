@@ -246,15 +246,15 @@ runtimeService.createProcessInstanceQuery()
 [[advanced.custom.sql.queries]]
 
 
-=== Execute custom SQL
+=== 执行自定义SQL Execute custom SQL
 
-The Activiti API allows for interacting with the database using a high level API. For example, for retrieving data the Query API and the Native Query API are powerful in its usage. However, for some use cases they might not be flexible enough. The following section describes how a completely custom SQL statement (select, insert, update and delete are possible) can be executed against the Activiti data store, but completely within the configured Process Engine (and thus levering the transaction setup for example).
+Activiti API可以通过高级API与数据库交互。例如，要获取数据，查询API与原生（Native）查询API各有用武之地。然而，在某些用例下，可能不够灵活。下面的章节描述了如何在Activiti数据存储中执行完全自定义的SQL语句（select、insert、update与delete都可以），且完全在配置的流程引擎范围内（例如因此可以使用事务设置）。
 
-To define custom SQL statements, the Activiti engine leverages the capabilities of its underlying framework, MyBatis. More info can be read  link:$$http://mybatis.github.io/mybatis-3/java-api.html$$[in the MyBatis user guide].
+要定义自定义SQL语句，activiti引擎使用其底层框架，MyBatis的能力。可以在link:$$http://mybatis.github.io/mybatis-3/java-api.html$$[MyBatis用户手册中]阅读更多信息。
 
-==== Annotation based Mapped Statements
+==== 基于注解的映射语句 Annotation based Mapped Statements
 
-The first thing to do when using Annotation based Mapped Statements, is to create a MyBatis mapper class. For example, suppose that for some use case not the whole task data is needed, but only a small subset of it. A Mapper that could do this, looks as follows:
+当使用基于注解的映射语句时，首先要做的是创建一个ByBatis映射类。例如，假设在某个用例中，不需要所有的任务数据，而只需要其中很少一部分。可以通过映射类完成，像是这样：
 
 [source,java,linenums]
 ----
@@ -266,8 +266,7 @@ public interface MyTestMapper {
 }
 ----
 
-
-This mapper must be provided to the Process Engine configuration as follows:
+该映射类必须像下面这样提供给流程引擎配置：
 
 [source,xml,linenums]
 ----
@@ -280,12 +279,11 @@ This mapper must be provided to the Process Engine configuration as follows:
 ...
 ----
 
-Notice that this is an interface. The underlying MyBatis framework will make an instance of it that can be used at runtime. Also notice that the return value of the method is not typed, but a list of maps (which corresponds to the list of rows with column values). Typing is possible with the MyBatis mappers if wanted.
+请注意这是一个接口。底层的MyBatis框架会构造一个它的实例，并在运行时使用。也请注意方法的返回值没有类型，而只是一个map的list（代表了带有列数据的行的列表）。如果需要，可以通过MyBatis映射类设置类型。
 
-To execute the query above, the _managementService.executeCustomSql_ method must be used. This method takes in a _CustomSqlExecution_ instance. This is a wrapper that hides the internal bits of the engine otherwise needed to make it work.
+要执行上面的查询，必须使用__managementService.executeCustomSql__方法。这个方法使用一个_CustomSqlExecution__实例。这是一个包装器，将引擎的内部数据隐藏起来，不然引擎就要处理这些。
 
-
-Unfortunately, Java generics make it a bit less readable than it could have been. The two generic types below are the mapper class and the return type class. However, the actual logic is simply to call the mapper method and return its results (if applicable).
+不幸的是，Java泛型让它没有本应该的那么可读。下面的两个泛型类是映射类与其返回类型类。然而，实际的逻辑就是简单的调用映射方法，并返回其结果（若有）。
 
 [source,java,linenums]
 ----
@@ -301,10 +299,9 @@ CustomSqlExecution<MyTestMapper, List<Map<String, Object>>> customSqlExecution =
 List<Map<String, Object>> results = managementService.executeCustomSql(customSqlExecution);
 ----
 
+在这个例子里，上面列出的映射实体只包含__id, name与创建时间__，而不是完整的任务对象。
 
-The Map entries in the list above will only contain _id, name and create time_ in this case and not the full task object.
-
-Any SQL is possible when using the approach above. Another more complex example:
+上面的方法可以使用任何SQL。另一个更复杂的例子：
 
 [source,java,linenums]
 ----
@@ -316,14 +313,14 @@ Any SQL is possible when using the approach above. Another more complex example:
     List<Map<String, Object>> selectTaskWithSpecificVariable(String variableName);
 ----
 
-Using this method, the task table will be joined with the variables table. Only where the variable has a certain name is retained, and the task id and the corresponding numerical value is returned.
+使用这个方法，会将任务表与变量表联合。只选择变量有特定名字的记录，并返回任务id与对应的数字值。
 
-For a working example on using Annotation based Mapped Statements check the unit test _org.activiti.standalone.cfg.CustomMybatisMapperTest_ and other classes and resources in folders src/test/java/org/activiti/standalone/cfg/ and src/test/resources/org/activiti/standalone/cfg/
+对于使用基于注解的映射语句的实际例子，请查看单元测试__org.activiti.standalone.cfg.CustomMybatisMapperTest__与src/test/java/org/activiti/standalone/cfg/、src/test/resources/org/activiti/standalone/cfg/目录中的其它类与资源。
 
 
-==== XML based Mapped Statements
+==== 基于XML的映射语句 XML based Mapped Statements
 
-When using XML based Mapped Statements, statements are defined in XML files. For the use case where not the whole task data is needed, but only a small subset of it. The XML file can look as follows:
+当使用基于XML的映射语句时，语句在XML文件中定义。对于不需要整个任务数据，而只需要其中很少一部分的用例来说，XML文件像是下面这样：
 
 [source,xml,linenums]
 ----
@@ -342,7 +339,7 @@ When using XML based Mapped Statements, statements are defined in XML files. For
 </mapper>
 ----
 
-Results are mapped to instances of _org.activiti.standalone.cfg.CustomTask_ class which can look as follows:
+结果映射为__org.activiti.standalone.cfg.CustomTask__类的实例，像是下面这样：
 
 [source,java,linenums]
 ----
@@ -364,7 +361,7 @@ public class CustomTask {
 }
 ----
 
-Mapper XML files must be provided to the Process Engine configuration as follows:
+必须像下面这样为流程引擎配置提供映射XML文件：
 
 [source,xml,linenums]
 ----
@@ -377,7 +374,8 @@ Mapper XML files must be provided to the Process Engine configuration as follows
 ...
 ----
 
-The statement can be executed as follows:
+语句可以如下执行：
+
 [source,java,linenums]
 ----
 List<CustomTask> tasks = managementService.executeCommand(new Command<List<CustomTask>>() {
@@ -390,9 +388,9 @@ List<CustomTask> tasks = managementService.executeCommand(new Command<List<Custo
     });
 ----
 
-For uses cases that require more complicated statements, XML Mapped Statements can be helpful. Since Activiti uses XML Mapped Statements internally, it's possible to make use of the underlying capabilities.
+对于需要更复杂语句的用例，XML映射语句很有帮助。因此Activiti内部就使用XML映射语句，它可以确保底层功能。
 
-Suppose that for some use case the ability to query attachments data is required based on id, name, type, userId, etc! To fulfill the use case a query class _AttachmentQuery_ that extends  _org.activiti.engine.impl.AbstractQuery_ can be created as follows:
+假设某个用例下，需要基于id、name、type、userId等字段，查询附件数据！要实现这个用例，可以创建一个扩展了__org.activiti.engine.impl.AbstractQuery__的查询类__AttachmentQuery__，像下面这样：
 
 [source,java,linenums]
 ----
@@ -440,9 +438,9 @@ public class AttachmentQuery extends AbstractQuery<AttachmentQuery, Attachment> 
   }
 ----
 
-Note that when extending _AbstractQuery_ extended classes should pass an instance of _ManagementService_ to super constructor and methods _executeCount_ and _executeList_ need to be implemented to call the mapped statements.
+请注意在扩展__AbstractQuery__时，扩展类需要为super构造器传递一个__ManagementService__的实例，并需要实现__executeCount__与__executeList__来调用映射语句。
 
-The XML file containing the mapped statements can look as follows:
+包含映射语句的XML文件像是下面这样：
 
 [source,xml,linenums]
 ----
@@ -481,36 +479,36 @@ The XML file containing the mapped statements can look as follows:
 </mapper>
 ----
 
-Capabilities such as pagination, ordering, table name prefixing are available and can be used in the statements (since the parameterType is a subclass of _AbstractQuery_). Note that to map results the predefined _org.activiti.engine.impl.persistence.entity.AttachmentEntity.attachmentResultMap_ resultMap can be used.
+可以在语句中使用例如分页、排序、表名前缀等功能（因为parameterType为__AbstractQuery__的子类）。请注意可以使用已定义的__org.activiti.engine.impl.persistence.entity.AttachmentEntity.attachmentResultMap__来映射结果。
 
-Finally, the _AttachmentQuery_ can be used as follows:
+最后，__AttachmentQuery__可以如下使用：
 
 [source,java,linenums]
 ----
 ....
-// Get the total number of attachments
+// 获取附件的总数 Get the total number of attachments
 long count = new AttachmentQuery(managementService).count();
 
-// Get attachment with id 10025
+// 获取id为10025的附件 Get attachment with id 10025
 Attachment attachment = new AttachmentQuery(managementService).attachmentId("10025").singleResult();
 
-// Get first 10 attachments
+// 获取前10个附件 Get first 10 attachments
 List<Attachment> attachments = new AttachmentQuery(managementService).listPage(0, 10);
 
-// Get all attachments uploaded by user kermit
+// 获取用户kermit上传的所有附件 Get all attachments uploaded by user kermit
 attachments = new AttachmentQuery(managementService).userId("kermit").list();
 ....
 ----
 
-For working examples on using XML Mapped Statements check the unit test _org.activiti.standalone.cfg.CustomMybatisXMLMapperTest_ and other classes and resources in folders src/test/java/org/activiti/standalone/cfg/ and src/test/resources/org/activiti/standalone/cfg/
 
+对于使用基于XML的映射语句的实际例子，请查看单元测试__org.activiti.standalone.cfg.CustomMybatisXMLMapperTest__与src/test/java/org/activiti/standalone/cfg/、src/test/resources/org/activiti/standalone/cfg/目录中的其它类与资源。
 
 [[advanced.process.engine.configurators]]
 
 
-=== Advanced Process Engine configuration with a ProcessEngineConfigurator
+=== 使用ProcessEngineConfigurator进行高级流程引擎配置  Advanced Process Engine configuration with a ProcessEngineConfigurator
 
-An advanced way of hooking into the process engine configuration is through the use of a  _ProcessEngineConfigurator_. The idea is that an implementation of the  _org.activiti.engine.cfg.ProcessEngineConfigurator_ interface is created and injected  into the process engine configuration:
+深入流程引擎配置的高级方法是使用__ProcessEngineConfigurator__。方法是创建一个__org.activiti.engine.cfg.ProcessEngineConfigurator__接口的实现，并注入到流程引擎配置中：
 
 [source,xml,linenums]
 ----
@@ -531,10 +529,9 @@ An advanced way of hooking into the process engine configuration is through the 
 </bean>
 ----
 
+这个接口需要实现两个方法。__configure__方法，使用一个__ProcessEngineConfiguration__实例作为参数。可以使用这个方式添加自定义配置，并且这个方法会保证**在流程引擎创建之前，所有默认配置已经完成之后**调用。另一个方法是__getPriority__方法，可以指定配置器的顺序，以备某些配置器对其他的有依赖。
 
-There are two methods required to implement this interface. The _configure_ method, which gets a _ProcessEngineConfiguration_ instance as parameter. The custom configuration can be added this way, and this method will guaranteed be called *before the process engine is created, but after all default configuration has been done*. The other method is the _getPriority_ method, which allows for ordering the configurators in the case where some configurators are dependent on each other.
-
-An example of such a configurator is the <<chapter_ldap,LDAP integration>>, where the  configurator is used to replace the default user and group manager classes with one that is capable of handling an LDAP user store.	 So basically a configurator allows to change or tweak the process engine quite heavily and is meant for very advanced use cases. Another example is to swap the  process definition cache with a customized version:
+这种配置器的一个例子是<<chapter_ldap,LDAP集成>>，其中配置器用于将默认的用户与组管理类，替换为可以处理LDAP用户存储的实现。因此基本上配置器可以相当大地改变或调整流程引擎，也意味着非常高级的使用场景。另一个例子是使用自定义的版本替换流程引擎缓存：
 
 [source,java,linenums]
 ----
@@ -548,7 +545,7 @@ public class ProcessDefinitionCacheConfigurator extends AbstractProcessEngineCon
 }
 ----
 
-Process Engine configurators can also be auto discovered from the classpath using the link:$$http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html$$[ServiceLoader] approach. This means that a jar with the configurator implementation must be put on the classpath, containing a file in the _META-INF/services_ folder in the jar called *org.activiti.engine.cfg.ProcessEngineConfigurator*. The content of the file needs to be the fully qualified classname of the custom implementation. When the process engine is booted, the logging will show that these configurators are found:
+也可以使用link:$$http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html$$[ServiceLoader]方法，从classpath中自动发现流程引擎配置器。这意味着包含配置器实现的jar必须放在classpath下，并在jar的__META-INF/services__目录下包含名为**org.activiti.engine.cfg.ProcessEngineConfigurator**的文件。文件的内容必须是自定义实现的全限定类名。当流程引擎启动时，日志会显示找到这些配置器：
 
 ----
 INFO  org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl  - Found 1 auto-discoverable Process Engine Configurators
@@ -556,25 +553,24 @@ INFO  org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl  - Found 1 Pro
 INFO  org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl  - class org.activiti.MyCustomConfigurator
 ----
 
-Note that this ServiceLoader approach might not work in certain environments. It can be  explicitly disabled using the _enableConfiguratorServiceLoader_ property of the ProcessEngineConfiguration (true by default).
+请注意ServiceLoader方法可能在某些环境不能运行。可以通过ProcessEngineConfiguration的__enableConfiguratorServiceLoader__参数明确禁用（默认为true）。
 
 
 [[advanced.task.query.switching]]
 
 
-=== Advanced query API: seamless switching between runtime and historic task querying
+=== 高级查询API：在运行时与历史任务查询间无缝切换 Advanced query API: seamless switching between runtime and historic task querying
 
+任何BPM用户界面的核心组件都是任务列表。一般来说，最终用户操作运行时的任务，在收件箱中通过不同设置过滤。有时也需要在这些列表中显示历史任务，并使用类似的过滤。为了简化代码，__TaskQuery__与__HistoricTaskInstanceQuery__有共同的父接口，其中包含了所有公共操作（大多数操作都是公共的）。
 
-One core component of any BPM user interface is the task list. Typically, end users work on open, runtime tasks, filtering  their inbox with various setting. Often also the historic tasks need to be displayed in those lists, with similar filtering. To make that code-wise easier, the _TaskQuery_ and _HistoricTaskInstanceQuery_ both have a shared parent interface, which contains all common operations (and most of the operations are common).
-
-This common interface is the _org.activiti.engine.task.TaskInfoQuery_ class. Both _org.activiti.engine.task.Task_ and _org.activiti.engine.task.HistoricTaskInstance_  have a common superclass _org.activiti.engine.task.TaskInfo_ (with common properties) which is returned from e.g. the _list()_ method. However, Java generics are sometimes more harming than helping: if you want to use the _TaskInfoQuery_ type directly, it would look like this:
+这个公共接口是__org.activiti.engine.task.TaskInfoQuery__类。__org.activiti.engine.task.Task__与__org.activiti.engine.task.HistoricTaskInstance__都有公共父类__org.activiti.engine.task.TaskInfo__（并带有公共参数），并将作为例如__list()__方法的返回值。然而，有时Java泛型会帮倒忙：如果想要直接使用__TaskInfoQuery__类型，将会像是这样：
 
 [source,java,linenums]
 ----
 TaskInfoQuery<? extends TaskInfoQuery<?,?>, ? extends TaskInfo> taskInfoQuery
 ----
 
-Ugh, Right. To 'solve' this, a _org.activiti.engine.task.TaskInfoQueryWrapper_ class that can be used to avoid the generics  (the following code could come from REST code that returns a task list where the user can switch between open and completed tasks):
+呃……好吧。为了“解决”这个问题，可以使用__org.activiti.engine.task.TaskInfoQueryWrapper__类来避免泛型（下面的代码来自REST的代码，将返回一个任务列表，且用户可以选择进行中还是已完成的任务）：
 
 [source,java,linenums]
 ----
@@ -596,9 +592,9 @@ List<? extends TaskInfo> taskInfos = taskInfoQueryWrapper.getTaskInfoQuery().or(
 [[advanced.custom.session.manager]]
 
 
-=== Custom identity management by overriding standard SessionFactory
+=== 通过覆盖标准SessionFactory自定义身份管理 Custom identity management by overriding standard SessionFactory
 
-If you do not want to use a full _ProcessEngineConfigurator_ implementation like in the  <<chapter_ldap,LDAP integration>>, but still want to plug in your custom identity management framework,  then you can also override the _SessionFactory_ classes directly in the _ProcessEngineConfiguration_.  In Spring this can be easily done by adding the following to the _ProcessEngineConfiguration_ bean definition:
+如果不想像<<chapter_ldap,LDAP集成>>中那样，使用完整的__ProcessEngineConfigurator__实现，但仍然希望将自定义的身份管理插入框架中，那么也可以直接覆盖__ProcessEngineConfiguration__中的__SessionFactory__类。在Spring中，可以简单地通过向__ProcessEngineConfiguration__ bean定义添加下面的代码实现：
 
 [source,xml,linenums]
 ----
@@ -619,7 +615,7 @@ If you do not want to use a full _ProcessEngineConfigurator_ implementation like
 
 ----
 
-The _MyGroupManagerFactory_ and _MyUserManagerFactory_ need to implement the _org.activiti.engine.impl.interceptor.SessionFactory_ interface. The call to _openSession()_ returns the custom class implementation that does the actual identity management. For groups this is a class that inherits from _org.activiti.engine.impl.persistence.entity.GroupEntityManager_ and for managing users it must inherit from _org.activiti.engine.impl.persistence.entity.UserEntityManager_. The following code sample contains a custom manager factory for groups:
+__MyGroupManagerFactory__与__MyUserManagerFactory__需要实现__org.activiti.engine.impl.interceptor.SessionFactory__接口。对__openSession()__的调用，需要返回实际管理身份的自定义类的实现。对于组，需要是继承__org.activiti.engine.impl.persistence.entity.GroupEntityManager__的类，对于用户管理，需要是继承__org.activiti.engine.impl.persistence.entity.UserEntityManager__的类。下面的代码样例包含了一个自定义的组管理器工厂：
 
 [source,java,linenums]
 ----
@@ -644,7 +640,7 @@ public class MyGroupManagerFactory implements SessionFactory {
 }
 ----
 
-The _MyCompanyGroupManager_ created by the factory is doing the actual work. You do not need to override all members of _GroupEntityManager_ though, just the ones required for your use case. The following sample provides an indication of how this may look like (only a selection of members are shown):
+这个工厂创建的__MyCompanyGroupManager__进行实际工作。但不需要覆盖__GroupEntityManager__的所有成员，只需要覆盖使用场景需要的那些即可。下面的样例展示了可能的样子（只展示一部分成员）：
 
 [source,java,linenums]
 ----
@@ -682,43 +678,38 @@ public class MyCompanyGroupManager extends GroupEntityManager {
 }
 ----
 
-Add your own implementation in the appropriate methods to plugin your own identity management solution.
-You have to figure out which member of the base class must be overridden. For example the following call:
+在适当的方法中添加你自己的实现，以插入自己的身份管理解决方案。需要自行判断要覆盖基类中的那些成员。例如下面的调用：
 
 [source,java,linenums]
 ----
 long potentialOwners = identityService.createUserQuery().memberOfGroup("management").count();
 ----
 
-leads to a call on the following member of the _UserIdentityManager_ interface:
+会调用__UserIdentityManager__接口的下列成员：
 
 [source,java,linenums]
 ----
 List<User> findUserByQueryCriteria(UserQueryImpl query, Page page);
 ----
 
-
-The code for the <<chapter_ldap,LDAP integration>> contains full examples of how to implement this. Check out the code on Github, specifically the following classes
-          link:$$https://github.com/Activiti/Activiti/blob/master/modules/activiti-ldap/src/main/java/org/activiti/ldap/LDAPGroupManager.java$$[LDAPGroupManager] and
-   link:$$https://github.com/Activiti/Activiti/blob/master/modules/activiti-ldap/src/main/java/org/activiti/ldap/LDAPUserManager.java$$[LDAPUserManager].
+<<chapter_ldap,LDAP集成>>中的代码包含了如何实现这些的完整示例。可以在GitHub查看代码，特别是link:$$https://github.com/Activiti/Activiti/blob/master/modules/activiti-ldap/src/main/java/org/activiti/ldap/LDAPGroupManager.java$$[LDAPGroupManager]与link:$$https://github.com/Activiti/Activiti/blob/master/modules/activiti-ldap/src/main/java/org/activiti/ldap/LDAPUserManager.java$$[LDAPUserManager]。
 
 
 [[advanced.safe.bpmn.xml]]
 
 
-=== Enable safe BPMN 2.0 xml
+=== 启用安全BPMN 2.0 XML (Enable safe BPMN 2.0 xml)
 
+在大多数情况下，部署至Activiti引擎的BPMN 2.0流程都在例如开发团队的严格控制下。然而，有的时候能够向引擎上传任意的BPMN 2.0 XML很诱人。在这种情况下，需要考虑动机不良的用户可能会像link:$$http://www.jorambarrez.be/blog/2013/02/19/uploading-a-funny-xml-can-bring-down-your-server/$$[这里]描述的一样，搞坏服务器。
 
-In most cases the BPMN 2.0 processes that are being deployed to the Activiti engine are under tight control of e.g. the development team. However, in some use cases it might be desirable to upload arbitrary BPMN 2.0 xml to the engine. In that case, take into consideration that a user with bad intentions can bring the server down as described link:$$http://www.jorambarrez.be/blog/2013/02/19/uploading-a-funny-xml-can-bring-down-your-server/$$[here].
-
-To avoid the attacks described in the link above, a property _enableSafeBpmnXml_ can be set on the process engine configuration:
+要避免上面链接中描述的攻击，可以在流程引擎配置中设置__enableSafeBpmnXml__参数：
 
 [source,xml,linenums]
 ----
 <property name="enableSafeBpmnXml" value="true"/>
 ----
 
-*By default this feature is disabled!* The reason for this is that it relies on  the availability of the link:$$http://download.java.net/jdk7/archive/b123/docs/api/javax/xml/transform/stax/StAXSource.html$$[StaxSource] class. Unfortunately, on some platforms (e.g. JDK 6, JBoss, etc.) this class is unavailable (due to older xml parser implementation) and thus the safe BPMN 2.0 xml feature cannot be enabled.
+**默认情况下这个功能是禁用的！**原因是它依赖link:$$http://download.java.net/jdk7/archive/b123/docs/api/javax/xml/transform/stax/StAXSource.html$$[StaxSource]类。而不幸的是，某些平台（例如JDK6， JBoss，等等）不能使用这个类（由于过时的XML解析器实现），因此不能启用安全BPMN 2.0 XML功能。
 
 If the platform on which Activiti runs does support it, do enable this feature.
 
@@ -726,18 +717,18 @@ If the platform on which Activiti runs does support it, do enable this feature.
 [[advanced.event.logging]]
 
 
-=== Event logging (Experimental)
+=== 事件记录（试验性） Event logging (Experimental)
 
-As of Activiti version 5.16, an (experimental) event logging mechanism has been introduced. The logging mechanism builds upon the general-purpose <<eventDispatcher,event mechanism of the Activiti engine>> and is disabled by default. The idea is that the events originating from the engine are caught, and a map containing all the event data (and some more) is created and provided to an _org.activiti.engine.impl.event.logger.EventFlusher_ which will flush this data to somewhere else. By default, simple database-backed event handlers/flusher is used, which serializes the said map to JSON using Jackson and stores it in the database as an _EventLogEntryEntity_ instance.  The table required for this database logging is  created by default (called __$$ACT_EVT_LOG$$__). This table can be deleted if the event logging is not used.
+从Activiti 5.16开始，引入了（试验性）的事件记录机制。记录机制基于<<eventDispatcher,Activiti引擎的事件机制>>的一般用途，并默认禁用。其思想是，来源于引擎的事件会被捕获，并创建一个包含了所有事件数据（甚至更多）的映射，提供给__org.activiti.engine.impl.event.logger.EventFlusher__，由它将这些数据刷入其他地方。默认情况下，使用简单的基于数据库的事件处理/刷入，会使用Jackson将上述映射序列化为JSON，并将其作为__EventLogEntryEntity__接口存入数据库。如果不使用事件记录，可以删除这个表。
 
-To enable the database logger:
+要启用数据库记录：
 
 [source,java,linenums]
 ----
 processEngineConfiguration.setEnableDatabaseEventLogging(true);
 ----
 
-or at runtime:
+或在运行时：
 
 [source,xml,linenums]
 ----
@@ -745,18 +736,17 @@ databaseEventLogger = new EventLogger(processEngineConfiguration.getClock());
 runtimeService.addEventListener(databaseEventLogger);
 ----
 
-The EventLogger class can be subclassed. In particular, the _createEventFlusher()_ method needs to return an instance of the _org.activiti.engine.impl.event.logger.EventFlusher_ interface if the default database logging is not wanted. The _managementService.getEventLogEntries(startLogNr, size);_  can be used to retrieve the _EventLogEntryEntity_ instances through Activiti.
+可以继承EventLogger类。如果默认的数据库记录不符合要求，需要覆盖__createEventFlusher()__方法返回一个__org.activiti.engine.impl.event.logger.EventFlusher__接口的实例。可以通过Activiti的__managementService.getEventLogEntries(startLogNr, size);__获取__EventLogEntryEntity__实例。
 
-It is easy to see how this table data can now be used to feed the JSON into a big data NoSQL store such as MongoDB, Elastic Search, etc. It is also easy to see that the classes used here (org.activiti.engine.impl.event.logger.EventLogger/EventFlusher and many EventHandler classes) are pluggable and can be tweaked to your own use case (eg not storing the JSON in the database, but firing it straight onto a queue or big data store).
+容易看出这个表中的数据可以通过JSON放入大数据NoSQL存储，例如MongoDB，Elastic Search，等等。也容易看出这里使用的类（org.activiti.engine.impl.event.logger.EventLogger/EventFlusher与许多其他EventHandler类）是可插入的，可调整以适应你的使用场景（例如不将JSON存入数据库，而是将其直接发送给一个队列或大数据存储）。
 
-Note that this event logging mechanism is additional to the 'traditional' history manager of Activiti. Although all the data is in the database tables,
-it is not optimized for querying nor for easy retrieval. The real use case is audit trailing and feeding it into a big data store.
+请注意这个事件记录机制是额外于Activiti的“传统”历史管理器的。尽管所有数据都在数据库表中，但并未对查询或快速恢复做优化。实际使用场景是末端审计并将其存入大数据存储。
 
-=== Disabling bulk inserts
+=== 禁用批量插入 Disabling bulk inserts
 
-By default, the engine will group multiple insert statements for the same database table together in a _bulk insert_, thus improving performance. This has been tested and implemented for all supported databases.
+默认情况下，引擎会将对同一个数据库表的多个插入语句组合在一起，作为__批量插入__，这样能够提高性能，并已在所有支持的数据库中测试与实现了。
 
-However, it could be a specific version of a supported and tested database does not allow bulk inserts (we have for example a report for DB2 on z/OS, although DB2 in general works), the bulk insert can be disabled on the process engine configuration:
+然而，支持与测试过的数据库，可能有某个特定版本不支持批量插入（例如有报告说DB2在z/OS上不支持，尽管一般来说DB2是支持的），可以在流程引擎配置中禁用批量插入：
 
 [source,xml,linenums]
 ----
@@ -764,15 +754,15 @@ However, it could be a specific version of a supported and tested database does 
 ----
 
 [[advancedSecureScripting]]
-=== Secure Scripting
+=== 安全脚本 Secure Scripting
 
-*Experimental*: the secure scripting feature has been added as part of the Activiti 5.21 release.
+**试验性**：安全脚本功能随Activiti 5.21发布。
 
-By default, when using a <<bpmnScriptTask, script task>>, the script that is executed has similar capabilities as a Java delegate. It has full access to the JVM, can run forever (due to infinite loops) or use up a lot of memory. However, Java delegates need to be written and put on the classpath in a jar and they have a different lifecyle from a process definitions. End-users generally will not write Java delegates, as this is a typical the job of a developer.
+默认情况下，使用<<bpmnScriptTask,脚本任务>>时，执行的脚本与Java代理具有相似的能力。可以完全访问JVM，永远运行（无限循环），或占用大量内存。然而，Java代理需要撰写并放在classpath的jar中，与流程定义的生命周期不同。最终用户一般不会撰写Java代理，因为这基本上是开发者的工作。
 
-Scripts on the other hand are part of the process definition and its lifecycle is the same. Script tasks don't need the extra step of a jar deployment, but can be executed from the moment the process definition is deployed. Sometimes, scripts for script tasks are not written by developers. Yet, this poses a problem as stated above: a script has full access to the JVM and it is possible to block many system resources when executing the script. Allowing scripts from just about anyone is thus not a good idea.
+然而脚本是流程定义的一部分，具有相同的生命周期。脚本任务不需要额外的jar部署步骤，而是在流程部署后就可以执行。有时，脚本任务中的脚本不是由开发者撰写的。这就有一个上面提到的问题：脚本可以完全访问JVM，也可以在执行脚本时阻止许多系统资源。因此允许来自几乎任何人的脚本不是一个好主意。
 
-To solve this problem, the _secure scripting_ feature can be enabled. Currently, this feature is implemented for _javascript_ scripting only. To enable it, add the _activiti-secure-javascript_ dependency to your project. When using maven:
+要解决这个问题，可以启用__安全脚本__功能。目前，这个功能只实现了_javascript_脚本。要启用它，向你的项目添加__activiti-secure-javascript__依赖。使用Maven时：
 
 [source,xml,linenums]
 ----
@@ -783,11 +773,11 @@ To solve this problem, the _secure scripting_ feature can be enabled. Currently,
 </dependency>
 ----
 
-Adding this dependency will transitively bring in the Rhino dependency (see link:$https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino$$[https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino]). Rhino is a javascript engine for the JDK. It used to be included in JDK version 6 and 7 and was superseded by the Nashorn engine. However, the Rhino project continued development after it was included in the JDK. Many features (including the ones Activiti uses to implement the secure scripting) were added afterwards. At the time of writing, the Nashorn engine *does not* have the features that are needed to implement the secure scripting feature.
+添加这个依赖会同时引入Rhino依赖（参见link:$https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino$$[https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino]）。Rhino是一个用于JDK的javascript引擎。过去包含在JDK版本6与7中，并被Nashorn引擎取代。然而，Rhino项目仍然在继续开发。许多功能（包括Activiti用于实现安全脚本的）都在之后才加入。在撰写本手册的时候，Nashorn**还没有**实现安全脚本功能需要功能。
 
-This does mean that there could be (typically small) differences between scripts (for example, _importPackage_ works on Rhino, but _load()_ has to be used on Nashorn). The changes would be similar to switching from JDK 7 to 8 scripts.
+这意味着脚本之间可能要做一些（基本很少）改变（例如，Rhino使用__importPackage__，而Nashorn使用__load()__）。这些改变与将脚本从JDK 7切换至8相似。
 
-Configuring the secure scripting is done through a dedicated _Configurator_ object that is passed to the process engine configuration before the process engine is instantiated:
+通过专门的__Configurator__对象配置安全脚本，并在流程引擎实例化之前将其传递给流程引擎配置：
 
 [source,java,linenums]
 ----
@@ -801,20 +791,20 @@ SecureJavascriptConfigurator configurator = new SecureJavascriptConfigurator()
 processEngineConfig.addConfigurator(configurator);
 ----
 
-Following settings are possible:
+可以使用下列设置：
 
-* *enableClassWhiteListing*: When true, all classes will be blacklisted and all classes that want to be used will need to be whitelisted individually. This gives tight control over what is exposed to scripts. By default _false_.
-* *whiteListedClasses*: a Set of Strings corresponding with fully qualified classnames of the classes that are allowed to be used in the script. For example, to expose the _execution_ object in a script, the _org.activiti.engine.impl.persistence.entity.ExecutionEntity_ String needs to be added to this Set. By default _empty_.
-* *maxStackDepth*: Limits the stack depth while calling functions within a script. This can be used to avoid stackoverflow exceptions that occur when recursively calling a method defined in the script. By default _-1_ (disabled).
-* *maxScriptExecutionTime*: The maximum time a script is allowed to run. By default _-1_ (disabled).
-* *maxMemoryUsed*: The maximum memory, in bytes, that the script is allowed to use. Note that the script engine itself takes a a certain amount of memory that is counted here too. By default _-1_ (disabled).
-* *nrOfInstructionsBeforeStateCheckCallback*: The maximum script execution time and memory usage is implemented using a callback that is called every x instructions of the script. Note that these are not script instructions, but java byte code instructions (which means one script line could be hundreds of byte code instructions). By default 100.
+* *enableClassWhiteListing*: 为true时，会黑名单所有类，希望运行的所有类都需要分别添加入白名单。严格控制了暴露给脚本的东西。默认为__false__。
+* *whiteListedClasses*: 一个全限定类名字符串的集合，表示允许脚本中使用的类。例如，要在脚本中暴露__execution__对象，需要在这个集合中添加__org.activiti.engine.impl.persistence.entity.ExecutionEntity__字符串。默认为__空__。
+* *maxStackDepth*: 限制在脚本中调用函数时的最大栈深度。可以用于避免由于递归调用脚本中定义的方法，而导致的栈溢出异常。默认为__-1__（禁用）。
+* *maxScriptExecutionTime*: 脚本允许运行的最大时间。默认为__-1__（禁用）。
+* *maxMemoryUsed*: 脚本允许使用的最大内存数量，以字节计。请注意脚本引擎自己也要需要一定量的内存，也会算在这里。默认为__-1__（禁用）。
+* *nrOfInstructionsBeforeStateCheckCallback*: 脚本每执行x个指令，就通过回调函数进行一次最大脚本执行时间与内存检测。请注意这不是指脚本指令，而是指java字节码指令（这意味着一行脚本可能有上百行字节码指令）。默认为100。
 
-_Note:_ the _maxMemoryUsed_ setting can only be used by a JVM that supports the com.sun.management.ThreadMXBean#getThreadAllocatedBytes() method. The Oracle JDK has this.
+__请注意：____maxMemoryUsed__设置只能用于支持com.sun.management.ThreadMXBean#getThreadAllocatedBytes()方法的JVM。Oracle JDK支持它。
 
-There is also a secure variant of the ScriptExecutionListener and ScriptTaskListener: _org.activiti.scripting.secure.listener.SecureJavascriptExecutionListener_ and _org.activiti.scripting.secure.listener.SecureJavascriptTaskListener_.
+也有ScriptExecutionListener与ScriptTaskListener的安全形式：__org.activiti.scripting.secure.listener.SecureJavascriptExecutionListener__与__org.activiti.scripting.secure.listener.SecureJavascriptTaskListener__。
 
-It's used as follows:
+像这样使用：
 
 [source,xml,linenums]
 ----
@@ -830,4 +820,4 @@ It's used as follows:
 </activiti:executionListener>
 ----
 
-For examples that demonstrate unsecure scripts and how they are made secure by the _secure scripting_ feature, please check the  link:$$https://github.com/Activiti/Activiti/tree/master/modules/activiti-secure-javascript/src/test/resources$$[unit tests on Github]
+演示不安全脚本，与如何通过__安全脚本__功能将其变得安全的例子，可以查看link:$$https://github.com/Activiti/Activiti/tree/master/modules/activiti-secure-javascript/src/test/resources$$[GitHub上的单元测试]
