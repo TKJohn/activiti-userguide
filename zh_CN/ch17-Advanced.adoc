@@ -1,7 +1,7 @@
 
 == 高级 Advanced
 
-下面的章节介绍了Activiti的高级用例，超过了传统的BPMN 2.0流程的执行。因此，要理解这里的材料需要对Activiti足够熟练与精通。
+下面的章节介绍了Activiti的高级用例，超出了一般的BPMN 2.0流程执行的范畴。因此，要理解这里的材料需要对Activiti足够熟练与精通。
 
 [[advanced_parseHandlers]]
 
@@ -11,9 +11,9 @@
 
 ==== 异步执行器的设计 Async executor design
 
-异步执行器包含了一个用于执行定时器与异步作业的线程池。当启用时，引擎将会使用已经持久化的异步作业实体调用异步执行器，然后线程池将异步地执行该作业。这是与老的作业执行器的主要区别，因为在这种情况下，异步作业已被持久化，而作业执行器将会轮询数据库获取新作业。如果找到了一个作业，将锁定并执行它，这意味着大量额外的数据库通信。异步执行器会直接执行异步作业，而不会先轮询数据库。如果异步作业是一个排他作业，异步执行器将首先锁定流程实例的执行，如果成功将执行作业，并解锁流程实例执行。如果锁定流程实例失败，则会重试。
+异步执行器包含了一个用于执行定时器与异步作业的线程池。当启用时，引擎将会使用已经持久化的异步作业实体调用异步执行器，然后线程池将异步地执行该作业。这是与老的作业执行器的主要区别，因为在异步作业已被持久化的情况下，作业执行器将会轮询数据库获取新作业。如果找到了一个作业，将锁定并执行它，这意味着大量额外的数据库通信。异步执行器会直接执行异步作业，而不会先轮询数据库。如果异步作业是一个排他作业，异步执行器将首先锁定流程实例的执行，如果成功则将执行作业，并之后解锁流程实例执行。如果锁定流程实例失败，则会重试。
 
-对于定时器作业，逻辑与异步作业不同，异步与作业执行器的实现相近。异步执行器将轮询数据库中将要到时执行的定时器作业。然后会锁定并执行作业。
+定时器作业的逻辑与异步作业不同。对于定时器作业，异步与作业执行器的实现相近。异步执行器将轮询数据库中到期的定时器作业。然后会锁定并执行作业。
 
 ==== 作业执行器的设计 Job executor design
 
@@ -36,7 +36,7 @@
 <property name="asyncExecutor" ref="asyncExecutor" />
 ----
 
-可以覆盖默认的异步执行器，以覆盖默认设置，但是当然也可以从DefaultAsyncJobExecutor类扩展。下面列出的配置中，DefaultAsyncJobExecutor的参数使用了新的值：
+可以覆盖默认的异步执行器，以覆盖默认设置，当然也可以从DefaultAsyncJobExecutor类扩展。下面列出的配置中，DefaultAsyncJobExecutor的参数使用了新的值：
 
 [source,xml,linenums]
 ----
@@ -60,16 +60,16 @@
 |名字|默认值|描述
 |corePoolSize|2|线程池中为执行作业保留的最小线程数量。
 |maxPoolSize|10|线程池中为执行作业保留的最大线程数量。
-|keepAliveTime|5000|在销毁作业执行所用的线程前，需要保持活动的时间（以毫秒计）。默认设置为5000。设置为0非默认值会消耗资源，但在有大量执行作业的时候，可以避免总是创建新线程。
+|keepAliveTime|5000|在销毁执行作业所用的线程前，需要保持活动的时间（以毫秒计）。默认设置为5000。设置为非默认的0值会消耗资源，但在有大量执行作业的时候，可以避免总是创建新线程。
 
 |queueSize|100|放置待执行作业的队列的大小。
 |maxTimerJobsPerAcquisition|1|在一次查询中获取的将到期定时器作业的数量。
 |maxAsyncJobsDuePerAcquisition|1|在一次数据库查询中获取的异步作业的数量。
-|defaultAsyncJobAcquireWaitTimeInMillis|10000|在执行异步作业查询之间等待的时间，以毫秒计。
-|defaultTimerJobAcquireWaitTimeInMillis|10000|在执行将到期定时器作业查询之间等待的时间，以毫秒计。
-|timerLockTimeInMillis|300000|在重试之前，定时器作业锁定的时间，以毫秒计。在该时间之后，Activiti引擎会视为定时器作业已经失败，并将重试。
+|defaultAsyncJobAcquireWaitTimeInMillis|10000|在两次执行异步作业查询之间等待的时间，以毫秒计。
+|defaultTimerJobAcquireWaitTimeInMillis|10000|在两次执行将到期定时器作业查询之间等待的时间，以毫秒计。
+|timerLockTimeInMillis|300000|在重试之前，定时器作业进行锁定操作的时间，以毫秒计。在该时间之后，Activiti引擎会视为定时器作业已经失败，并将重试锁定。
 
-|asyncJobLockTimeInMillis|300000|在重试之前，异步作业锁定的时间，以毫秒计。在该时间之后，Activiti引擎会视为异步作业已经失败，并将重试。
+|asyncJobLockTimeInMillis|300000|在重试之前，异步作业进行锁定操作的时间，以毫秒计。在该时间之后，Activiti引擎会视为异步作业已经失败，并将重试锁定。
 
 |===============
 
@@ -77,9 +77,9 @@
 
 一个BPMN 2.0 XML需要解析为Activiti的内部模型，才能在Activiti引擎中执行。解析发生在部署流程时；或没有在内存中找到流程的时候，这时将会从数据库获取XML。
 
-对于每一个流程，++BpmnParser++类都会创建一个新的++BpmnParser++实例。这个实例会用作所有在解析时要做的事情的容器。解析本身很简单：对于每一个BPMN 2.0元素，引擎中都有一个对应的++org.activiti.engine.parse.BpmnParseHandler++的实例。因此，解析器会将一个BPMN 2.0元素类映射至一个++BpmnParseHandler++实例。默认情况下，Activiti使用++BpmnParseHandler++实例处理所有支持的元素，并用其为流程的步骤附加执行监听器，以创建历史。
+对于每一个流程，++BpmnParser++类都会创建一个新的++BpmnParser++实例。这个实例是所有在解析时要做的事情的容器。解析本身很简单：对于每一个BPMN 2.0元素，引擎中都有一个对应的++org.activiti.engine.parse.BpmnParseHandler++的实例。因此，解析器会将一个BPMN 2.0元素类映射至一个++BpmnParseHandler++实例。默认情况下，Activiti使用++BpmnParseHandler++实例处理所有支持的元素，并用其为流程的步骤附加执行监听器，以创建历史。
 
-可以在Activiti引擎中添加++org.activiti.engine.parse.BpmnParseHandler++的自定义实例。常见用例时，例如为特定步骤添加执行监听器，用于向某个事件处理队列触发事件。Activiti内部使用这种方式处理历史。要添加这种自定义处理器，需要调整Activiti配置：
+可以在Activiti引擎中添加++org.activiti.engine.parse.BpmnParseHandler++的自定义实例。常见使用场景是，例如为特定步骤添加执行监听器，用于向某个事件处理队列触发事件。Activiti内部使用这种方式处理历史。要添加这种自定义处理器，需要调整Activiti配置：
 
 [source,xml,linenums]
 ----
@@ -97,7 +97,7 @@
 </property>
 ----
 
-在++preBpmnParseHandlers++参数中配置的++BpmnParseHandler++实例的列表将添加在任何默认处理器之前。类似的，++postBpmnParseHandlers++中的将添加在之后。在顺序会影响自定义解析处理器中包含的逻辑时很重要。
+在++preBpmnParseHandlers++参数中配置的++BpmnParseHandler++实例的列表将添加在任何默认处理器之前。类似的，++postBpmnParseHandlers++中的将添加在默认处理器之后。在顺序会影响自定义解析处理器中包含的逻辑时很重要。
 
 ++org.activiti.engine.parse.BpmnParseHandler++是一个简单的接口：
 
@@ -112,7 +112,7 @@ public interface BpmnParseHandler {
 }
 ----
 
-++getHandledTypes()++方法返回该解析器处理的所有类型的集合。可用的类型是++BaseElement++的子类，通过集合的泛型指定。也可以扩展++AbstractBpmnParseHandler++类，并覆盖++getHandledType()+方法，它只返回一个类而不是一个集合。这个类也包含了一些默认解析处理器共享的辅助方法。当解析器遇到任何该方法的返回类型时，将调用++BpmnParseHandler++实例。在下面的例子里，当遇到BPMN 2.0 XML中包含的流程时，将会执行++executeParse++方法（这是一个类型转换方法，取代了++BpmnParseHandler++接口中的普通++parse++方法）中的逻辑。
+++getHandledTypes()++方法返回该解析器处理的所有类型的集合。通过集合的泛型决定了可用的类型是++BaseElement++的子类。也可以扩展++AbstractBpmnParseHandler++类，并覆盖++getHandledType()++方法，它只返回一个类而不是一个集合。这个类也包含了一些默认解析处理器共享的辅助方法。当解析器遇到任何该方法的返回类型时，将调用++BpmnParseHandler++实例。在下面的例子里，当遇到BPMN 2.0 XML中包含的流程时，将会执行++executeParse++方法（这是一个类型转换方法，取代了++BpmnParseHandler++接口中的普通++parse++方法）中的逻辑。
 
 [source,java,linenums]
 ----
@@ -129,9 +129,9 @@ public class TestBPMNParseHandler extends AbstractBpmnParseHandler<Process> {
 }
 ----
 
-**重要提示：**当撰写自定义解析处理器时，不要使用任何用于解析BPMN 2.0结构的内部类。这将导致很难查找bug。实现一个自定义处理器安全的做法是实现__BpmnParseHandler__接口，或扩展内部抽象类__org.activiti.engine.impl.bpmn.parser.handler.AbstractBpmnParseHandler__。
+**重要提示：**在撰写自定义解析处理器时，不要使用任何用于解析BPMN 2.0结构的内部类。这将导致很难查找bug。实现一个自定义处理器安全的做法是实现__BpmnParseHandler__接口，或扩展内部抽象类__org.activiti.engine.impl.bpmn.parser.handler.AbstractBpmnParseHandler__。
 
-可以（但不常见）替换默认的++BpmnParseHandler++实例，该实例用于将BPMN 2.0元素解析为Activiti内部模型。可以通过下面的代码片段实现：
+可以（但不常见）替换默认用于将BPMN 2.0元素解析为Activiti内部模型的++BpmnParseHandler++实例。可以通过下面的代码片段实现：
 
 [source,xml,linenums]
 ----
@@ -180,7 +180,7 @@ public class CustomUserTaskBpmnParseHandler extends ServiceTaskParseHandler {
 </property>
 ----
 
-使用UUID id生成器使用下列额外依赖：
+使用UUID id生成器需要添加下列额外依赖：
 
 [source,xml,linenums]
 ----
@@ -197,11 +197,11 @@ public class CustomUserTaskBpmnParseHandler extends ServiceTaskParseHandler {
 
 === 多租户 Multitenancy
 
-总的来说，多租户是一个软件为多个不同组织提供服务的概念。其核心是数据是隔离的，一个组织不能看到其他组织的数据。在这个上下文中，一个这种组织（或部门、团队……）被称为一个__租户（tenant）__。
+总的来说，多租户是一个软件为多个不同组织提供服务的概念。其核心是数据是隔离的，一个组织不能看到其他组织的数据。在这个语境中，一个这样的组织（或部门、团队……）被称为一个__租户（tenant）__。
 
-请注意它与多实例安装方式有本质区别，其中多实例安装是指每一个组织都分别运行一个Activiti流程引擎实例（并使用不同的数据库账户）。尽管Activiti比较轻量级，运行一个流程引擎实例不会花费太多资源，但仍然增加了复杂性与维护量。但是，在某些用力下可能是正确的解决方案。
+请注意它与多实例安装方式有本质区别，其中多实例安装是指每一个组织都分别运行一个Activiti流程引擎实例（并使用不同的数据库账户）。尽管Activiti比较轻量级，运行一个流程引擎实例不会花费太多资源，但多实例安装仍然增加了复杂性与维护量。但是，在某些使用场景中，多实例安装可能是正确的解决方案。
 
-Activiti中的多租户主要围绕着隔离数据实现。要注意__Activiti并不强制多租户规则__。这意味着当查询与使用数据时并不会验证进行操作的用户属于正确的租户。这应该在调用Activiti引擎的层次实现。Activiti确保可以存储租户信息，并在获取流程数据时使用。
+Activiti中的多租户主要围绕着隔离数据实现。要注意__Activiti并不强制多租户规则__。这意味着当查询与使用数据时，并不会验证进行操作的用户是否属于正确的租户。这应该在调用Activiti引擎的层次实现。Activiti确保可以存储租户信息，并在获取流程数据时使用。
 
 在Activiti流程引擎中部署流程定义时，可以传递一个__租户标识符（tenant identifier）__。这是一个字符串（例如一个UUID，部门id，等等……），限制为256个字符长，唯一标识租户：
 
@@ -250,7 +250,7 @@ runtimeService.createProcessInstanceQuery()
 
 Activiti API可以通过高级API与数据库交互。例如，要获取数据，查询API与原生（Native）查询API各有用武之地。然而，在某些用例下，可能不够灵活。下面的章节描述了如何在Activiti数据存储中执行完全自定义的SQL语句（select、insert、update与delete都可以），且完全在配置的流程引擎范围内（例如因此可以使用事务设置）。
 
-要定义自定义SQL语句，activiti引擎使用其底层框架，MyBatis的能力。可以在link:$$http://mybatis.github.io/mybatis-3/java-api.html$$[MyBatis用户手册中]阅读更多信息。
+要定义自定义SQL语句，activiti引擎使用其底层框架MyBatis的功能。可以在link:$$http://mybatis.github.io/mybatis-3/java-api.html$$[MyBatis用户手册中]阅读更多信息。
 
 ==== 基于注解的映射语句 Annotation based Mapped Statements
 
@@ -281,7 +281,7 @@ public interface MyTestMapper {
 
 请注意这是一个接口。底层的MyBatis框架会构造一个它的实例，并在运行时使用。也请注意方法的返回值没有类型，而只是一个map的list（代表了带有列数据的行的列表）。如果需要，可以通过MyBatis映射类设置类型。
 
-要执行上面的查询，必须使用__managementService.executeCustomSql__方法。这个方法使用一个_CustomSqlExecution__实例。这是一个包装器，将引擎的内部数据隐藏起来，不然引擎就要处理这些。
+要执行上面的查询，必须使用__managementService.executeCustomSql__方法。这个方法使用一个__CustomSqlExecution__实例。这是一个包装器，将引擎需要处理的内部数据隐藏起来。
 
 不幸的是，Java泛型让它没有本应该的那么可读。下面的两个泛型类是映射类与其返回类型类。然而，实际的逻辑就是简单的调用映射方法，并返回其结果（若有）。
 
@@ -561,7 +561,7 @@ INFO  org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl  - class org.a
 
 === 高级查询API：在运行时与历史任务查询间无缝切换 Advanced query API: seamless switching between runtime and historic task querying
 
-任何BPM用户界面的核心组件都是任务列表。一般来说，最终用户操作运行时的任务，在收件箱中通过不同设置过滤。有时也需要在这些列表中显示历史任务，并使用类似的过滤。为了简化代码，__TaskQuery__与__HistoricTaskInstanceQuery__有共同的父接口，其中包含了所有公共操作（大多数操作都是公共的）。
+任何BPM用户界面的核心组件都是任务列表。一般来说，最终用户操作运行时的任务，在收件箱中通过不同设置进行过滤。有时也需要在这些列表中显示历史任务，并进行类似的过滤。为了简化代码，__TaskQuery__与__HistoricTaskInstanceQuery__有共同的父接口，其中包含了所有公共操作（大多数操作都是公共的）。
 
 这个公共接口是__org.activiti.engine.task.TaskInfoQuery__类。__org.activiti.engine.task.Task__与__org.activiti.engine.task.HistoricTaskInstance__都有公共父类__org.activiti.engine.task.TaskInfo__（并带有公共参数），并将作为例如__list()__方法的返回值。然而，有时Java泛型会帮倒忙：如果想要直接使用__TaskInfoQuery__类型，将会像是这样：
 
@@ -570,7 +570,7 @@ INFO  org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl  - class org.a
 TaskInfoQuery<? extends TaskInfoQuery<?,?>, ? extends TaskInfo> taskInfoQuery
 ----
 
-呃……好吧。为了“解决”这个问题，可以使用__org.activiti.engine.task.TaskInfoQueryWrapper__类来避免泛型（下面的代码来自REST的代码，将返回一个任务列表，且用户可以选择进行中还是已完成的任务）：
+呃……好吧。为了“解决”这个问题，可以使用__org.activiti.engine.task.TaskInfoQueryWrapper__类来避免泛型（下面的代码来自REST的代码，将返回一个任务列表，且用户可以选择查看进行中还是已完成的任务）：
 
 [source,java,linenums]
 ----
@@ -640,7 +640,7 @@ public class MyGroupManagerFactory implements SessionFactory {
 }
 ----
 
-这个工厂创建的__MyCompanyGroupManager__进行实际工作。但不需要覆盖__GroupEntityManager__的所有成员，只需要覆盖使用场景需要的那些即可。下面的样例展示了可能的样子（只展示一部分成员）：
+实际工作由这个工厂创建的__MyCompanyGroupManager__进行。但不需要覆盖__GroupEntityManager__的所有成员，只需要覆盖使用场景需要的那些即可。下面的样例展示了可能的样子（只展示一部分成员）：
 
 [source,java,linenums]
 ----
@@ -711,7 +711,7 @@ List<User> findUserByQueryCriteria(UserQueryImpl query, Page page);
 
 **默认情况下这个功能是禁用的！**原因是它依赖link:$$http://download.java.net/jdk7/archive/b123/docs/api/javax/xml/transform/stax/StAXSource.html$$[StaxSource]类。而不幸的是，某些平台（例如JDK6， JBoss，等等）不能使用这个类（由于过时的XML解析器实现），因此不能启用安全BPMN 2.0 XML功能。
 
-If the platform on which Activiti runs does support it, do enable this feature.
+如果Activiti运行的平台支持，请一定要启用这个功能。
 
 
 [[advanced.event.logging]]
@@ -736,9 +736,9 @@ databaseEventLogger = new EventLogger(processEngineConfiguration.getClock());
 runtimeService.addEventListener(databaseEventLogger);
 ----
 
-可以继承EventLogger类。如果默认的数据库记录不符合要求，需要覆盖__createEventFlusher()__方法返回一个__org.activiti.engine.impl.event.logger.EventFlusher__接口的实例。可以通过Activiti的__managementService.getEventLogEntries(startLogNr, size);__获取__EventLogEntryEntity__实例。
+可以扩展EventLogger类。如果默认的数据库记录不符合要求，需要覆盖__createEventFlusher()__方法返回一个__org.activiti.engine.impl.event.logger.EventFlusher__接口的实例。可以通过Activiti的__managementService.getEventLogEntries(startLogNr, size);__获取__EventLogEntryEntity__实例。
 
-容易看出这个表中的数据可以通过JSON放入大数据NoSQL存储，例如MongoDB，Elastic Search，等等。也容易看出这里使用的类（org.activiti.engine.impl.event.logger.EventLogger/EventFlusher与许多其他EventHandler类）是可插入的，可调整以适应你的使用场景（例如不将JSON存入数据库，而是将其直接发送给一个队列或大数据存储）。
+容易看出这个表中的数据可以通过JSON放入大数据NoSQL存储，例如MongoDB，Elastic Search，等等。也容易看出这里使用的类（org.activiti.engine.impl.event.logger.EventLogger/EventFlusher与许多其他EventHandler类）是可插入的，可以按你的使用场景调整（例如不将JSON存入数据库，而是将其直接发送给一个队列或大数据存储）。
 
 请注意这个事件记录机制是额外于Activiti的“传统”历史管理器的。尽管所有数据都在数据库表中，但并未对查询或快速恢复做优化。实际使用场景是末端审计并将其存入大数据存储。
 
@@ -760,9 +760,9 @@ runtimeService.addEventListener(databaseEventLogger);
 
 默认情况下，使用<<bpmnScriptTask,脚本任务>>时，执行的脚本与Java代理具有相似的能力。可以完全访问JVM，永远运行（无限循环），或占用大量内存。然而，Java代理需要撰写并放在classpath的jar中，与流程定义的生命周期不同。最终用户一般不会撰写Java代理，因为这基本上是开发者的工作。
 
-然而脚本是流程定义的一部分，具有相同的生命周期。脚本任务不需要额外的jar部署步骤，而是在流程部署后就可以执行。有时，脚本任务中的脚本不是由开发者撰写的。这就有一个上面提到的问题：脚本可以完全访问JVM，也可以在执行脚本时阻止许多系统资源。因此允许来自几乎任何人的脚本不是一个好主意。
+然而脚本是流程定义的一部分，具有相同的生命周期。脚本任务不需要额外的jar部署步骤，而是在流程部署后就可以执行。有时，脚本任务中的脚本不是由开发者撰写的。这就有一个上面提到的问题：脚本可以完全访问JVM，也可以在执行脚本时阻塞许多系统资源。因此允许来自几乎任何人的脚本不是一个好主意。
 
-要解决这个问题，可以启用__安全脚本__功能。目前，这个功能只实现了_javascript_脚本。要启用它，向你的项目添加__activiti-secure-javascript__依赖。使用Maven时：
+要解决这个问题，可以启用__安全脚本__功能。目前，这个功能只实现了__javascript__脚本。要启用它，向你的项目添加__activiti-secure-javascript__依赖。使用Maven时：
 
 [source,xml,linenums]
 ----
@@ -773,7 +773,7 @@ runtimeService.addEventListener(databaseEventLogger);
 </dependency>
 ----
 
-添加这个依赖会同时引入Rhino依赖（参见link:$https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino$$[https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino]）。Rhino是一个用于JDK的javascript引擎。过去包含在JDK版本6与7中，并被Nashorn引擎取代。然而，Rhino项目仍然在继续开发。许多功能（包括Activiti用于实现安全脚本的）都在之后才加入。在撰写本手册的时候，Nashorn**还没有**实现安全脚本功能需要功能。
+添加这个依赖会同时引入Rhino依赖（参见link:$https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino$$[https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino]）。Rhino是一个用于JDK的javascript引擎。过去包含在JDK版本6与7中，并已被Nashorn引擎取代。然而，Rhino项目仍然在继续开发。许多功能（包括Activiti用于实现安全脚本的）都在之后才加入。在撰写本手册的时候，Nashorn**还没有**实现安全脚本功能需要的功能。
 
 这意味着脚本之间可能要做一些（基本很少）改变（例如，Rhino使用__importPackage__，而Nashorn使用__load()__）。这些改变与将脚本从JDK 7切换至8相似。
 
@@ -793,7 +793,7 @@ processEngineConfig.addConfigurator(configurator);
 
 可以使用下列设置：
 
-* *enableClassWhiteListing*: 为true时，会黑名单所有类，希望运行的所有类都需要分别添加入白名单。严格控制了暴露给脚本的东西。默认为__false__。
+* *enableClassWhiteListing*: 为true时，会黑名单所有类。希望运行的所有类都需要添加入白名单，这样就严格控制了暴露给脚本的东西。默认为__false__。
 * *whiteListedClasses*: 一个全限定类名字符串的集合，表示允许脚本中使用的类。例如，要在脚本中暴露__execution__对象，需要在这个集合中添加__org.activiti.engine.impl.persistence.entity.ExecutionEntity__字符串。默认为__空__。
 * *maxStackDepth*: 限制在脚本中调用函数时的最大栈深度。可以用于避免由于递归调用脚本中定义的方法，而导致的栈溢出异常。默认为__-1__（禁用）。
 * *maxScriptExecutionTime*: 脚本允许运行的最大时间。默认为__-1__（禁用）。
@@ -820,4 +820,4 @@ __请注意：____maxMemoryUsed__设置只能用于支持com.sun.management.Thre
 </activiti:executionListener>
 ----
 
-演示不安全脚本，与如何通过__安全脚本__功能将其变得安全的例子，可以查看link:$$https://github.com/Activiti/Activiti/tree/master/modules/activiti-secure-javascript/src/test/resources$$[GitHub上的单元测试]
+演示不安全脚本以及如何通过__安全脚本__功能将其变得安全的例子，可以查看link:$$https://github.com/Activiti/Activiti/tree/master/modules/activiti-secure-javascript/src/test/resources$$[GitHub上的单元测试]
