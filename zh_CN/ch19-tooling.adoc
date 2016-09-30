@@ -10,7 +10,7 @@
 
 ==== 介绍 Introduction
 
-可以使用标准Java管理扩展（JMX）技术连接Activiti引擎，以获取信息或改变其行为。可以使用任何标准的JMX客户端。启用与禁用作业执行器，部署新的流程定义文件或删除它们都可以通过JMX完成，而不需要写一行代码。
+可以使用标准Java管理扩展（JMX）技术连接Activiti引擎，以获取信息或改变其行为。可以使用任何标准的JMX客户端。启用与禁用作业执行器、部署新的流程定义文件或删除它们等等操作，都可以通过JMX完成，而不需要写一行代码。
 
 
 [[jmxQuickStart]]
@@ -29,7 +29,7 @@
 </dependency>
 ----
 
-在添加依赖并构建流程引擎后，就可以使用JMX连接了。只需要在标准JDK发行版中提供的jconsole。在本地线程列表中，可以看到包含Activit的JVM。如果由于任何原因没有在“本地进程”中列出合适的JVM，可以尝试使用这个URL从“远程进程”中连接：
+在添加依赖并构建流程引擎后，就可以使用JMX连接了。可以使用在标准JDK发行版中提供的jconsole。在本地线程列表中，可以看到包含Activit的JVM。如果由于任何原因没有在“本地进程”中列出合适的JVM，可以尝试使用这个URL从“远程进程”中连接：
 ----
 service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi/activiti
 ----
@@ -48,7 +48,7 @@ service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi/activiti
 [options="header"]
 |===============
 |MBean|类型|名字|描述
-|ProcessDefinitionsMBean|属性|processDefinitions|已部署流程定义的++Id++, +Name+, +Version+, ++IsSuspended++参数，作为字符串的雷暴
+|ProcessDefinitionsMBean|属性|processDefinitions|已部署流程定义的++Id++, +Name+, +Version+, ++IsSuspended++参数，是一个字符串的list
 ||属性|deployments|当前部署的++Id++, +Name+, ++TenantId++参数
 ||方法|getProcessDefinitionById(String id)|给定id流程定义的+Id+, +Name+, ++Version++与++IsSuspended++参数
 ||方法|deleteDeployment(String id)|使用给定++Id++删除部署
@@ -85,14 +85,14 @@ JMX使用最常使用的配置作为默认配置来简化部署。然而也可�
 </bean>
 ----
 
-表表展示了可配置的参数与其默认值：
+下表展示了可配置的参数与其默认值：
 
 [options="header"]
 |===============
 |名字|默认值|描述
-|disabled|false|若设置，即使已添加依赖也不会启动JMX
+|disabled|false|若值为true，即使已添加依赖也不会启动JMX
 |domain|org.activiti.jmx.Mbeans|MBean的域
-|createConnector|true|若值为true，则创建一个连接器至已启动的MbeanServer
+|createConnector|true|若值为true，则为已启动的MbeanServer创建一个连接器
 |MBeanDomain|DefaultDomain|MBean服务器的域
 |registryPort|1099|出现在服务URL中作为注册端口
 |serviceUrlPath|/jmxrmi/activiti|出现在服务URL中
@@ -125,7 +125,7 @@ service:jmx:rmi:///jndi/rmi://:<hostname>:<registryPort>/<serviceUrlPath>
 
 ==== 创建测试用例 Create Test Case
 
-在开发过程中，有时在应用中实际实现前，创建一个小测试用例来测试想法或功能很有用，因为这样可以用测试隔离主题。JUnit测试用例也是交流bug报告与功能需求的推荐工具。在一份bug报告或功能需求jira单中附加一个测试用例，可以有效减少修复时间。
+在开发过程中，有时在应用中实际实现前，创建一个小测试用例来测试想法或功能很有用，因为这样可以用测试来隔离主题。JUnit测试用例也是交流bug报告与功能需求的推荐工具。在一份bug报告或功能需求jira单中附加一个测试用例，可以有效减少修复时间。
 
 为了便于创建测试用例，可以使用maven原型。通过使用这个原型，可以快速创建标准测试用例。原型应该在标准仓库中已经有了。如果没有，可以简单的安装在你的本地maven仓库目录中：在**tooling/archtypes**目录下键入**mvn install**。
 
@@ -180,7 +180,7 @@ mvn archetype:generate \
 
 ==== 介绍 Introduction
 
-https://www.docker.com/[Docker]是一个神奇的虚拟化工具。可以将一个应用与其所有依赖打包为一个标准的软件开发单元。人们可以创建持久化的景象，并将其发布至共享服务器。其他人可以获取该镜像，并轻松启动与运行该软件。
+https://www.docker.com/[Docker]是一个神奇的虚拟化工具。可以将一个应用与其所有依赖打包为一个标准的软件开发单元。人们可以创建持久化的镜像，并将其发布至共享服务器。其他人可以获取该镜像，并轻松启动与运行该软件。
 
 Activiti docker镜像的目的是快速运行activiti explorer与rest-api，而不需要为设置开发环境而处理复杂的细节。对于希望尽快运行、测试与使用Activiti的人来说十分有益。对展示演示也很有价值。
 
@@ -226,7 +226,3 @@ Docker使用tooling/dockerImage/singleImage文件夹下的Dockerfile构建。一
 
 [source]
 docker push activiti/activiti-single-image:latest
-
-
-
-[[jmxQuickStart]]
