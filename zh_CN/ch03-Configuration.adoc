@@ -705,7 +705,7 @@ void addEventListener(ActivitiEventListener listenerToAdd, ActivitiEventType... 
 
 ===== 抛出BPMN事件的监听器 Listeners throwing BPMN events
 
-<<experimental, [试验功能] >>
+<<experimental, [EXPERIMENTAL] >>
 
 
 处理分发的事件的另一个方法，是抛出BPMN事件。请牢记在心，只有特定种类的Activiti事件类型，抛出BPMN事件才合理。例如，在流程实例被删除时抛出BPMN事件，会导致错误。下面的代码片段展示了如何在流程实例中抛出信号，向外部流程（全局）抛出信号，在流程实例中抛出消息事件，以及在流程实例中抛出错误事件。这里不使用++class++或++delegateExpression++，而要使用++throwEvent++属性，以及一个附加属性，用于指定需要抛出的事件类型。

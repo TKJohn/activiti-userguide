@@ -157,7 +157,7 @@ HTTP响应的media-type总是++application/json++，除非请求的是二进制�
 |参数|必填|描述
 |name|否|包含在查询中的变量名。在有些使用'++equals++'的查询中可以为空，查询**任意变量名**为给定值的资源。
 |value|是|包含在查询中的变量值，需要使用给定类型的正确格式。
-|operator|是|查询使用的操作，可以为下列值：++equals, notEquals, equalsIgnoreCase, notEqualsIgnoreCase, lessThan, greaterThan, lessThanOrEquals, greaterThanOrEquals++与++like++。
+|operator|是|查询使用的操作，可以为下列值：++equals, notEquals, equalsIgnoreCase, notEqualsIgnoreCase, lessThan, greaterThan, lessThanOrEquals, greaterThanOrEquals, like++与++likeIgnoreCase++。
 |type|否|所用变量的类型。当省略时，会从++value++参数推理类型。任何JSON文本值都认为是++string++类型，JSON boolean值认为是++boolean++类型，JSON数字认为是++long++或++integer++，取决于数字的大小。建议在有疑惑时明确指定类型。其他支持的类型列在下面。
 
 
@@ -414,14 +414,14 @@ GET repository/deployments/{deploymentId}/resources
   {
     "id": "diagrams/my-process.bpmn20.xml",
     "url": "http://localhost:8081/activiti-rest/service/repository/deployments/10/resources/diagrams%2Fmy-process.bpmn20.xml",
-    "dataUrl": "http://localhost:8081/activiti-rest/service/repository/deployments/10/resourcedata/diagrams%2Fmy-process.bpmn20.xml",
+    "contentUrl": "http://localhost:8081/activiti-rest/service/repository/deployments/10/resourcedata/diagrams%2Fmy-process.bpmn20.xml",
     "mediaType": "text/xml",
     "type": "processDefinition"
   },
   {
     "id": "image.png",
     "url": "http://localhost:8081/activiti-rest/service/repository/deployments/10/resources/image.png",
-    "dataUrl": "http://localhost:8081/activiti-rest/service/repository/deployments/10/resourcedata/image.png",
+    "contentUrl": "http://localhost:8081/activiti-rest/service/repository/deployments/10/resourcedata/image.png",
     "mediaType": "image/png",
     "type": "resource"
   }
@@ -435,7 +435,7 @@ GET repository/deployments/{deploymentId}/resources
 ** ++processDefinition++: 包含一个或多个流程定义的资源。通过部署器挑选。
 ** ++processImage++: 代表流程定义的图形化输出的资源。
 
-__结果JSON中的dataUrl参数包含了获取该二进制资源的实际URL。__
+__结果JSON中的contentUrl参数包含了获取该二进制资源的实际URL。__
 
 
 ==== 获取一个部署资源 Get a deployment resource
@@ -898,7 +898,7 @@ POST repository/process-definitions/{processDefinitionId}/identitylinks
 [source,json,linenums]
 ----
 {
-  "groupId" : "sales"
+  "group" : "sales"
 }
 ----
 
@@ -939,7 +939,7 @@ DELETE repository/process-definitions/{processDefinitionId}/identitylinks/{famil
 |参数|必填|值|描述
 |processDefinitionId|是|String|流程定义的id。
 |family|是|String|为++users++或++groups++，取决于身份关联的类型。
-|identityId|是|String|要从候选启动者中移除的userId或groupId。
+|identityId|是|String|要从候选启动者中移除的用户或组。
 
 |===============
 
@@ -981,7 +981,7 @@ GET repository/process-definitions/{processDefinitionId}/identitylinks/{family}/
 |参数|必填|值|描述
 |processDefinitionId|是|String|流程定义的id。
 |family|是|String|为++users++或++groups++，取决于身份关联的类型。
-|identityId|是|String|要获取的候选启动者的userId或groupId。
+|identityId|是|String|作为候选启动者的用户或组。
 
 |===============
 
@@ -1810,7 +1810,7 @@ GET runtime/process-instances/{processInstanceId}/identitylinks
 ]
 ----
 
-请注意++groupId++永远为null，因为只有用户才能参与流程实例。
+请注意++group++永远为null，因为只有用户才能参与流程实例。
 
 
 ==== 为一个流程实例添加一个参与用户 Add an involved user to a process instance
@@ -1834,12 +1834,12 @@ POST runtime/process-instances/{processInstanceId}/identitylinks
 [source,json,linenums]
 ----
 {
-  "userId":"kermit",
+  "user":"kermit",
   "type":"participant"
 }
 ----
 
-++userId++与++type++都是必填的。
+++user++与++type++都是必填的。
 
 
 .为一个流程实例添加一个参与用户 - 响应码
@@ -1847,7 +1847,7 @@ POST runtime/process-instances/{processInstanceId}/identitylinks
 |===============
 |响应码|描述
 |201|代表已找到流程实例，并已返回关联。
-|400|代表请求体中未包含userId或type。
+|400|代表请求体中未包含user或type。
 |404|代表未找到请求的流程实例。
 
 |===============
@@ -1865,7 +1865,7 @@ POST runtime/process-instances/{processInstanceId}/identitylinks
 }
 ----
 
-请注意++groupId++永远为null，因为只有用户才能参与流程实例。
+请注意++group++永远为null，因为只有用户才能参与流程实例。
 
 
 ==== 从一个流程实例中移除一个参与用户 Remove an involved user to from process instance
@@ -1907,7 +1907,7 @@ DELETE runtime/process-instances/{processInstanceId}/identitylinks/users/{userId
 ----
 
 
-请注意++groupId++永远为null，因为只有用户才能参与流程实例。
+请注意++group++永远为null，因为只有用户才能参与流程实例。
 
 
 ==== 一个流程实例的变量的列表 List of variables for a process instance
@@ -2916,15 +2916,22 @@ GET runtime/tasks/{taskId}
   "delegationState" : "pending",
   "description" : "Task description",
   "dueDate" : "2013-04-17T10:17:43.902+0000",
-  "execution" : "http://localhost:8182/runtime/executions/5",
+  "executionUrl" : "http://localhost:8182/runtime/executions/5",
+  "executionId" : "5",
   "id" : "8",
   "name" : "My task",
   "owner" : "owner",
-  "parentTask" : "http://localhost:8182/runtime/tasks/9",
+  "parentTaskUrl" : "http://localhost:8182/runtime/tasks/9",
+  "parentTaskId" : "9",
   "priority" : 50,
-  "processDefinition" : "http://localhost:8182/repository/process-definitions/oneTaskProcess%3A1%3A4",
-  "processInstance" : "http://localhost:8182/runtime/process-instances/5",
+  "processDefinitionUrl" : "http://localhost:8182/repository/process-definitions/oneTaskPr
+ocess%3A1%3A4",
+  "processDefinitionId" : "oneTaskProcess%3A1%3A4",
+  "processInstanceUrl" : "http://localhost:8182/runtime/process-instances/5",
+  "processInstanceId" : "5",
   "suspended" : false,
+  "formKey" : null,
+  "category": "examples",
   "taskDefinitionKey" : "theTask",
   "url" : "http://localhost:8182/runtime/tasks/8",
   "tenantId" : null
@@ -2970,6 +2977,7 @@ GET runtime/tasks
 |processInstanceId|否|String|只返回给定id流程实例中的任务。
 |processInstanceBusinessKey|否|String|只返回给定businessKey流程实例中的任务。
 |processInstanceBusinessKeyLike|否|String|只返回businessKey like给定值的流程实例中的任务。
+|processDefinitionId|否|String|只返回给定id的流程定义的流程实例中的任务。
 |processDefinitionKey|否|String|只返回给定key的流程定义的流程实例中的任务。
 |processDefinitionKeyLike|否|String|只返回key like给定值的流程定义的流程实例中的任务。
 |processDefinitionName|否|String|只返回给定名字的流程定义的流程实例中的任务。
@@ -2990,6 +2998,7 @@ GET runtime/tasks
 |tenantIdLike|否|String|只返回tenantId like给定值的任务。
 |withoutTenantId|否|Boolean|如果值为++true++，则只返回未设置tenantId的任务。如果值为++false++，则忽略++withoutTenantId++参数。
 |candidateOrAssigned|否|String|选择已被申领，或已指派给用户，或等待用户（候选用户或组）申领的任务。
+|category|否|string|选择给定分类的任务。请注意这是任务的分类，而不是流程定义的分类（即BPMN Xml内的namespace）。
 
 |===============
 
@@ -3017,17 +3026,24 @@ GET runtime/tasks
       "delegationState" : "pending",
       "description" : "Task description",
       "dueDate" : "2013-04-17T10:17:43.902+0000",
-      "execution" : "http://localhost:8182/runtime/executions/5",
+      "executionUrl" : "http://localhost:8182/runtime/executions/5",
+      "executionId" : "5",
       "id" : "8",
       "name" : "My task",
       "owner" : "owner",
-      "parentTask" : "http://localhost:8182/runtime/tasks/9",
+      "parentTaskUrl" : "http://localhost:8182/runtime/tasks/9",
+      "parentTaskId" : "9",
       "priority" : 50,
-      "processDefinition" : "http://localhost:8182/repository/process-definitions/oneTaskProcess%3A1%3A4",
-      "processInstance" : "http://localhost:8182/runtime/process-instances/5",
+      "processDefinitionUrl" : "http://localhost:8182/repository/process-definitions/oneTa
+skProcess%3A1%3A4",
+      "processDefinitionId" : "oneTaskProcess%3A1%3A4",
+      "processInstanceUrl" : "http://localhost:8182/runtime/process-instances/5",
+      "processInstanceId" : "5",
       "suspended" : false,
       "taskDefinitionKey" : "theTask",
       "url" : "http://localhost:8182/runtime/tasks/8",
+      "formKey" : null,
+      "category": "examples",
       "tenantId" : null
     }
   ],
@@ -3037,6 +3053,7 @@ GET runtime/tasks
   "order": "asc",
   "size": 1
 }
+
 ----
 
 
@@ -3103,17 +3120,24 @@ POST query/tasks
       "delegationState" : "pending",
       "description" : "Task description",
       "dueDate" : "2013-04-17T10:17:43.902+0000",
-      "execution" : "http://localhost:8182/runtime/executions/5",
+      "executionUrl" : "http://localhost:8182/runtime/executions/5",
+      "executionId" : "5",
       "id" : "8",
       "name" : "My task",
       "owner" : "owner",
-      "parentTask" : "http://localhost:8182/runtime/tasks/9",
+      "parentTaskUrl" : "http://localhost:8182/runtime/tasks/9",
+      "parentTaskId" : "9",
       "priority" : 50,
-      "processDefinition" : "http://localhost:8182/repository/process-definitions/oneTaskProcess%3A1%3A4",
-      "processInstance" : "http://localhost:8182/runtime/process-instances/5",
+      "processDefinitionUrl" : "http://localhost:8182/repository/process-definitions/oneTa
+skProcess%3A1%3A4",
+      "processDefinitionId" : "oneTaskProcess%3A1%3A4",
+      "processInstanceUrl" : "http://localhost:8182/runtime/process-instances/5",
+      "processInstanceId" : "5",
       "suspended" : false,
       "taskDefinitionKey" : "theTask",
       "url" : "http://localhost:8182/runtime/tasks/8",
+      "formKey" : null,
+      "category": "examples",
       "tenantId" : null
     }
   ],
@@ -3398,15 +3422,19 @@ GET runtime/tasks/{taskId}/variables/{variableName}/data?scope={scope}
 
 
 
-==== 为一个任务创建一个新的变量 Create new variables on a task
-
+==== 为一个任务创建（或更新）变量 Create (or update) variables on a task
 
 ----
 POST runtime/tasks/{taskId}/variables
 ----
 
+----
+PUT runtime/tasks/{taskId}/variables
+----
 
-.为一个任务创建一个新的变量 - URL 参数
+使用++POST++时，将创建所有传递的变量。如果其中有已经在任务中存在的变量，则请求结果为错误（409 - 冲突）。而在使用++PUT++时，会为任务创建不存在的变量，而已经存在的变量将被更新，不会报错。
+
+.为一个任务创建（或更新）变量 - URL 参数
 [options="header"]
 |===============
 |参数|必填|值|描述
@@ -3460,14 +3488,14 @@ POST runtime/tasks/{taskId}/variables
 ----
 
 
-.为一个任务创建一个新的变量 - 响应码
+.为一个任务创建（或更新）变量 - 响应码
 [options="header"]
 |===============
 |响应码|描述
 |201|代表已创建变量，并已返回结果。
 |400|代表缺少要创建的变量名，或者尝试为独立任务（未关联至流程）创建++global++变量，或者请求中包含了空的变量数组，或者请求中没有包含变量数组。状态消息提供了额外信息。
 |404|代表未找到请求的任务。
-|409|代表任务中已有给定名字的变量。改用PUT方法更新任务变量。
+|409|代表任务中已有给定名字的变量（仅在使用POST方法时抛出）。改用PUT方法更新任务变量。
 
 |===============
 
@@ -3724,14 +3752,14 @@ GET runtime/tasks/{taskId}/identitylinks
 ----
 [
   {
-    "userId" : "kermit",
-    "groupId" : null,
+    "user" : "kermit",
+    "group" : null,
     "type" : "candidate",
     "url" : "http://localhost:8081/activiti-rest/service/runtime/tasks/100/identitylinks/users/kermit/candidate"
   },
   {
-    "userId" : null,
-    "groupId" : "sales",
+    "user" : null,
+    "group" : "sales",
     "type" : "candidate",
     "url" : "http://localhost:8081/activiti-rest/service/runtime/tasks/100/identitylinks/groups/sales/candidate"
   },
@@ -3788,8 +3816,8 @@ GET runtime/tasks/{taskId}/identitylinks/{family}/{identityId}/{type}
 [source,json,linenums]
 ----
 {
-  "userId" : null,
-  "groupId" : "sales",
+  "user" : null,
+  "group" : "sales",
   "type" : "candidate",
   "url" : "http://localhost:8081/activiti-rest/service/runtime/tasks/100/identitylinks/groups/sales/candidate"
 }
@@ -3818,7 +3846,7 @@ POST runtime/tasks/{taskId}/identitylinks
 [source,json,linenums]
 ----
 {
-  "userId" : "kermit",
+  "user" : "kermit",
   "type" : "candidate",
 }
 ----
@@ -3828,7 +3856,7 @@ POST runtime/tasks/{taskId}/identitylinks
 [source,json,linenums]
 ----
 {
-  "groupId" : "sales",
+  "group" : "sales",
   "type" : "candidate",
 }
 ----
@@ -3849,8 +3877,8 @@ POST runtime/tasks/{taskId}/identitylinks
 [source,json,linenums]
 ----
 {
-  "userId" : null,
-  "groupId" : "sales",
+  "user" : null,
+  "group" : "sales",
   "type" : "candidate",
   "url" : "http://localhost:8081/activiti-rest/service/runtime/tasks/100/identitylinks/groups/sales/candidate"
 }
@@ -4686,8 +4714,8 @@ GET history/historic-process-instance/{processInstanceId}/identitylinks
 [
  {
   "type" : "participant",
-  "userId" : "kermit",
-  "groupId" : null,
+  "user" : "kermit",
+  "group" : null,
   "taskId" : null,
   "taskUrl" : null,
   "processInstanceId" : "5",
@@ -4976,6 +5004,7 @@ GET history/historic-task-instances
 |taskDescription|否|String|历史任务实例的任务描述。
 |taskDescriptionLike|否|String|历史任务实例的任务描述'like'操作。
 |taskDefinitionKey|否|String|历史任务实例从流程定义得到的任务标识符。
+|taskCategory|否|String|选择给定分类的任务。请注意这是任务的分类，而不是流程定义的分类（即BPMN Xml内的namespace）。
 |taskDeleteReason|否|String|历史任务实例的任务删除原因。
 |taskDeleteReasonLike|否|String|历史任务实例的任务删除原因'like'操作。
 |taskAssignee|否|String|历史任务实例的办理人。
@@ -5207,8 +5236,8 @@ GET history/historic-task-instance/{taskId}/identitylinks
 [
  {
   "type" : "assignee",
-  "userId" : "kermit",
-  "groupId" : null,
+  "user" : "kermit",
+  "group" : null,
   "taskId" : "6",
   "taskUrl" : "http://localhost:8182/history/historic-task-instances/5",
   "processInstanceId" : null,
@@ -6602,8 +6631,6 @@ GET identity/users/{userId}/picture
 |===============
 
 
-**请求体：**
-
 **请求体：**请求需要是++multipart/form-data++类型的。需要有唯一的file-part，包含变量的二进制值。另外，也可以使用下列额外的form-fields：
 
 * ++mimeType++: 可选的上传图片的mime-type。如果省略，则默认使用++image/jpeg++作为该图片的mime-type。
@@ -7057,7 +7084,7 @@ POST identity/groups/{groupId}/members
 [source,json,linenums]
 ----
 {
-   "userId":"kermit"
+   "user":"kermit"
 }
 ----
 
@@ -7067,7 +7094,7 @@ POST identity/groups/{groupId}/members
 |===============
 |响应码|描述
 |201|代表已找到组，并已添加成员。
-|404|代表请求体中没有包含userId。
+|404|代表请求体中没有包含user。
 |404|代表未找到请求的组。
 |409|代表请求的用户已经是组的成员。
 
@@ -7079,8 +7106,8 @@ POST identity/groups/{groupId}/members
 [source,json,linenums]
 ----
 {
-   "userId":"kermit",
-   "groupId":"sales",
+   "user":"kermit",
+   "group":"sales",
     "url":"http://localhost:8182/identity/groups/sales/members/kermit"
 }
 ----
@@ -7119,8 +7146,8 @@ DELETE identity/groups/{groupId}/members/{userId}
 [source,json,linenums]
 ----
 {
-   "userId":"kermit",
-   "groupId":"sales",
+   "user":"kermit",
+   "group":"sales",
     "url":"http://localhost:8182/identity/groups/sales/members/kermit"
 }
 ----

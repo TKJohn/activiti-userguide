@@ -4141,7 +4141,7 @@ public class ExampleExecutionListenerOne implements ExecutionListener {
   </activiti:field>
   <activiti:field name="language" stringValue="groovy" />
   <activiti:field name="resultVariable" stringValue="myVar" />
-<activiti:executionListener>
+</activiti:executionListener>
 ----
 
 
@@ -4280,7 +4280,7 @@ public class MyTaskCreateListener implements TaskListener {
   </activiti:field>
   <activiti:field name="language" stringValue="groovy" />
   <activiti:field name="resultVariable" stringValue="myVar" />
-<activiti:taskListener>
+</activiti:taskListener>
 ----
 
 

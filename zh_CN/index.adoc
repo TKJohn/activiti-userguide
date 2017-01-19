@@ -5,7 +5,7 @@ v  5.21.0
 :toclevels: 5
 :icons: font
 :numbered:
-:source-highlighter: pygments
+:source-highlighter: pygments.rb
 :pygments-css: class
 :pygments-linenums-mode: table
 :compat-mode:

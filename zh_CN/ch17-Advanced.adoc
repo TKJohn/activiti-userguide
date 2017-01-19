@@ -237,7 +237,7 @@ runtimeService.createProcessInstanceQuery()
 
 查询API也可以使用__like__语义通过租户标识符过滤，也可以过滤掉没有租户标识符的实体。
 
-**重要的实现细节：**由于数据库的原因（更确切地说，唯一约束的null处理），__默认的__代表__没有租户__的租户标识符为**空字符串**。（流程定义key，流程定义版本，租户标识符）的组合需要是唯一的（并且通过数据库约束检查）。也请注意租户标识符不能设置为null，不然会影响查询，因为某些数据库（Oracle）将空字符串当做null值（这就是为什么__.withoutTenantId__查询不检查空字符串还是null）。这意味着同一个流程定义（有相同的流程定义key）可以为多个租户部署，每一个租户都有他们自己的版本。未使用租户时不会影响使用。
+**重要的实现细节：**由于数据库的原因（更确切地说，唯一约束的null处理），__默认的__代表__没有租户__的租户标识符为**空字符串**。（流程定义key，流程定义版本，租户标识符）的组合需要是唯一的（并且通过数据库约束检查）。也请注意租户标识符不能设置为null，不然会影响查询，因为某些数据库（Oracle）将空字符串当做null值（这就是为什么__.withoutTenantId__查询不检查空字符串还是null）。这意味着同一个流程定义（有相同的流程定义key）可以为多个租户部署，每一个租户都有他们自己的版本。并不会影响未使用租户时的使用方式。
 
 **请注意上面所说都不与在集群中运行多个Activiti实例冲突。**
 
@@ -820,4 +820,4 @@ __请注意：____maxMemoryUsed__设置只能用于支持com.sun.management.Thre
 </activiti:executionListener>
 ----
 
-演示不安全脚本以及如何通过__安全脚本__功能将其变得安全的例子，可以查看link:$$https://github.com/Activiti/Activiti/tree/master/modules/activiti-secure-javascript/src/test/resources$$[GitHub上的单元测试]
+演示不安全脚本以及如何通过__安全脚本__功能将其变得安全的例子，可以查看link:$$https://github.com/Activiti/Activiti/tree/master/modules/activiti-secure-javascript/src/test/resources$$[GitHub上的单元测试]。
