@@ -7057,7 +7057,7 @@ DELETE identity/groups/{groupId}
 
 ==== 获取一个组中的成员 Get members in a group
 
-++identity/groups/members++不能使用GET。使用++identity/users?memberOfGroup=sales++URL获取特定组中的所有用户。
+不能使用GET ++identity/groups/members++，而需要使用 ++identity/users?memberOfGroup=sales++ URL以获取特定组中的所有用户。
 
 
 ==== 为一个组添加一个成员 Add a member to a group
@@ -7084,7 +7084,7 @@ POST identity/groups/{groupId}/members
 [source,json,linenums]
 ----
 {
-   "user":"kermit"
+   "userId":"kermit"
 }
 ----
 
@@ -7106,8 +7106,8 @@ POST identity/groups/{groupId}/members
 [source,json,linenums]
 ----
 {
-   "user":"kermit",
-   "group":"sales",
+   "userId":"kermit",
+   "groupId":"sales",
     "url":"http://localhost:8182/identity/groups/sales/members/kermit"
 }
 ----
@@ -7139,19 +7139,4 @@ DELETE identity/groups/{groupId}/members/{userId}
 |404|代表未找到请求的组，或用户不是组的成员。状态描述中包含了关于错误的额外信息。
 
 |===============
-
-
-**响应体：**
-
-[source,json,linenums]
-----
-{
-   "user":"kermit",
-   "group":"sales",
-    "url":"http://localhost:8182/identity/groups/sales/members/kermit"
-}
-----
-
-
-
 
